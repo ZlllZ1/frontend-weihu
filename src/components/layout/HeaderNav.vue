@@ -35,7 +35,7 @@
       </div>
       <div class="inline-flex items-center justify-center gap-5">
         <div class="relative clickOut">
-          <button class="hover:text-[#333]" @click.stop="toggleMessage">
+          <button class="hover:text-blue" @click.stop="toggleMessage">
             消息
           </button>
           <transition name="fade">
@@ -43,7 +43,7 @@
           </transition>
         </div>
         <div class="relative clickOut">
-          <button class="hover:text-[#333]" @click.stop="togglePrivateLetter">
+          <button class="hover:text-blue" @click.stop="togglePrivateLetter">
             私信
           </button>
           <transition name="fade">
@@ -51,7 +51,7 @@
           </transition>
         </div>
         <div class="relative clickOut">
-          <button class="hover:text-[#333]" @click.stop="toggleLogin">
+          <button class="hover:text-blue" @click.stop="toggleLogin">
             注册/登录
           </button>
           <transition name="fade">
@@ -73,35 +73,35 @@ const searchText = ref('')
 const showMessage = ref(false)
 const showPrivateLetter = ref(false)
 const showLogin = ref(false)
+
 const search = () => {
   console.log(111)
 }
+
 const toggleMessage = () => {
   showMessage.value = !showMessage.value
   showPrivateLetter.value = false
   showLogin.value = false
 }
-
 const togglePrivateLetter = () => {
   showPrivateLetter.value = !showPrivateLetter.value
   showMessage.value = false
   showLogin.value = false
 }
-
 const toggleLogin = () => {
   showLogin.value = !showLogin.value
   showMessage.value = false
   showPrivateLetter.value = false
 }
+
 const handleClickOutside = event => {
-  console.log(event.target.closest('.clickOut'))
   if (!event.target.closest('.clickOut')) {
     showMessage.value = false
     showPrivateLetter.value = false
     showLogin.value = false
   }
 }
-const closeLogin = () => (showLogin.value = false)
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
 })
@@ -109,6 +109,8 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
+
+const closeLogin = () => (showLogin.value = false)
 </script>
 
 <style lang="scss" scoped>

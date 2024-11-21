@@ -1,9 +1,7 @@
 <template>
   <div class="absolute top-12 left-1/2 -translate-x-1/2">
     <span class="triangle"></span>
-    <div
-      class="bg-white w-[360px] h-[440px] rounded shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
-    >
+    <div class="relative bg-white w-[360px] h-[440px] rounded shadow-sm">
       私信框
     </div>
   </div>
