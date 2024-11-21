@@ -15,11 +15,17 @@ module.exports = defineConfig({
   },
   chainWebpack: config => {
     config.plugin('html').tap(args => {
-      args[0].title = 'My Vue App'
+      args[0].title = '微乎'
       return args
     })
   },
-  css: {},
+  css: {
+    loaderOptions: {
+      postcss: {
+        plugins: [require('tailwindcss'), require('autoprefixer')]
+      }
+    }
+  },
   devServer: {
     proxy: {
       '/api': {
