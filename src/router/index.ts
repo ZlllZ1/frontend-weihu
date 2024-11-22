@@ -1,46 +1,40 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '@/views/home/HomeView.vue'
-import CreateView from '@/views/create/CreateView.vue'
-import FriendView from '@/views/friend/FriendView.vue'
-import UserInfo from '@/views/userInfo/UserInfo.vue'
-import PersonalCenter from '@/views/personalCenter/PersonalCenter.vue'
-import PostView from '@/views/post/PostView.vue'
-import chatView from '@/views/chat/chatView.vue'
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('@/views/home/HomeView.vue')
   },
   {
     path: '/create',
     name: 'create',
-    component: CreateView
+    component: () => import('@/views/create/CreateView.vue')
   },
   {
     path: '/friend',
     name: 'friend',
-    component: FriendView
+    component: () => import('@/views/friend/FriendView.vue')
   },
   {
     path: '/userInfo/:userId',
     name: 'userInfo',
-    component: UserInfo
+    component: () => import('@/views/userInfo/UserInfo.vue')
   },
   {
     path: '/personalCenter',
     name: 'personalCenter',
-    component: PersonalCenter
+    component: () => import('@/views/personalCenter/PersonalCenter.vue')
   },
   {
     path: '/post/:postId',
     name: 'post',
-    component: PostView
+    component: () => import('@/views/post/PostView.vue')
   },
   {
     path: '/chat/:userId',
     name: 'chat',
-    component: chatView
+    component: () => import('@/views/chat/chatView.vue')
   }
 ]
 
