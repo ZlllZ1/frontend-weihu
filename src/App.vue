@@ -11,7 +11,9 @@ import LoginCard from './components/layout/LoginCard.vue'
 import eventBus from '@/utils/eventBus'
 
 const showLogin = ref(false)
-const openLogin = () => (showLogin.value = true)
+const openLogin = () => {
+  showLogin.value = true
+}
 const closeLogin = () => (showLogin.value = false)
 onMounted(() => {
   eventBus.on('openLogin', openLogin)

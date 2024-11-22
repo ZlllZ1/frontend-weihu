@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+// import eventBus from '@/utils/eventBus'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -43,4 +44,12 @@ const router = createRouter({
   routes
 })
 
+// router.beforeEach((to, from, next) => {
+//   if (to.name !== 'home') {
+//     if (!localStorage.getItem('token')) {
+//       eventBus.emit('openLogin')
+//       next(false)
+//     }
+//   }
+// })
 export default router

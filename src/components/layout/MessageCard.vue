@@ -35,21 +35,36 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, markRaw } from 'vue'
 import PraiseContent from './PraiseContent.vue'
 import CommentContent from './CommentContent.vue'
 import FollowContent from './FollowContent.vue'
 const headerTab = [
-  { label: '点赞', value: 0, selected: true, component: PraiseContent },
-  { label: '评论', value: 1, selected: false, component: CommentContent },
-  { label: '关注', value: 2, selected: false, component: FollowContent }
+  {
+    label: '点赞',
+    value: 0,
+    selected: true,
+    component: markRaw(PraiseContent)
+  },
+  {
+    label: '评论',
+    value: 1,
+    selected: false,
+    component: markRaw(CommentContent)
+  },
+  {
+    label: '关注',
+    value: 2,
+    selected: false,
+    component: markRaw(FollowContent)
+  }
 ]
 const currentContent = ref(headerTab[0].component)
 const changeTab = value => {
   headerTab.forEach(tab => (tab.selected = false))
   const tab = headerTab.find(item => item.value === value)
   tab.selected = true
-  currentContent.value = tab.component
+  currentContent.value = markRaw(tab.component)
 }
 </script>
 
