@@ -39,15 +39,15 @@ import { ref } from 'vue'
 import PraiseContent from './PraiseContent.vue'
 import CommentContent from './CommentContent.vue'
 import FollowContent from './FollowContent.vue'
-const headerTab = ref([
+const headerTab = [
   { label: '点赞', value: 0, selected: true, component: PraiseContent },
   { label: '评论', value: 1, selected: false, component: CommentContent },
   { label: '关注', value: 2, selected: false, component: FollowContent }
-])
-const currentContent = ref(headerTab.value[0].component)
+]
+const currentContent = ref(headerTab[0].component)
 const changeTab = value => {
-  headerTab.value.forEach(tab => (tab.selected = false))
-  const tab = headerTab.value.find(item => item.value === value)
+  headerTab.forEach(tab => (tab.selected = false))
+  const tab = headerTab.find(item => item.value === value)
   tab.selected = true
   currentContent.value = tab.component
 }

@@ -2,13 +2,17 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import request from './utils/request'
-import '@/styles/global.scss'
+import './styles/global.scss'
 import './tailwind.css'
-import LoadingData from './components/common/loading-spin/index'
+import request from './utils/request.js'
+import LoadingData from './components/common/loading-data/LoadingData.vue'
 
 const app = createApp(App)
+
 app.use(router).use(store)
+
 app.config.globalProperties.$request = request
-app.config.globalProperties.$loading = LoadingData
+
+app.component('LoadingData', LoadingData)
+
 app.mount('#app')

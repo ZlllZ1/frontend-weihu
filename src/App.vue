@@ -14,7 +14,7 @@ const showLogin = ref(false)
 const openLogin = () => (showLogin.value = true)
 const closeLogin = () => (showLogin.value = false)
 onMounted(() => {
-  eventBus.$on('openLogin', openLogin)
+  eventBus.on('openLogin', openLogin)
 })
 onUnmounted(() => {
   eventBus.off('showLoginModal', openLogin)
