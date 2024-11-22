@@ -7,6 +7,7 @@ module.exports = defineConfig({
   assetsDir: 'static',
   productionSourceMap: false,
   configureWebpack: {
+    devtool: 'source-map',
     optimization: {
       splitChunks: {
         chunks: 'all'
@@ -19,13 +20,7 @@ module.exports = defineConfig({
       return args
     })
   },
-  css: {
-    // loaderOptions: {
-    //   postcss: {
-    //     plugins: [require('tailwindcss'), require('autoprefixer')]
-    //   }
-    // }
-  },
+  css: {},
   devServer: {
     proxy: {
       '/api': {
