@@ -6,7 +6,12 @@ module.exports = {
     colors: {
       ...colors,
       blue: '#1172F6',
-      gray: '#8491A5'
+      gray: '#8491A5',
+      lightBlue: colors.sky,
+      warmGray: colors.stone,
+      trueGray: colors.neutral,
+      coolGray: colors.gray,
+      blueGray: colors.slate
     },
     extend: {}
   },

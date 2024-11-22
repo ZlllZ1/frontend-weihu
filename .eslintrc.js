@@ -3,7 +3,8 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    node: true
+    node: true,
+    'vue/setup-compiler-macros': true
   },
   extends: [
     'eslint:recommended',
@@ -17,6 +18,7 @@ module.exports = {
   },
   plugins: ['vue', 'prettier'],
   rules: {
-    'prettier/prettier': 'error'
+    'prettier/prettier': 'error',
+    'vue/v-on-event-hyphenation': 'off'
   }
 }

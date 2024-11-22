@@ -20,11 +20,11 @@ module.exports = defineConfig({
     })
   },
   css: {
-    loaderOptions: {
-      postcss: {
-        plugins: [require('tailwindcss'), require('autoprefixer')]
-      }
-    }
+    // loaderOptions: {
+    //   postcss: {
+    //     plugins: [require('tailwindcss'), require('autoprefixer')]
+    //   }
+    // }
   },
   devServer: {
     proxy: {
