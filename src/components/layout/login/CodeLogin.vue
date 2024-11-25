@@ -22,7 +22,7 @@
           class="text-blue hover:text-gray"
           @click="getAuthCode"
         >
-          获取短信验证码
+          获取验证码
         </button>
         <span v-else class="flex items-center justify-center"
           >{{ authCodeTimer }}秒后可重发</span
