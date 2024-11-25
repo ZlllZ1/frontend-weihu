@@ -36,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/chat/:userId',
     name: 'chat',
     component: () => import('@/views/chat/chatView.vue')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notFound',
+    component: () => import('@/views/notFound/NotFound.vue')
   }
 ]
 
