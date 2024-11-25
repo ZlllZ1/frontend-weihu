@@ -62,6 +62,13 @@ const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
 const getAuthCode = () => {
+  if (!account.value.length) {
+    errorText.value = '邮箱不能为空'
+    setTimeout(() => {
+      errorText.value = ''
+    }, 1000)
+    return
+  }
   if (!validateAccount(account.value)) {
     errorText.value = '邮箱格式错误'
     setTimeout(() => {
@@ -79,8 +86,22 @@ const getAuthCode = () => {
 }
 
 const login = () => {
+  if (!account.value.length) {
+    errorText.value = '邮箱不能为空'
+    setTimeout(() => {
+      errorText.value = ''
+    }, 1000)
+    return
+  }
   if (!validateAccount(account.value)) {
     errorText.value = '邮箱格式错误'
+    setTimeout(() => {
+      errorText.value = ''
+    }, 1000)
+    return
+  }
+  if (!authCode.value.length) {
+    errorText.value = '验证码不能为空'
     setTimeout(() => {
       errorText.value = ''
     }, 1000)

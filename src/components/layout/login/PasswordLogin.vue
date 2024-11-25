@@ -39,10 +39,36 @@ const account = ref('')
 const password = ref('')
 const errorText = ref('')
 
+const validateAccount = account => {
+  const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
+  return accountRegex.test(account)
+}
+
 const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updatePassword = value => (password.value = value.replace(/\s/g, ''))
 
 const login = () => {
+  if (!account.value.length) {
+    errorText.value = '邮箱不能为空'
+    setTimeout(() => {
+      errorText.value = ''
+    }, 1000)
+    return
+  }
+  if (!validateAccount(account.value)) {
+    errorText.value = '邮箱格式错误'
+    setTimeout(() => {
+      errorText.value = ''
+    }, 1000)
+    return
+  }
+  if (!password.value.length) {
+    errorText.value = '密码不能为空'
+    setTimeout(() => {
+      errorText.value = ''
+    }, 1000)
+    return
+  }
   errorText.value = '邮箱或密码错误'
   setTimeout(() => {
     errorText.value = ''
