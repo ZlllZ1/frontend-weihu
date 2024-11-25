@@ -67,7 +67,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import MessageCard from './MessageCard.vue'
 import PrivateLetterCard from './PrivateLetterCard.vue'
-import LoginCard from './LoginCard.vue'
+import LoginCard from './login/LoginCard.vue'
 
 const searchText = ref('')
 const showMessage = ref(false)

@@ -7,7 +7,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import HeaderNav from '@/components/layout/HeaderNav.vue'
-import LoginCard from './components/layout/LoginCard.vue'
+import LoginCard from './components/layout/login/LoginCard.vue'
 import eventBus from '@/utils/eventBus'
 
 const showLogin = ref(false)

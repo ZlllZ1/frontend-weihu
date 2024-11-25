@@ -9,17 +9,13 @@
       >
         <template v-for="(tab, index) in headerTab" :key="index">
           <button
-            class="hover:text-blue"
+            class="hover:text-blue division flex-1"
             :class="{ 'text-blue': tab.selected }"
             :aria-label="`切换到${tab.label}标签`"
             @click="changeTab(tab.value)"
           >
             {{ tab.label }}
           </button>
-          <div
-            v-if="index < headerTab.length - 1"
-            class="h-4 self-center w-px bg-[#EBECED]"
-          ></div>
         </template>
       </div>
       <div class="flex-grow overflow-y-auto">
@@ -73,6 +69,15 @@ const changeTab = value => {
   @apply absolute w-8 h-4 -top-[10px] left-1/2 -translate-x-1/2 flex items-center justify-center;
   &:after {
     @apply absolute content-[''] -bottom-[2px] rotate-[45deg] h-6 w-6 -m-3 bg-white;
+  }
+}
+
+.division {
+  @apply relative;
+  &:not(:last-child) {
+    &::after {
+      @apply content-[''] absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-[#EBECED];
+    }
   }
 }
 </style>

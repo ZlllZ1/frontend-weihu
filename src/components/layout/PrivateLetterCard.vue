@@ -1,11 +1,27 @@
 <template>
   <div class="absolute top-12 left-1/2 -translate-x-1/2">
     <span class="triangle"></span>
-    <div class="relative bg-white w-[360px] h-[440px] rounded shadow-sm">
-      私信框
+    <div
+      class="flex flex-col relative bg-white w-[360px] h-[440px] rounded shadow-sm"
+    >
+      <div
+        class="flex items-center justify-evenly h-12 w-full border-b border-[#EBECED] flex-shrink-0"
+      >
+        我的私信
+      </div>
+      <div class="flex-grow overflow-y-auto">
+        <div>1</div>
+      </div>
+      <div
+        class="flex flex-shrink-0 items-center py-4 px-2 justify-end h-10 border-t border-[#EBECED]"
+      >
+        <a class="hover:text-blue cursor-pointer"> 查看所有私信</a>
+      </div>
     </div>
   </div>
 </template>
+
+<script setup></script>
 
 <style lang="scss" scoped>
 .triangle {
