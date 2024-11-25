@@ -65,7 +65,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import MessageCard from './MessageCard.vue'
+import MessageCard from './message/MessageCard.vue'
 import PrivateLetterCard from './PrivateLetterCard.vue'
 import LoginCard from './login/LoginCard.vue'
 

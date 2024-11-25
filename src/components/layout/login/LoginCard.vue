@@ -53,18 +53,23 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, markRaw } from 'vue'
 import PasswordLogin from './PasswordLogin.vue'
 import PhoneLogin from './PhoneLogin.vue'
 const emit = defineEmits(['closeLogin'])
 
 const loginMethod = ref([
-  { label: '手机号登录', value: 'phone', active: true, component: PhoneLogin },
+  {
+    label: '手机号登录',
+    value: 'phone',
+    active: true,
+    component: markRaw(PhoneLogin)
+  },
   {
     label: '密码登录',
     value: 'password',
     active: false,
-    component: PasswordLogin
+    component: markRaw(PasswordLogin)
   }
 ])
 const currentComponent = computed(

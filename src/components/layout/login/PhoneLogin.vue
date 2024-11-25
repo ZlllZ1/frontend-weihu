@@ -8,7 +8,6 @@
           type="text"
           maxlength="11"
           placeholder="输入手机号"
-          :class="{ 'text-red': phoneError }"
         />
       </div>
       <div class="border-b border-[#EBECED] w-full flex flex-1 justify-between">
