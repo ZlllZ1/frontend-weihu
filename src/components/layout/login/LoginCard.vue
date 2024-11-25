@@ -55,7 +55,7 @@
 <script setup>
 import { computed, ref, markRaw } from 'vue'
 import PasswordLogin from './PasswordLogin.vue'
-import PhoneLogin from './PhoneLogin.vue'
+import PhoneLogin from './CodeLogin.vue'
 const emit = defineEmits(['closeLogin'])
 
 const loginMethod = ref([

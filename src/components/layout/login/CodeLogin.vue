@@ -4,18 +4,18 @@
       <div class="flex items-center border-b border-[#EBECED] w-full">
         <div class="mr-2 pr-2 border-r border-[#EBECED]">中国+86</div>
         <input
-          v-model="phone"
+          :value="account.trim()"
           type="text"
-          maxlength="11"
-          placeholder="输入手机号"
+          placeholder="输入QQ邮箱/163邮箱"
+          @input="updateAccount($event.target.value)"
         />
       </div>
       <div class="border-b border-[#EBECED] w-full flex flex-1 justify-between">
         <input
-          v-model="authCode"
+          :value="authCode.trim()"
           type="text"
-          maxlength="6"
-          placeholder="输入6位短信验证码"
+          placeholder="输入验证码"
+          @input="updateAuthCode($event.target.value)"
         />
         <button
           v-if="!authCodeTimer"
@@ -48,23 +48,22 @@
 import { ref } from 'vue'
 import ToastView from '@/components/common/ToastView.vue'
 
-const phone = ref('')
+const account = ref('')
 const authCode = ref('')
 const authCodeTimer = ref(null)
 const errorText = ref('')
 
-const validatePhone = phone => {
-  const phoneRegex = /0?(13|14|15|18|17)[0-9]{9}/
-  return phoneRegex.test(phone)
-}
-const validateCode = code => {
-  const codeRegex = /^\d{6}$/
-  return codeRegex.test(code)
+const validateAccount = account => {
+  const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
+  return accountRegex.test(account)
 }
 
+const updateAccount = value => (account.value = value.replace(/\s/g, ''))
+const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
+
 const getAuthCode = () => {
-  if (!validatePhone(phone.value)) {
-    errorText.value = '手机号格式错误'
+  if (!validateAccount(account.value)) {
+    errorText.value = '邮箱格式错误'
     setTimeout(() => {
       errorText.value = ''
     }, 1000)
@@ -80,15 +79,8 @@ const getAuthCode = () => {
 }
 
 const login = () => {
-  if (!validatePhone(phone.value)) {
-    errorText.value = '手机号格式错误'
-    setTimeout(() => {
-      errorText.value = ''
-    }, 1000)
-    return
-  }
-  if (!validateCode(authCode.value)) {
-    errorText.value = '短信验证码格式错误'
+  if (!validateAccount(account.value)) {
+    errorText.value = '邮箱格式错误'
     setTimeout(() => {
       errorText.value = ''
     }, 1000)

@@ -2,16 +2,18 @@
   <div class="py-6 px-4 flex flex-col">
     <div class="text-sm h-[135px]">
       <input
-        v-model="account"
+        :value="account.trim()"
         type="text"
-        placeholder="输入手机号或邮箱"
+        placeholder="输入QQ邮箱/163邮箱"
         class="border-b border-[#EBECED] w-full py-2"
+        @input="updateAccount($event.target.value)"
       />
       <input
-        v-model="password"
+        :value="password.trim()"
         type="password"
         placeholder="输入密码"
         class="border-b border-[#EBECED] w-full py-2"
+        @input="updatePassword($event.target.value)"
       />
       <div class="flex justify-end py-2">
         <a href="/" target="_blank" class="hover:text-black w-fit">忘记密码</a>
@@ -37,8 +39,11 @@ const account = ref('')
 const password = ref('')
 const errorText = ref('')
 
+const updateAccount = value => (account.value = value.replace(/\s/g, ''))
+const updatePassword = value => (password.value = value.replace(/\s/g, ''))
+
 const login = () => {
-  errorText.value = '账号或密码错误'
+  errorText.value = '邮箱或密码错误'
   setTimeout(() => {
     errorText.value = ''
   }, 1000)
