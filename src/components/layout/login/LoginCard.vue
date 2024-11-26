@@ -40,9 +40,24 @@
         <div class="flex-1 h-px bg-[#EBECED] ml-2"></div>
       </div>
       <div class="py-6 flex items-center justify-center">
-        <a href="/" class="inline-block">
-          <img src="../../../assets/weChat.png" class="w-6 h-6" />
-        </a>
+        <img
+          src="../../../assets/weChat.png"
+          class="w-6 h-6 cursor-pointer"
+          @click="showCode = !showCode"
+        />
+      </div>
+      <div
+        v-if="showCode"
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-1 cursor-pointer"
+        @mousedown.self="showCode = false"
+      >
+        <div
+          class="w-40 h-48 cursor-default p-2 bg-white rounded-lg flex flex-col items-center justify-center"
+          @click.stop
+        >
+          <div class="bg-black w-full h-32"></div>
+          <button class="text-sm mt-4 text-blue">重新刷新</button>
+        </div>
       </div>
       <div class="text-xs">
         <span>未注册手机验证后自动登录，注册即代表同意</span>
@@ -80,6 +95,7 @@ const loginMethod = ref([
 const currentComponent = computed(
   () => loginMethod.value.find(m => m.active)?.component
 )
+const showCode = ref(false)
 
 const changeLoginMethod = v => {
   loginMethod.value.forEach(m => {

@@ -77,15 +77,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import MessageCard from './message/MessageCard.vue'
 import PrivateLetterCard from './PrivateLetterCard.vue'
 import LoginCard from './login/LoginCard.vue'
 import UserDropdown from './UserDropdown.vue'
+import eventBus from '@/utils/eventBus'
 import { useStore } from 'vuex'
 
 const store = useStore()
-const userInfo = store.state.user.userInfo
+const userInfo = computed(() => store.state.user.userInfo)
 const searchText = ref('')
 const showMessage = ref(false)
 const showPrivateLetter = ref(false)
@@ -93,16 +94,28 @@ const showLogin = ref(false)
 const showDropdown = ref(false)
 
 const search = () => {
+  if (!localStorage.getItem('token')) {
+    eventBus.emit('openLogin')
+    return
+  }
   console.log('搜索')
 }
 
 const toggleMessage = () => {
+  if (!localStorage.getItem('token')) {
+    eventBus.emit('openLogin')
+    return
+  }
   showMessage.value = !showMessage.value
   showPrivateLetter.value = false
   showLogin.value = false
   showDropdown.value = false
 }
 const togglePrivateLetter = () => {
+  if (!localStorage.getItem('token')) {
+    eventBus.emit('openLogin')
+    return
+  }
   showPrivateLetter.value = !showPrivateLetter.value
   showMessage.value = false
   showLogin.value = false
