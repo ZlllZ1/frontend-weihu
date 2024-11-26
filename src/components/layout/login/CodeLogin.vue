@@ -49,7 +49,10 @@
 import { ref } from 'vue'
 import ToastView from '@/components/common/ToastView.vue'
 import request from '@/utils/request'
+import { useStore } from 'vuex'
 
+const emits = defineEmits(['closeLogin'])
+const store = useStore()
 const account = ref('')
 const authCode = ref('')
 const authCodeTimer = ref(null)
@@ -82,7 +85,7 @@ const getAuthCode = async () => {
   const res = await request.post('/login/sendAuthCode', {
     account: account.value
   })
-  console.log(res)
+  if (res.code !== 200) return
   if (intervalId) clearInterval(intervalId)
   authCodeTimer.value = 60
   intervalId = setInterval(() => {
@@ -95,7 +98,7 @@ const getAuthCode = async () => {
   }, 1000)
 }
 
-const login = () => {
+const login = async () => {
   if (!account.value.length) {
     errorText.value = '邮箱不能为空'
     setTimeout(() => {
@@ -117,6 +120,19 @@ const login = () => {
     }, 1000)
     return
   }
+  const res = await request.post('/login/codeLogin', {
+    account: account.value,
+    authCode: authCode.value
+  })
+  if (res.code !== 200) return
+  store.commit('user/setToken', res.data.token)
+  const { code, data } = await request.get('/user/getUserInfo', {
+    account: account.value
+  })
+  if (code !== 200) return
+  store.commit('user/setUserInfo', data)
+  localStorage.setItem('userInfo', JSON.stringify(data))
+  emits('closeLogin')
 }
 </script>
 

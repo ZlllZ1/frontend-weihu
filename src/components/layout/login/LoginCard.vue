@@ -30,7 +30,10 @@
           ></div>
         </div>
       </div>
-      <component :is="currentComponent"></component>
+      <component
+        :is="currentComponent"
+        @closeLogin="emit('closeLogin')"
+      ></component>
       <div class="flex text-xs items-center">
         <div class="flex-1 h-px bg-[#EBECED] mr-2"></div>
         <span>其他方式登录</span>

@@ -20,7 +20,7 @@
           >
         </div>
       </div>
-      <div class="inline-flex items-center justify-center gap-4">
+      <div class="nav-item inline-flex items-center justify-center gap-4">
         <input
           v-model="searchText"
           type="text"
@@ -52,12 +52,23 @@
             <PrivateLetterCard v-if="showPrivateLetter" />
           </transition>
         </div>
-        <div class="relative clickOut">
+        <div v-if="!userInfo" class="relative clickOut ml-6">
           <button class="hover:text-blue" @click.stop="toggleLogin">
             注册/登录
           </button>
           <transition name="fade">
             <LoginCard v-if="showLogin" @closeLogin="closeLogin" />
+          </transition>
+        </div>
+        <div v-else class="relative clickOut ml-6">
+          <img
+            :src="userInfo.avatar || require('@/assets/avatar_default.png')"
+            alt="用户头像"
+            class="rounded-full w-8 h-8 cursor-pointer"
+            @click.stop="toggleDropdown"
+          />
+          <transition name="fade">
+            <UserDropdown v-if="showDropdown" />
           </transition>
         </div>
       </div>
@@ -70,30 +81,44 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import MessageCard from './message/MessageCard.vue'
 import PrivateLetterCard from './PrivateLetterCard.vue'
 import LoginCard from './login/LoginCard.vue'
+import UserDropdown from './UserDropdown.vue'
+import { useStore } from 'vuex'
 
+const store = useStore()
+const userInfo = store.state.user.userInfo
 const searchText = ref('')
 const showMessage = ref(false)
 const showPrivateLetter = ref(false)
 const showLogin = ref(false)
+const showDropdown = ref(false)
 
 const search = () => {
-  console.log(111)
+  console.log('搜索')
 }
 
 const toggleMessage = () => {
   showMessage.value = !showMessage.value
   showPrivateLetter.value = false
   showLogin.value = false
+  showDropdown.value = false
 }
 const togglePrivateLetter = () => {
   showPrivateLetter.value = !showPrivateLetter.value
   showMessage.value = false
   showLogin.value = false
+  showDropdown.value = false
 }
 const toggleLogin = () => {
   showLogin.value = !showLogin.value
   showMessage.value = false
   showPrivateLetter.value = false
+  showDropdown.value = false
+}
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value
+  showMessage.value = false
+  showPrivateLetter.value = false
+  showLogin.value = false
 }
 
 const handleClickOutside = event => {
@@ -101,6 +126,7 @@ const handleClickOutside = event => {
     showMessage.value = false
     showPrivateLetter.value = false
     showLogin.value = false
+    showDropdown.value = false
   }
 }
 

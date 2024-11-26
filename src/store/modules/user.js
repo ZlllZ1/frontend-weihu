@@ -1,7 +1,7 @@
 const userModule = {
   namespaced: true,
   state: () => ({
-    userInfo: null,
+    userInfo: JSON.parse(localStorage.getItem('userInfo')) || null,
     token: null
   }),
   getters: {},
