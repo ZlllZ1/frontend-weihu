@@ -69,12 +69,18 @@ const router = createRouter({
   routes
 })
 
+const publicRoutes = ['home']
+
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'home') {
+  if (!publicRoutes.includes(to.name as string)) {
     if (!localStorage.getItem('token')) {
       eventBus.emit('openLogin')
       next(false)
+    } else {
+      next()
     }
+  } else {
+    next()
   }
 })
 
