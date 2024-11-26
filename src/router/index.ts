@@ -35,7 +35,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/chat/:userId',
     name: 'chat',
-    component: () => import('@/views/chat/chatView.vue')
+    component: () => import('@/views/chat/ChatView.vue')
+  },
+  {
+    path: '/privacyGuidelines',
+    name: 'privacyGuidelines',
+    component: () => import('@/views/privacyGuidelines/PrivacyGuidelines.vue')
+  },
+  {
+    path: '/protocol',
+    name: 'protocol',
+    component: () => import('@/views/protocol/ProtocolView.vue')
   },
   {
     path: '/:pathMatch(.*)*',
