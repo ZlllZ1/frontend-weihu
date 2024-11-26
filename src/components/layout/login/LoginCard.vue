@@ -43,17 +43,11 @@
       </div>
       <div class="text-xs">
         <span>未注册手机验证后自动登录，注册即代表同意</span>
-        <router-link
-          to="protocol"
-          class="hover:text-black"
-          @mousedown.self="emit('closeLogin')"
-          >《协议》</router-link
+        <a href="/protocol" target="_blank" class="hover:text-black"
+          >《协议》</a
         >
-        <router-link
-          to="privacyGuidelines"
-          class="hover:text-black"
-          @mousedown.self="emit('closeLogin')"
-          >《隐私保护指引》</router-link
+        <a href="/privacyGuidelines" target="_blank" class="hover:text-black"
+          >《隐私保护指引》</a
         >
       </div>
     </div>

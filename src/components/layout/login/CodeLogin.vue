@@ -28,7 +28,9 @@
         >
       </div>
       <div class="flex justify-end py-2">
-        <a href="/" target="_blank" class="hover:text-black w-fit">反馈错误</a>
+        <a href="/feedbackError" target="_blank" class="hover:text-black w-fit"
+          >反馈错误</a
+        >
       </div>
     </div>
     <button

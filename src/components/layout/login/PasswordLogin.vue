@@ -16,7 +16,9 @@
         @input="updatePassword($event.target.value)"
       />
       <div class="flex justify-end py-2">
-        <a href="/" target="_blank" class="hover:text-black w-fit">忘记密码</a>
+        <a href="/forgetPassword" target="_blank" class="hover:text-black w-fit"
+          >忘记密码</a
+        >
       </div>
     </div>
     <button

@@ -4,9 +4,11 @@
   >
     <nav class="flex justify-between pl-14 pr-24 bg-white h-14">
       <div class="inline-flex items-center justify-center">
-        <span class="text-3xl text-blue">微</span>
-        <span class="text-3xl text-blue ml-1">乎</span>
-        <div class="ml-8 w-[280px] flex flex-1 gap-px text-lg">
+        <router-link to="/" class="flex items-center cursor-pointer">
+          <span class="text-3xl text-blue">微</span>
+          <span class="text-3xl text-blue ml-1">乎</span>
+        </router-link>
+        <div class="nav-item ml-8 w-[280px] flex flex-1 gap-px text-lg">
           <router-link to="/" class="flex-1 text-center justify-center"
             >首页</router-link
           >
@@ -114,7 +116,7 @@ const closeLogin = () => (showLogin.value = false)
 </script>
 
 <style lang="scss" scoped>
-nav {
+.nav-item {
   a {
     @apply flex items-center h-14 border-b-[3px] border-transparent font-medium;
     &:hover {
