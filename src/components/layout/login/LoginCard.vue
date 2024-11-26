@@ -63,15 +63,15 @@
 <script setup>
 import { computed, ref, markRaw } from 'vue'
 import PasswordLogin from './PasswordLogin.vue'
-import PhoneLogin from './CodeLogin.vue'
+import CodeLogin from './CodeLogin.vue'
 const emit = defineEmits(['closeLogin'])
 
 const loginMethod = ref([
   {
-    label: '手机号登录',
-    value: 'phone',
+    label: '邮箱登录',
+    value: 'code',
     active: true,
-    component: markRaw(PhoneLogin)
+    component: markRaw(CodeLogin)
   },
   {
     label: '密码登录',

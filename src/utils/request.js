@@ -45,6 +45,6 @@ class Request {
 }
 
 export default new Request({
-  baseUrl: 'http://127.0.0.1:3000/api',
+  baseURL: 'http://127.0.0.1:3007',
   timeout: 5000
 })

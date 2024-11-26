@@ -1,20 +1,19 @@
 <template>
   <div class="py-6 px-4 flex flex-col">
     <div class="text-sm h-[135px]">
-      <div class="flex items-center border-b border-[#EBECED] w-full">
-        <div class="mr-2 pr-2 border-r border-[#EBECED]">中国+86</div>
-        <input
-          :value="account.trim()"
-          type="text"
-          placeholder="输入QQ邮箱/163邮箱"
-          @input="updateAccount($event.target.value)"
-        />
-      </div>
+      <input
+        :value="account.trim()"
+        type="text"
+        placeholder="输入QQ邮箱/163邮箱"
+        class="border-b border-[#EBECED] w-full"
+        @input="updateAccount($event.target.value)"
+      />
       <div class="border-b border-[#EBECED] w-full flex flex-1 justify-between">
         <input
           :value="authCode.trim()"
           type="text"
           placeholder="输入验证码"
+          class="flex-1"
           @input="updateAuthCode($event.target.value)"
         />
         <button
@@ -47,10 +46,12 @@
 <script setup>
 import { ref } from 'vue'
 import ToastView from '@/components/common/ToastView.vue'
+import request from '@/utils/request'
 
 const account = ref('')
 const authCode = ref('')
 const authCodeTimer = ref(null)
+let intervalId = null
 const errorText = ref('')
 
 const validateAccount = account => {
@@ -61,7 +62,7 @@ const validateAccount = account => {
 const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
-const getAuthCode = () => {
+const getAuthCode = async () => {
   if (!account.value.length) {
     errorText.value = '邮箱不能为空'
     setTimeout(() => {
@@ -76,11 +77,18 @@ const getAuthCode = () => {
     }, 1000)
     return
   }
+  const res = await request.post('/login/sendAuthCode', {
+    account: account.value
+  })
+  console.log(res)
+  if (intervalId) clearInterval(intervalId)
   authCodeTimer.value = 60
-  setInterval(() => {
+  intervalId = setInterval(() => {
     authCodeTimer.value--
-    if (authCodeTimer.value === 0) {
+    if (authCodeTimer.value <= 0) {
+      clearInterval(intervalId)
       authCodeTimer.value = null
+      intervalId = null
     }
   }, 1000)
 }
