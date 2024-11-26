@@ -24,14 +24,18 @@ import { useStore } from 'vuex'
 const store = useStore()
 
 const logout = async () => {
-  const res = await request.post('/user/logout', {
-    account: store.state.user.userInfo.email
-  })
-  if (res.code !== 200) return
-  store.commit('user/setUserInfo', null)
-  store.commit('user/setToken', null)
-  localStorage.removeItem('userInfo')
-  location.reload()
+  try {
+    const res = await request.post('/user/logout', {
+      account: store.state.user.userInfo.email
+    })
+    if (res.code !== 200) return
+    store.commit('user/setUserInfo', null)
+    store.commit('user/setToken', null)
+    localStorage.removeItem('userInfo')
+    location.reload()
+  } catch (err) {
+    console.log(err)
+  }
 }
 </script>
 
