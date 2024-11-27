@@ -2,7 +2,7 @@ const userModule = {
   namespaced: true,
   state: () => ({
     userInfo: JSON.parse(localStorage.getItem('userInfo')) || null,
-    token: null
+    token: localStorage.getItem('token') || null
   }),
   getters: {},
   mutations: {

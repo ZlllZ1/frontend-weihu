@@ -1,0 +1,471 @@
+<template>
+  <div class="mx-32 my-5 bg-white rounded-sm relative">
+    <div class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">
+      <div
+        class="h-56 bg-cover bg-center relative cursor-pointer"
+        :style="{
+          backgroundImage: `url(${
+            userInfo?.homeBg || require('@/assets/bg_default.png')
+          })`
+        }"
+        @click="bgFileInput.click()"
+      >
+        <input
+          ref="bgFileInput"
+          type="file"
+          class="hidden"
+          @change="handleBgChange"
+        />
+        <span
+          class="border border-white border-opacity-80 absolute top-4 right-4 text-white bg-black bg-opacity-20 text-opacity-80 px-2 py-1 text-sm rounded"
+        >
+          上传主页背景图
+        </span>
+      </div>
+      <div
+        class="w-40 h-40 rounded-lg absolute top-48 left-6 border-4 border-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] overflow-hidden group cursor-pointer"
+        @click="avatarFileInput.click()"
+      >
+        <img
+          :src="userInfo?.avatar || require('@/assets/avatar_default.png')"
+          class="rounded-sm"
+          alt="个人头像"
+        />
+        <input
+          ref="avatarFileInput"
+          type="file"
+          class="hidden"
+          @change="handleAvatarChange"
+        />
+        <div
+          class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-12 w-12 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div class="pl-[220px] py-3 h-full pr-4">
+        <div class="flex justify-between items-center w-full">
+          <div class="flex items-center pr-8 justify-center">
+            <template v-if="!changeNickname">
+              <span class="text-2xl">{{ userInfo?.nickname }}</span>
+              <span
+                class="ml-4 text-base text-blue cursor-pointer"
+                @click="changeNickname = true"
+                >修改</span
+              >
+            </template>
+            <template v-else>
+              <span class="text-2xl">用户名</span>
+              <input
+                v-model="newNickname"
+                type="text"
+                class="ml-4 border border-gray rounded w-64 px-2"
+                maxlength="20"
+              />
+              <button
+                class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                @click="changeNickname = false"
+              >
+                取消
+              </button>
+              <button
+                class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                @click="saveChangeNickname"
+              >
+                保存
+              </button>
+            </template>
+          </div>
+          <a href="/personalCenter" class="text-sm text-[#666] hover:text-blue"
+            >返回我的主页 &gt;</a
+          >
+        </div>
+        <div class="border-b border-[#999] py-8 flex items-center">
+          <div class="w-32 border-r border-gray">性别</div>
+          <div
+            v-if="!changeSex"
+            class="flex items-center justify-between flex-1 px-8"
+          >
+            <span>
+              {{
+                userInfo?.sex === 0
+                  ? '男'
+                  : userInfo?.sex === 1
+                  ? '女'
+                  : userInfo?.sex === 2
+                  ? '未知'
+                  : ''
+              }}
+            </span>
+            <button class="ml-4 text-base text-blue" @click="changeSex = true">
+              修改
+            </button>
+          </div>
+          <div v-else class="flex items-center justify-between flex-1 px-8">
+            <div class="flex items-center">
+              <span>男</span
+              ><input v-model="sex" :value="0" type="radio" class="mr-6 ml-2" />
+              <span>女</span
+              ><input v-model="sex" :value="1" type="radio" class="mr-6 ml-2" />
+              <span>未知</span
+              ><input v-model="sex" :value="2" type="radio" class="mr-6 ml-2" />
+            </div>
+            <div>
+              <button
+                class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                @click="changeSex = false"
+              >
+                取消
+              </button>
+              <button
+                class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                @click="saveChangeSex"
+              >
+                保存
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="border-b border-[#999] py-8 flex items-center">
+          <div class="w-32 border-r border-gray">出生日期</div>
+        </div>
+        <div class="border-b border-[#999] py-8 flex items-center">
+          <div class="w-32 border-r border-gray">居住地</div>
+        </div>
+        <div class="border-b border-[#999] py-8 flex items-center">
+          <div class="w-32 border-r border-gray">个人简介</div>
+        </div>
+        <div class="border-b border-[#999] py-8 flex items-center">
+          <div class="w-32 border-r border-gray">邮箱</div>
+          <div
+            v-if="!changeEmail"
+            class="flex items-center justify-between flex-1 px-8"
+          >
+            <span>{{ userInfo.email }}</span>
+            <button
+              class="ml-4 text-base text-blue"
+              @click="changeEmail = true"
+            >
+              修改
+            </button>
+          </div>
+          <div v-else class="flex items-center justify-between flex-1 px-8">
+            <template v-if="changeEmailStep === 0">
+              <div class="flex flex-col gap-2">
+                <div
+                  class="w-72 pl-2 border border-gray rounded flex items-center justify-between"
+                >
+                  <input
+                    :value="email"
+                    type="text"
+                    placeholder="输入原邮箱"
+                    maxlength="20"
+                    class="w-48 text-sm"
+                    @input="updateAccount($event.target.value)"
+                  />
+                  <button
+                    v-if="!authCodeTimer"
+                    class="text-blue text-sm px-2 rounded"
+                    @click="getAuthCode('old')"
+                  >
+                    获取验证码
+                  </button>
+                  <span
+                    v-else
+                    class="flex items-center justify-center text-xs mr-2 text-gray"
+                    >{{ authCodeTimer }}秒后可重发</span
+                  >
+                </div>
+                <input
+                  :value="authCode"
+                  type="text"
+                  placeholder="输入验证码"
+                  class="border border-gray rounded px-2 w-48 text-sm"
+                  @input="updateAuthCode($event.target.value)"
+                />
+              </div>
+              <div>
+                <button
+                  class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                  @click="cancelEmail"
+                >
+                  取消
+                </button>
+                <button
+                  class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                  @click="nextEmailStep"
+                >
+                  下一步
+                </button>
+              </div>
+            </template>
+            <template v-else-if="changeEmailStep === 1">
+              <div class="flex flex-col gap-2">
+                <div
+                  class="w-72 pl-2 border border-gray rounded flex items-center justify-between"
+                >
+                  <input
+                    :value="email"
+                    type="text"
+                    placeholder="输入新邮箱(QQ/163)"
+                    maxlength="20"
+                    class="w-48 text-sm"
+                    @input="updateAccount($event.target.value)"
+                  />
+                  <button
+                    v-if="!authCodeTimer"
+                    class="text-blue text-sm px-2 rounded"
+                    @click="getAuthCode"
+                  >
+                    获取验证码
+                  </button>
+                  <span
+                    v-else
+                    class="flex items-center justify-center text-xs mr-2 text-gray"
+                    >{{ authCodeTimer }}秒后可重发</span
+                  >
+                </div>
+                <input
+                  type="text"
+                  :value="authCode"
+                  placeholder="输入验证码"
+                  class="border border-gray rounded px-2 w-48 text-sm"
+                  @input="updateAuthCode($event.target.value)"
+                />
+              </div>
+              <div>
+                <button
+                  class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                  @click="cancelEmail"
+                >
+                  取消
+                </button>
+                <button
+                  class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                  @click="saveChangeEmail"
+                >
+                  保存
+                </button>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div class="border-b border-[#999] py-8 flex items-center">
+          <div class="w-32 border-r border-gray">密码</div>
+        </div>
+        <div class="border-b border-[#999] py-8 flex items-center">
+          <div class="w-32 border-r border-gray">注册日期</div>
+          <span class="px-8">{{ userInfo.registrationDate }}</span>
+        </div>
+      </div>
+    </div>
+    <ToastView v-if="toastText.length">
+      <span>{{ toastText }}</span>
+    </ToastView>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onUnmounted } from 'vue'
+import { useStore } from 'vuex'
+import ToastView from '@/components/common/ToastView.vue'
+import { getUserInfo, saveNickname, saveSex, saveEmail } from '@/api/user'
+import { codeLogin } from '@/api/login'
+import { sendAuthCode } from '@/api/login'
+
+const store = useStore()
+const userInfo = computed(() => store.state.user.userInfo)
+const bgFileInput = ref(null)
+const avatarFileInput = ref(null)
+const changeNickname = ref(false)
+const newNickname = ref(userInfo.value.nickname)
+const changeSex = ref(false)
+const changeEmail = ref(false)
+const email = ref('')
+const changeEmailStep = ref(0)
+const authCodeTimer = ref(null)
+let intervalId = null
+const toastText = ref('')
+const authCode = ref('')
+const sex = ref(userInfo.value.sex || 2)
+
+const getInfo = async () => {
+  const res = await getUserInfo(userInfo.value.email)
+  if (res.code !== 200) return
+  store.commit('user/setUserInfo', res.data)
+  localStorage.setItem('userInfo', JSON.stringify(res.data))
+}
+
+const handleBgChange = event => {
+  const file = event.target.files[0]
+  if (file) {
+    const formData = new FormData()
+    formData.append('file', file)
+  }
+}
+
+const handleAvatarChange = event => {
+  const file = event.target.files[0]
+  if (file) {
+    const formData = new FormData()
+    formData.append('file', file)
+  }
+}
+
+const saveChangeNickname = async () => {
+  try {
+    const { code } = await saveNickname(userInfo.value.email, newNickname.value)
+    if (code !== 200) return
+    changeNickname.value = false
+    getInfo()
+    toastText.value = '修改成功'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const saveChangeSex = async () => {
+  try {
+    const { code } = await saveSex(userInfo.value.email, sex.value)
+    if (code !== 200) return
+    changeSex.value = false
+    getInfo()
+    toastText.value = '修改成功'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const validateAccount = account => {
+  const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
+  return accountRegex.test(account)
+}
+const updateAccount = value => (email.value = value.replace(/\s/g, ''))
+const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
+
+const getAuthCode = async (type = '') => {
+  if (email.value !== userInfo.value.email && type === 'old') {
+    toastText.value = '请输入原邮箱'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+    return
+  }
+  if (!email.value.length) {
+    toastText.value = '邮箱不能为空'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+    return
+  }
+  if (!validateAccount(email.value)) {
+    toastText.value = '邮箱格式错误'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+    return
+  }
+  try {
+    const res = await sendAuthCode(email.value)
+    if (res.code !== 200) return
+    if (intervalId) clearInterval(intervalId)
+    authCodeTimer.value = 60
+    intervalId = setInterval(() => {
+      authCodeTimer.value--
+      if (authCodeTimer.value <= 0) {
+        clearInterval(intervalId)
+        authCodeTimer.value = null
+        intervalId = null
+      }
+    }, 1000)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const cancelEmail = () => {
+  email.value = ''
+  authCode.value = ''
+  changeEmailStep.value = 0
+  changeEmail.value = false
+}
+
+const nextEmailStep = async () => {
+  try {
+    const res = await codeLogin(email.value, authCode.value)
+    if (res.code !== 200) return
+    email.value = ''
+    authCode.value = ''
+    authCodeTimer.value = null
+    intervalId = null
+    changeEmailStep.value = 1
+  } catch (error) {
+    toastText.value = '验证码错误'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+  }
+}
+
+const saveChangeEmail = async () => {
+  try {
+    const { code } = await codeLogin(email.value, authCode.value)
+    if (code !== 200) return
+    const saveRes = await saveEmail(userInfo.value.email, email.value)
+    if (saveRes.code !== 200) return
+    const res = await getUserInfo(email.value)
+    if (res.code !== 200) return
+    store.commit('user/setUserInfo', res.data)
+    localStorage.setItem('userInfo', JSON.stringify(res.data))
+    email.value = ''
+    authCode.value = ''
+    authCodeTimer.value = null
+    intervalId = null
+    changeEmailStep.value = 0
+    changeEmail.value = false
+    toastText.value = '修改成功'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+onUnmounted(() => {
+  if (intervalId) {
+    clearInterval(intervalId)
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+input {
+  @apply outline-none h-8;
+}
+</style>

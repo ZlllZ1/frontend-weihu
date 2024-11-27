@@ -8,6 +8,7 @@
         href="/personalCenter"
         target="_blank"
         class="hover:bg-[#EEE] w-full rounded-lg flex items-center justify-center"
+        @click="emit('closeDropdown')"
         >我的主页</a
       >
       <button class="hover:bg-[#EEE] w-full rounded-lg" @click="logout">
@@ -18,20 +19,22 @@
 </template>
 
 <script setup>
-import request from '@/utils/request'
 import { useStore } from 'vuex'
+import { logOut } from '@/api/login'
+import { computed } from 'vue'
 
+const emit = defineEmits('closeDropdown')
 const store = useStore()
+const userInfo = computed(() => store.state.user.userInfo)
 
 const logout = async () => {
   try {
-    const res = await request.post('/user/logout', {
-      account: store.state.user.userInfo.email
-    })
+    const res = await logOut(userInfo.value.email)
     if (res.code !== 200) return
     store.commit('user/setUserInfo', null)
     store.commit('user/setToken', null)
     localStorage.removeItem('userInfo')
+    localStorage.removeItem('token')
     location.reload()
   } catch (err) {
     console.log(err)

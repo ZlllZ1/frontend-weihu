@@ -1,6 +1,6 @@
 <template>
   <header
-    class="shadow-[0_0_20px_0_rgba(0,0,0,0.1)] text-gray w-full sticky top-0 left-0"
+    class="shadow-[0_0_20px_0_rgba(0,0,0,0.1)] text-gray w-full sticky top-0 left-0 z-20"
   >
     <nav class="flex justify-between pl-14 pr-24 bg-white h-14">
       <div class="inline-flex items-center justify-center">
@@ -68,7 +68,10 @@
             @click.stop="toggleDropdown"
           />
           <transition name="fade">
-            <UserDropdown v-if="showDropdown" />
+            <UserDropdown
+              v-if="showDropdown"
+              @closeDropdown="showDropdown = false"
+            />
           </transition>
         </div>
       </div>

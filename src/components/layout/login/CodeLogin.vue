@@ -5,7 +5,7 @@
         :value="account.trim()"
         type="text"
         placeholder="输入QQ邮箱/163邮箱"
-        class="border-b border-[#EBECED] w-full"
+        class="border-b border-[#EBECED] w-full outline-none h-12"
         @input="updateAccount($event.target.value)"
       />
       <div class="border-b border-[#EBECED] w-full flex flex-1 justify-between">
@@ -13,7 +13,7 @@
           :value="authCode.trim()"
           type="text"
           placeholder="输入验证码"
-          class="flex-1"
+          class="flex-1 outline-none h-12"
           @input="updateAuthCode($event.target.value)"
         />
         <button
@@ -40,16 +40,17 @@
       登录
     </button>
   </div>
-  <ToastView v-if="errorText.length">
-    <span>{{ errorText }}</span>
+  <ToastView v-if="toastText.length">
+    <span>{{ toastText }}</span>
   </ToastView>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import ToastView from '@/components/common/ToastView.vue'
-import request from '@/utils/request'
 import { useStore } from 'vuex'
+import { sendAuthCode, codeLogin } from '@/api/login.js'
+import { getUserInfo } from '@/api/user.js'
 
 const emits = defineEmits(['closeLogin'])
 const store = useStore()
@@ -57,7 +58,7 @@ const account = ref('')
 const authCode = ref('')
 const authCodeTimer = ref(null)
 let intervalId = null
-const errorText = ref('')
+const toastText = ref('')
 
 const validateAccount = account => {
   const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
@@ -69,22 +70,20 @@ const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
 const getAuthCode = async () => {
   if (!account.value.length) {
-    errorText.value = '邮箱不能为空'
+    toastText.value = '邮箱不能为空'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
   if (!validateAccount(account.value)) {
-    errorText.value = '邮箱格式错误'
+    toastText.value = '邮箱格式错误'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
-  const res = await request.post('/login/sendAuthCode', {
-    account: account.value
-  })
+  const res = await sendAuthCode(account.value)
   if (res.code !== 200) return
   if (intervalId) clearInterval(intervalId)
   authCodeTimer.value = 60
@@ -100,35 +99,31 @@ const getAuthCode = async () => {
 
 const login = async () => {
   if (!account.value.length) {
-    errorText.value = '邮箱不能为空'
+    toastText.value = '邮箱不能为空'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
   if (!validateAccount(account.value)) {
-    errorText.value = '邮箱格式错误'
+    toastText.value = '邮箱格式错误'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
   if (!authCode.value.length) {
-    errorText.value = '验证码不能为空'
+    toastText.value = '验证码不能为空'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
-  const res = await request.post('/login/codeLogin', {
-    account: account.value,
-    authCode: authCode.value
-  })
+  const res = await codeLogin(account.value, authCode.value)
   if (res.code !== 200) return
   store.commit('user/setToken', res.data.token)
-  const { code, data } = await request.get('/user/getUserInfo', {
-    account: account.value
-  })
+  localStorage.setItem('token', res.data.token)
+  const { code, data } = await getUserInfo(account.value)
   if (code !== 200) return
   store.commit('user/setUserInfo', data)
   localStorage.setItem('userInfo', JSON.stringify(data))
@@ -137,10 +132,7 @@ const login = async () => {
 </script>
 
 <style lang="scss" scoped>
-input {
-  @apply outline-none h-12;
-}
-.error-message {
-  @apply block transition-opacity duration-300 ease-in-out;
-}
+// input {
+//   @apply outline-none h-12;
+// }
 </style>

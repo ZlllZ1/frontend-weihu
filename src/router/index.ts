@@ -24,8 +24,18 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/personalCenter',
-    name: 'personalCenter',
-    component: () => import('@/views/personalCenter/PersonalCenter.vue')
+    children: [
+      {
+        path: '',
+        name: 'personalCenter',
+        component: () => import('@/views/personalCenter/PersonalCenter.vue')
+      },
+      {
+        path: 'edit',
+        name: 'edit',
+        component: () => import('@/views/personalCenter/EditView.vue')
+      }
+    ]
   },
   {
     path: '/post/:postId',

@@ -28,8 +28,8 @@
       登录
     </button>
   </div>
-  <ToastView v-if="errorText.length">
-    <span>{{ errorText }}</span>
+  <ToastView v-if="toastText.length">
+    <span>{{ toastText }}</span>
   </ToastView>
 </template>
 
@@ -39,7 +39,7 @@ import ToastView from '@/components/common/ToastView.vue'
 
 const account = ref('')
 const password = ref('')
-const errorText = ref('')
+const toastText = ref('')
 
 const validateAccount = account => {
   const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
@@ -51,29 +51,29 @@ const updatePassword = value => (password.value = value.replace(/\s/g, ''))
 
 const login = () => {
   if (!account.value.length) {
-    errorText.value = '邮箱不能为空'
+    toastText.value = '邮箱不能为空'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
   if (!validateAccount(account.value)) {
-    errorText.value = '邮箱格式错误'
+    toastText.value = '邮箱格式错误'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
   if (!password.value.length) {
-    errorText.value = '密码不能为空'
+    toastText.value = '密码不能为空'
     setTimeout(() => {
-      errorText.value = ''
+      toastText.value = ''
     }, 1000)
     return
   }
-  errorText.value = '邮箱或密码错误'
+  toastText.value = '邮箱或密码错误'
   setTimeout(() => {
-    errorText.value = ''
+    toastText.value = ''
   }, 1000)
 }
 </script>
