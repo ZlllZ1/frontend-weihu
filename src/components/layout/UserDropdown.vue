@@ -11,7 +11,7 @@
         @click="emit('closeDropdown')"
         >我的主页</a
       >
-      <button class="hover:bg-[#EEE] w-full rounded-lg" @click="logout">
+      <button class="hover:bg-[#EEE] w-full rounded-lg" @click="userLogout">
         退出
       </button>
     </div>
@@ -20,22 +20,22 @@
 
 <script setup>
 import { useStore } from 'vuex'
-import { logOut } from '@/api/login'
+import { logout } from '@/api/login'
 import { computed } from 'vue'
 
 const emit = defineEmits('closeDropdown')
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
 
-const logout = async () => {
+const userLogout = async () => {
   try {
-    const res = await logOut(userInfo.value.email)
+    const res = await logout(userInfo.value.email)
     if (res.code !== 200) return
     store.commit('user/setUserInfo', null)
     store.commit('user/setToken', null)
     localStorage.removeItem('userInfo')
     localStorage.removeItem('token')
-    location.reload()
+    // location.reload()
   } catch (err) {
     console.log(err)
   }

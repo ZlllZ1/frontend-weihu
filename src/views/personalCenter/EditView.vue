@@ -160,7 +160,7 @@
             v-if="!changeEmail"
             class="flex items-center justify-between flex-1 px-8"
           >
-            <span>{{ userInfo.email }}</span>
+            <span>{{ userInfo?.email }}</span>
             <button
               class="ml-4 text-base text-blue"
               @click="changeEmail = true"
@@ -274,7 +274,7 @@
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">注册日期</div>
-          <span class="px-8">{{ userInfo.registrationDate }}</span>
+          <span class="px-8">{{ userInfo?.registrationDate }}</span>
         </div>
       </div>
     </div>
@@ -289,7 +289,7 @@ import { ref, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import ToastView from '@/components/common/ToastView.vue'
 import { getUserInfo, saveNickname, saveSex, saveEmail } from '@/api/user'
-import { codeLogin } from '@/api/login'
+import { judgeAuthCode } from '@/api/login'
 import { sendAuthCode } from '@/api/login'
 
 const store = useStore()
@@ -297,7 +297,7 @@ const userInfo = computed(() => store.state.user.userInfo)
 const bgFileInput = ref(null)
 const avatarFileInput = ref(null)
 const changeNickname = ref(false)
-const newNickname = ref(userInfo.value.nickname)
+const newNickname = ref(userInfo.value?.nickname)
 const changeSex = ref(false)
 const changeEmail = ref(false)
 const email = ref('')
@@ -306,10 +306,10 @@ const authCodeTimer = ref(null)
 let intervalId = null
 const toastText = ref('')
 const authCode = ref('')
-const sex = ref(userInfo.value.sex || 2)
+const sex = ref(userInfo?.value.sex || 2)
 
 const getInfo = async () => {
-  const res = await getUserInfo(userInfo.value.email)
+  const res = await getUserInfo(userInfo?.value.email)
   if (res.code !== 200) return
   store.commit('user/setUserInfo', res.data)
   localStorage.setItem('userInfo', JSON.stringify(res.data))
@@ -409,21 +409,25 @@ const getAuthCode = async (type = '') => {
 }
 
 const cancelEmail = () => {
+  intervalId = null
+  authCodeTimer.value = null
   email.value = ''
   authCode.value = ''
   changeEmailStep.value = 0
   changeEmail.value = false
+  clearInterval(intervalId)
 }
 
 const nextEmailStep = async () => {
   try {
-    const res = await codeLogin(email.value, authCode.value)
+    const res = await judgeAuthCode(email.value, authCode.value)
     if (res.code !== 200) return
     email.value = ''
     authCode.value = ''
     authCodeTimer.value = null
     intervalId = null
     changeEmailStep.value = 1
+    clearInterval(intervalId)
   } catch (error) {
     toastText.value = '验证码错误'
     setTimeout(() => {
@@ -434,8 +438,10 @@ const nextEmailStep = async () => {
 
 const saveChangeEmail = async () => {
   try {
-    const { code } = await codeLogin(email.value, authCode.value)
+    const { code } = await judgeAuthCode(email.value, authCode.value)
     if (code !== 200) return
+    console.log(userInfo.value.email)
+    console.log(email.value)
     const saveRes = await saveEmail(userInfo.value.email, email.value)
     if (saveRes.code !== 200) return
     const res = await getUserInfo(email.value)
@@ -448,6 +454,7 @@ const saveChangeEmail = async () => {
     intervalId = null
     changeEmailStep.value = 0
     changeEmail.value = false
+    clearInterval(intervalId)
     toastText.value = '修改成功'
     setTimeout(() => {
       toastText.value = ''

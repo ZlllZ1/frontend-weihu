@@ -6,6 +6,13 @@ export const sendAuthCode = account => {
   })
 }
 
+export const judgeAuthCode = (account, authCode) => {
+  return request.post('/login/judgeAuthCode', {
+    account,
+    authCode
+  })
+}
+
 export const codeLogin = (account, authCode) => {
   return request.post('/login/codeLogin', {
     account,
@@ -13,8 +20,8 @@ export const codeLogin = (account, authCode) => {
   })
 }
 
-export const logOut = account => {
-  return request.post('/user/logout', {
+export const logout = account => {
+  return request.post('/login/logout', {
     account
   })
 }
