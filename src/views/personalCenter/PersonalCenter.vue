@@ -121,6 +121,7 @@ import PersonalPost from './PersonalPost.vue'
 import PersonalQuestion from './PersonalQuestion.vue'
 import PersonalCircle from './PersonalCircle.vue'
 import PersonalFollow from './PersonalFollow.vue'
+import PersonalFan from './PersonalFan.vue'
 import PersonalPraise from './PersonalPraise.vue'
 import PersonalCollect from './PersonalCollect.vue'
 import PersonalShare from './PersonalShare.vue'
@@ -153,6 +154,13 @@ const personalHeaders = ref([
     num: 0,
     active: false,
     component: markRaw(PersonalFollow)
+  },
+  {
+    label: '粉丝',
+    value: 'fan',
+    num: 0,
+    active: true,
+    component: markRaw(PersonalFan)
   },
   {
     label: '点赞',

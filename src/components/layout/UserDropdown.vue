@@ -11,6 +11,13 @@
         @click="emit('closeDropdown')"
         >我的主页</a
       >
+      <a
+        href="/setting"
+        target="_blank"
+        class="hover:bg-[#EEE] w-full rounded-lg flex items-center justify-center"
+        @click="emit('closeDropdown')"
+        >设置</a
+      >
       <button class="hover:bg-[#EEE] w-full rounded-lg" @click="userLogout">
         退出
       </button>

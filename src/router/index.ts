@@ -38,6 +38,11 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+    path: '/setting',
+    name: 'setting',
+    component: () => import('@/views/setting/settingView.vue')
+  },
+  {
     path: '/post/:postId',
     name: 'post',
     component: () => import('@/views/post/PostView.vue')
