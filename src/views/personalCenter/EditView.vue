@@ -162,6 +162,50 @@
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">出生日期</div>
+          <div
+            v-if="!changeBirthDate"
+            class="flex items-center justify-between flex-1 px-8"
+          >
+            <span>{{ userInfo?.birthDate }}</span>
+            <button
+              class="ml-4 text-base text-blue"
+              @click="changeBirthDate = true"
+            >
+              修改
+            </button>
+          </div>
+          <div v-else class="flex items-center justify-between flex-1 px-8">
+            <div class="w-64">
+              <VueDatePicker
+                v-model="birthDate"
+                input-format="yyyy-MM-dd"
+                placeholder="选择日期"
+                :enable-time-picker="false"
+                :format="format"
+                hide-offset-dates
+                :max-date="new Date()"
+                hide-input-icon
+                locale="zh-CN"
+                select-text="选择"
+                cancel-text="取消"
+                :clearable="false"
+              />
+            </div>
+            <div>
+              <button
+                class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                @click="changeBirthDate = false"
+              >
+                取消
+              </button>
+              <button
+                class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                @click="saveChangeBirthDate"
+              >
+                保存
+              </button>
+            </div>
+          </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">居住地</div>
@@ -437,13 +481,16 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toast-notification'
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 import {
   getUserInfo,
   saveNickname,
   saveSex,
   saveEmail,
   savePassword,
-  saveIntroduction
+  saveIntroduction,
+  saveBirthDate
 } from '@/api/user'
 import { judgeAuthCode, sendAuthCode } from '@/api/login'
 
@@ -452,7 +499,7 @@ const userInfo = computed(() => store.state.user.userInfo)
 const bgFileInput = ref(null)
 const avatarFileInput = ref(null)
 const changeNickname = ref(false)
-const newNickname = ref(userInfo.value?.nickname)
+const newNickname = ref('')
 const changeSex = ref(false)
 const changeEmail = ref(false)
 const email = ref('')
@@ -461,19 +508,24 @@ const authCodeTimer = ref(null)
 let intervalId = null
 const $toast = useToast()
 const authCode = ref('')
-const sex = ref(userInfo?.value.sex || 2)
+const sex = ref(userInfo?.value.sex)
 const changePassword = ref(false)
 const changePasswordStep = ref(0)
 const oldPassword = ref('')
 const newPassword = ref('')
 const changeIntroduction = ref(false)
-const introduction = ref('')
+const introduction = ref(userInfo.value.introduction)
+const changeBirthDate = ref(false)
+const birthDate = ref(userInfo.value.birthDate)
+
+const format = date =>
+  `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 
 const getInfo = async () => {
   const res = await getUserInfo(userInfo?.value.email)
-  if (res.code !== 200) return
-  store.commit('user/setUserInfo', res.data)
-  localStorage.setItem('userInfo', JSON.stringify(res.data))
+  if (res.data.code !== 200) return
+  store.commit('user/setUserInfo', res.data.data)
+  localStorage.setItem('userInfo', JSON.stringify(res.data.data))
 }
 
 const handleBgChange = event => {
@@ -494,25 +546,25 @@ const handleAvatarChange = event => {
 
 const saveChangeNickname = async () => {
   try {
-    const { code } = await saveNickname(userInfo.value.email, newNickname.value)
-    if (code !== 200) return
+    const res = await saveNickname(userInfo.value.email, newNickname.value)
+    if (res.data.code !== 200) return
     changeNickname.value = false
     getInfo()
     $toast.success('修改成功')
   } catch (error) {
-    console.error(error)
+    $toast.error('修改失败')
   }
 }
 
 const saveChangeSex = async () => {
   try {
-    const { code } = await saveSex(userInfo.value.email, sex.value)
-    if (code !== 200) return
+    const res = await saveSex(userInfo.value.email, sex.value)
+    if (res.data.code !== 200) return
     changeSex.value = false
     getInfo()
     $toast.success('修改成功')
   } catch (error) {
-    console.error(error)
+    $toast.error('修改失败')
   }
 }
 
@@ -538,7 +590,7 @@ const getAuthCode = async (type = '') => {
   }
   try {
     const res = await sendAuthCode(email.value)
-    if (res.code !== 200) return
+    if (res.data.code !== 200) return
     if (intervalId) clearInterval(intervalId)
     authCodeTimer.value = 60
     intervalId = setInterval(() => {
@@ -583,7 +635,7 @@ const cancelIntroduction = () => {
 const nextEmailStep = async () => {
   try {
     const res = await judgeAuthCode(email.value, authCode.value)
-    if (res.code !== 200) return
+    if (res.data.code !== 200) return
     email.value = ''
     authCode.value = ''
     authCodeTimer.value = null
@@ -598,7 +650,7 @@ const nextEmailStep = async () => {
 const nextPasswordStep = async () => {
   try {
     const res = await judgeAuthCode(email.value, authCode.value)
-    if (res.code !== 200) return
+    if (res.data.code !== 200) return
     email.value = ''
     authCode.value = ''
     authCodeTimer.value = null
@@ -612,14 +664,14 @@ const nextPasswordStep = async () => {
 
 const saveChangeEmail = async () => {
   try {
-    const { code } = await judgeAuthCode(email.value, authCode.value)
-    if (code !== 200) return
+    const judgeRes = await judgeAuthCode(email.value, authCode.value)
+    if (judgeRes.data.code !== 200) return
     const saveRes = await saveEmail(userInfo.value.email, email.value)
-    if (saveRes.code !== 200) return
+    if (saveRes.data.code !== 200) return
     const res = await getUserInfo(email.value)
-    if (res.code !== 200) return
-    store.commit('user/setUserInfo', res.data)
-    localStorage.setItem('userInfo', JSON.stringify(res.data))
+    if (res.data.code !== 200) return
+    store.commit('user/setUserInfo', res.data.data)
+    localStorage.setItem('userInfo', JSON.stringify(res.data.data))
     email.value = ''
     authCode.value = ''
     authCodeTimer.value = null
@@ -629,7 +681,7 @@ const saveChangeEmail = async () => {
     clearInterval(intervalId)
     $toast.success('修改成功')
   } catch (error) {
-    console.error(error)
+    $toast.error('修改失败')
   }
 }
 
@@ -644,11 +696,11 @@ const saveChangePassword = async () => {
       return
     }
     const saveRes = await savePassword(userInfo.value.email, newPassword.value)
-    if (saveRes.code !== 200) return
+    if (saveRes.data.code !== 200) return
     const res = await getUserInfo(userInfo.value.email)
-    if (res.code !== 200) return
-    store.commit('user/setUserInfo', res.data)
-    localStorage.setItem('userInfo', JSON.stringify(res.data))
+    if (res.data.code !== 200) return
+    store.commit('user/setUserInfo', res.data.data)
+    localStorage.setItem('userInfo', JSON.stringify(res.data.data))
     oldPassword.value = ''
     newPassword.value = ''
     authCode.value = ''
@@ -659,22 +711,34 @@ const saveChangePassword = async () => {
     clearInterval(intervalId)
     $toast.success('修改成功')
   } catch (error) {
-    console.error(error)
+    $toast.error('修改失败')
   }
 }
 
 const saveChangeIntroduction = async () => {
   try {
-    const { code } = await saveIntroduction(
-      userInfo.value.email,
-      introduction.value
-    )
-    if (code !== 200) return
+    const res = await saveIntroduction(userInfo.value.email, introduction.value)
+    if (res.data.code !== 200) return
     changeIntroduction.value = false
     getInfo()
     $toast.success('修改成功')
   } catch (error) {
-    console.error(error)
+    $toast.error('修改失败')
+  }
+}
+
+const saveChangeBirthDate = async () => {
+  try {
+    const res = await saveBirthDate(
+      userInfo.value.email,
+      format(birthDate.value)
+    )
+    if (res.data.code !== 200) return
+    changeBirthDate.value = false
+    getInfo()
+    $toast.success('修改成功')
+  } catch (error) {
+    $toast.error('修改失败')
   }
 }
 

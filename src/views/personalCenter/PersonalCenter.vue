@@ -212,6 +212,5 @@ const togglePersonalHeader = value => {
   personalHeaders.value.forEach(header => {
     header.active = header.value === value
   })
-  console.log(personalHeaders.value)
 }
 </script>

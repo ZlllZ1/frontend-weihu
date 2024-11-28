@@ -68,13 +68,13 @@ const login = async () => {
       return
     }
     const res = await passwordLogin(account.value, password.value)
-    if (res.code !== 200) return
-    store.commit('user/setToken', res.data.token)
-    localStorage.setItem('token', res.data.token)
-    const { code, data } = await getUserInfo(account.value)
-    if (code !== 200) return
-    store.commit('user/setUserInfo', data)
-    localStorage.setItem('userInfo', JSON.stringify(data))
+    if (res.data.code !== 200) return
+    store.commit('user/setToken', res.data.data.token)
+    localStorage.setItem('token', res.data.data.token)
+    const { data } = await getUserInfo(account.value)
+    if (data.code !== 200) return
+    store.commit('user/setUserInfo', data.data)
+    localStorage.setItem('userInfo', JSON.stringify(data.data))
     $toast.success('登录成功')
     emits('closeLogin')
   } catch (error) {

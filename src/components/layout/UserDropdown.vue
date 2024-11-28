@@ -29,22 +29,24 @@
 import { useStore } from 'vuex'
 import { logout } from '@/api/login'
 import { computed } from 'vue'
+import { useToast } from 'vue-toast-notification'
 
 const emit = defineEmits('closeDropdown')
 const store = useStore()
+const $toast = useToast()
 const userInfo = computed(() => store.state.user.userInfo)
 
 const userLogout = async () => {
   try {
     const res = await logout(userInfo.value.email)
-    if (res.code !== 200) return
+    if (res.data.code !== 200) return
     store.commit('user/setUserInfo', null)
     store.commit('user/setToken', null)
     localStorage.removeItem('userInfo')
     localStorage.removeItem('token')
-    // location.reload()
+    $toast.success('退出成功')
   } catch (err) {
-    console.log(err)
+    $toast.error('退出失败')
   }
 }
 </script>

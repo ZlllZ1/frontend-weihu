@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { store } from '@/store/index'
 import eventBus from '@/utils/eventBus'
 
 class Request {
@@ -8,14 +7,18 @@ class Request {
     this.interceptors()
   }
 
+  setStore(store) {
+    this.store = store
+  }
+
   interceptors() {
     this.instance.interceptors.request.use(
       config => {
         if (config.requiresAuth) {
-          if (!store.state.user.userInfo || !store.state.user.token) {
+          if (!this.store || !this.store.state.user.token) {
             return Promise.reject({ requiresAuth: true })
           }
-          config.headers.Authorization = `Bearer ${store.state.user.token}`
+          config.headers.Authorization = `Bearer ${this.store.state.user.token}`
         }
         return config
       },
@@ -26,7 +29,7 @@ class Request {
 
     this.instance.interceptors.response.use(
       response => {
-        return response.data
+        return response
       },
       error => {
         if (error.requiresAuth) {
@@ -36,11 +39,11 @@ class Request {
       }
     )
   }
-  get(url, params) {
-    return this.instance.get(url, { params })
+  get(url, params, config = {}) {
+    return this.instance.get(url, { params, ...config })
   }
-  post(url, data) {
-    return this.instance.post(url, data)
+  post(url, data, config = {}) {
+    return this.instance.post(url, data, { ...config })
   }
 }
 
