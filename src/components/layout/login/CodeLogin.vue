@@ -40,14 +40,11 @@
       登录
     </button>
   </div>
-  <ToastView v-if="toastText.length">
-    <span>{{ toastText }}</span>
-  </ToastView>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import ToastView from '@/components/common/ToastView.vue'
+import { useToast } from 'vue-toast-notification'
 import { useStore } from 'vuex'
 import { sendAuthCode, codeLogin } from '@/api/login.js'
 import { getUserInfo } from '@/api/user.js'
@@ -58,7 +55,7 @@ const account = ref('')
 const authCode = ref('')
 const authCodeTimer = ref(null)
 let intervalId = null
-const toastText = ref('')
+const $toast = useToast()
 
 const validateAccount = account => {
   const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
@@ -69,70 +66,59 @@ const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
 const getAuthCode = async () => {
-  if (!account.value.length) {
-    toastText.value = '邮箱不能为空'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
-  }
-  if (!validateAccount(account.value)) {
-    toastText.value = '邮箱格式错误'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
-  }
-  const res = await sendAuthCode(account.value)
-  if (res.code !== 200) return
-  if (intervalId) clearInterval(intervalId)
-  authCodeTimer.value = 60
-  intervalId = setInterval(() => {
-    authCodeTimer.value--
-    if (authCodeTimer.value <= 0) {
-      clearInterval(intervalId)
-      authCodeTimer.value = null
-      intervalId = null
+  try {
+    if (!account.value.length) {
+      $toast.error('邮箱不能为空')
+      return
     }
-  }, 1000)
+    if (!validateAccount(account.value)) {
+      $toast.error('邮箱格式错误')
+      return
+    }
+    const res = await sendAuthCode(account.value)
+    if (res.code !== 200) return
+    if (intervalId) clearInterval(intervalId)
+    authCodeTimer.value = 60
+    intervalId = setInterval(() => {
+      authCodeTimer.value--
+      if (authCodeTimer.value <= 0) {
+        clearInterval(intervalId)
+        authCodeTimer.value = null
+        intervalId = null
+      }
+    }, 1000)
+    $toast.success('获取验证码成功')
+  } catch (error) {
+    $toast.error('获取验证码失败')
+  }
 }
 
 const login = async () => {
-  if (!account.value.length) {
-    toastText.value = '邮箱不能为空'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
+  try {
+    if (!account.value.length) {
+      $toast.error('邮箱不能为空')
+      return
+    }
+    if (!validateAccount(account.value)) {
+      $toast.error('邮箱格式错误')
+      return
+    }
+    if (!authCode.value.length) {
+      $toast.error('验证码不能为空')
+      return
+    }
+    const res = await codeLogin(account.value, authCode.value)
+    if (res.code !== 200) return
+    store.commit('user/setToken', res.data.token)
+    localStorage.setItem('token', res.data.token)
+    const { code, data } = await getUserInfo(account.value)
+    if (code !== 200) return
+    store.commit('user/setUserInfo', data)
+    localStorage.setItem('userInfo', JSON.stringify(data))
+    $toast.success('登录成功')
+    emits('closeLogin')
+  } catch (error) {
+    $toast.error('邮箱或验证码错误')
   }
-  if (!validateAccount(account.value)) {
-    toastText.value = '邮箱格式错误'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
-  }
-  if (!authCode.value.length) {
-    toastText.value = '验证码不能为空'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
-  }
-  const res = await codeLogin(account.value, authCode.value)
-  if (res.code !== 200) return
-  store.commit('user/setToken', res.data.token)
-  localStorage.setItem('token', res.data.token)
-  const { code, data } = await getUserInfo(account.value)
-  if (code !== 200) return
-  store.commit('user/setUserInfo', data)
-  localStorage.setItem('userInfo', JSON.stringify(data))
-  emits('closeLogin')
 }
 </script>
-
-<style lang="scss" scoped>
-// input {
-//   @apply outline-none h-12;
-// }
-</style>

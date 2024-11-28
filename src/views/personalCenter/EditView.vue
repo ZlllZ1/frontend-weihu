@@ -430,16 +430,13 @@
         </div>
       </div>
     </div>
-    <ToastView v-if="toastText.length">
-      <span>{{ toastText }}</span>
-    </ToastView>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
-import ToastView from '@/components/common/ToastView.vue'
+import { useToast } from 'vue-toast-notification'
 import {
   getUserInfo,
   saveNickname,
@@ -462,7 +459,7 @@ const email = ref('')
 const changeEmailStep = ref(0)
 const authCodeTimer = ref(null)
 let intervalId = null
-const toastText = ref('')
+const $toast = useToast()
 const authCode = ref('')
 const sex = ref(userInfo?.value.sex || 2)
 const changePassword = ref(false)
@@ -501,10 +498,7 @@ const saveChangeNickname = async () => {
     if (code !== 200) return
     changeNickname.value = false
     getInfo()
-    toastText.value = '修改成功'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.success('修改成功')
   } catch (error) {
     console.error(error)
   }
@@ -516,10 +510,7 @@ const saveChangeSex = async () => {
     if (code !== 200) return
     changeSex.value = false
     getInfo()
-    toastText.value = '修改成功'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.success('修改成功')
   } catch (error) {
     console.error(error)
   }
@@ -534,24 +525,15 @@ const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
 const getAuthCode = async (type = '') => {
   if (email.value !== userInfo.value.email && type === 'old') {
-    toastText.value = '请输入原邮箱'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.error('请输入原邮箱')
     return
   }
   if (!email.value.length) {
-    toastText.value = '邮箱不能为空'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.error('邮箱不能为空')
     return
   }
   if (!validateAccount(email.value)) {
-    toastText.value = '邮箱格式错误'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.error('邮箱格式错误')
     return
   }
   try {
@@ -567,8 +549,9 @@ const getAuthCode = async (type = '') => {
         intervalId = null
       }
     }, 1000)
+    $toast.success('获取验证码成功')
   } catch (error) {
-    console.error(error)
+    $toast.error('获取验证码失败')
   }
 }
 
@@ -608,10 +591,7 @@ const nextEmailStep = async () => {
     changeEmailStep.value = 1
     clearInterval(intervalId)
   } catch (error) {
-    toastText.value = '验证码错误'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.error('验证码错误')
   }
 }
 
@@ -626,10 +606,7 @@ const nextPasswordStep = async () => {
     changePasswordStep.value = 1
     clearInterval(intervalId)
   } catch (error) {
-    toastText.value = '验证码错误'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.error('验证码错误')
   }
 }
 
@@ -650,10 +627,7 @@ const saveChangeEmail = async () => {
     changeEmailStep.value = 0
     changeEmail.value = false
     clearInterval(intervalId)
-    toastText.value = '修改成功'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.success('修改成功')
   } catch (error) {
     console.error(error)
   }
@@ -661,21 +635,12 @@ const saveChangeEmail = async () => {
 
 const saveChangePassword = async () => {
   try {
-    console.log(userInfo.value.password)
-    console.log(oldPassword.value)
-    console.log(newPassword.value)
     if (userInfo.value.password !== oldPassword.value) {
-      toastText.value = '原密码错误'
-      setTimeout(() => {
-        toastText.value = ''
-      }, 1000)
+      $toast.error('原密码错误')
       return
     }
     if (newPassword.value.length < 6) {
-      toastText.value = '新密码长度不能小于6位'
-      setTimeout(() => {
-        toastText.value = ''
-      }, 1000)
+      $toast.error('新密码长度不能小于6位')
       return
     }
     const saveRes = await savePassword(userInfo.value.email, newPassword.value)
@@ -692,10 +657,7 @@ const saveChangePassword = async () => {
     changePasswordStep.value = 0
     changePassword.value = false
     clearInterval(intervalId)
-    toastText.value = '修改成功'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.success('修改成功')
   } catch (error) {
     console.error(error)
   }
@@ -710,10 +672,7 @@ const saveChangeIntroduction = async () => {
     if (code !== 200) return
     changeIntroduction.value = false
     getInfo()
-    toastText.value = '修改成功'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
+    $toast.success('修改成功')
   } catch (error) {
     console.error(error)
   }

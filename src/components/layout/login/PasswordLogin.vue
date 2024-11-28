@@ -28,14 +28,11 @@
       登录
     </button>
   </div>
-  <ToastView v-if="toastText.length">
-    <span>{{ toastText }}</span>
-  </ToastView>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import ToastView from '@/components/common/ToastView.vue'
+import { useToast } from 'vue-toast-notification'
 import { passwordLogin } from '@/api/login.js'
 import { getUserInfo } from '@/api/user.js'
 import { useStore } from 'vuex'
@@ -46,7 +43,7 @@ const emits = defineEmits(['closeLogin'])
 
 const account = ref('')
 const password = ref('')
-const toastText = ref('')
+const $toast = useToast()
 
 const validateAccount = account => {
   const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
@@ -57,35 +54,31 @@ const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updatePassword = value => (password.value = value.replace(/\s/g, ''))
 
 const login = async () => {
-  if (!account.value.length) {
-    toastText.value = '邮箱不能为空'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
+  try {
+    if (!account.value.length) {
+      $toast.error('邮箱不能为空')
+      return
+    }
+    if (!validateAccount(account.value)) {
+      $toast.error('邮箱格式错误')
+      return
+    }
+    if (!password.value.length) {
+      $toast.error('密码不能为空')
+      return
+    }
+    const res = await passwordLogin(account.value, password.value)
+    if (res.code !== 200) return
+    store.commit('user/setToken', res.data.token)
+    localStorage.setItem('token', res.data.token)
+    const { code, data } = await getUserInfo(account.value)
+    if (code !== 200) return
+    store.commit('user/setUserInfo', data)
+    localStorage.setItem('userInfo', JSON.stringify(data))
+    $toast.success('登录成功')
+    emits('closeLogin')
+  } catch (error) {
+    $toast.error('邮箱或密码错误')
   }
-  if (!validateAccount(account.value)) {
-    toastText.value = '邮箱格式错误'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
-  }
-  if (!password.value.length) {
-    toastText.value = '密码不能为空'
-    setTimeout(() => {
-      toastText.value = ''
-    }, 1000)
-    return
-  }
-  const res = await passwordLogin(account.value, password.value)
-  if (res.code !== 200) return
-  store.commit('user/setToken', res.data.token)
-  localStorage.setItem('token', res.data.token)
-  const { code, data } = await getUserInfo(account.value)
-  if (code !== 200) return
-  store.commit('user/setUserInfo', data)
-  localStorage.setItem('userInfo', JSON.stringify(data))
-  emits('closeLogin')
 }
 </script>
