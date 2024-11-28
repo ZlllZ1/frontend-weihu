@@ -271,6 +271,106 @@
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">密码</div>
+          <div
+            v-if="!changePassword"
+            class="flex items-center justify-between flex-1 px-8 relative"
+          >
+            <div class="password-container">
+              <span class="pass-word">{{ userInfo?.password || '' }}</span>
+              <span class="toolTip">{{ userInfo?.password }}</span>
+            </div>
+            <button
+              class="ml-4 text-base text-blue"
+              @click="changePassword = true"
+            >
+              修改
+            </button>
+          </div>
+          <div v-else class="flex justify-between items-center px-8 flex-1">
+            <template v-if="changePasswordStep === 0">
+              <div class="flex flex-col gap-2">
+                <div
+                  class="w-72 pl-2 border border-gray rounded flex items-center justify-between"
+                >
+                  <input
+                    :value="email"
+                    type="text"
+                    placeholder="输入邮箱"
+                    maxlength="20"
+                    class="w-48 text-sm"
+                    @input="updateAccount($event.target.value)"
+                  />
+                  <button
+                    v-if="!authCodeTimer"
+                    class="text-blue text-sm px-2 rounded"
+                    @click="getAuthCode"
+                  >
+                    获取验证码
+                  </button>
+                  <span
+                    v-else
+                    class="flex items-center justify-center text-xs mr-2 text-gray"
+                    >{{ authCodeTimer }}秒后可重发</span
+                  >
+                </div>
+                <input
+                  type="text"
+                  :value="authCode"
+                  placeholder="输入验证码"
+                  class="border border-gray rounded px-2 w-48 text-sm"
+                  @input="updateAuthCode($event.target.value)"
+                />
+              </div>
+              <div>
+                <button
+                  class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                  @click="cancelPassword"
+                >
+                  取消
+                </button>
+                <button
+                  class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                  @click="nextPasswordStep"
+                >
+                  下一步
+                </button>
+              </div>
+            </template>
+            <template v-else-if="changePasswordStep === 1">
+              <div class="flex flex-col gap-2">
+                <div class="w-72 flex flex-col gap-2">
+                  <input
+                    v-model="oldPassword"
+                    type="text"
+                    placeholder="输入原密码"
+                    class="border border-gray rounded px-2 w-64 text-sm"
+                  />
+                  <input
+                    v-model="newPassword"
+                    type="text"
+                    placeholder="输入6-20位的新密码"
+                    class="border border-gray rounded px-2 w-64 text-sm"
+                    minLength="6"
+                    maxlength="20"
+                  />
+                </div>
+              </div>
+              <div>
+                <button
+                  class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                  @click="cancelPassword"
+                >
+                  取消
+                </button>
+                <button
+                  class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                  @click="saveChangePassword"
+                >
+                  保存
+                </button>
+              </div>
+            </template>
+          </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">注册日期</div>
@@ -288,9 +388,14 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import ToastView from '@/components/common/ToastView.vue'
-import { getUserInfo, saveNickname, saveSex, saveEmail } from '@/api/user'
-import { judgeAuthCode } from '@/api/login'
-import { sendAuthCode } from '@/api/login'
+import {
+  getUserInfo,
+  saveNickname,
+  saveSex,
+  saveEmail,
+  savePassword
+} from '@/api/user'
+import { judgeAuthCode, sendAuthCode } from '@/api/login'
 
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
@@ -307,6 +412,10 @@ let intervalId = null
 const toastText = ref('')
 const authCode = ref('')
 const sex = ref(userInfo?.value.sex || 2)
+const changePassword = ref(false)
+const changePasswordStep = ref(0)
+const oldPassword = ref('')
+const newPassword = ref('')
 
 const getInfo = async () => {
   const res = await getUserInfo(userInfo?.value.email)
@@ -418,6 +527,16 @@ const cancelEmail = () => {
   clearInterval(intervalId)
 }
 
+const cancelPassword = () => {
+  intervalId = null
+  authCodeTimer.value = null
+  email.value = ''
+  authCode.value = ''
+  changePasswordStep.value = 0
+  changePassword.value = false
+  clearInterval(intervalId)
+}
+
 const nextEmailStep = async () => {
   try {
     const res = await judgeAuthCode(email.value, authCode.value)
@@ -436,12 +555,28 @@ const nextEmailStep = async () => {
   }
 }
 
+const nextPasswordStep = async () => {
+  try {
+    const res = await judgeAuthCode(email.value, authCode.value)
+    if (res.code !== 200) return
+    email.value = ''
+    authCode.value = ''
+    authCodeTimer.value = null
+    intervalId = null
+    changePasswordStep.value = 1
+    clearInterval(intervalId)
+  } catch (error) {
+    toastText.value = '验证码错误'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+  }
+}
+
 const saveChangeEmail = async () => {
   try {
     const { code } = await judgeAuthCode(email.value, authCode.value)
     if (code !== 200) return
-    console.log(userInfo.value.email)
-    console.log(email.value)
     const saveRes = await saveEmail(userInfo.value.email, email.value)
     if (saveRes.code !== 200) return
     const res = await getUserInfo(email.value)
@@ -464,6 +599,48 @@ const saveChangeEmail = async () => {
   }
 }
 
+const saveChangePassword = async () => {
+  try {
+    console.log(userInfo.value.password)
+    console.log(oldPassword.value)
+    console.log(newPassword.value)
+    if (userInfo.value.password !== oldPassword.value) {
+      toastText.value = '原密码错误'
+      setTimeout(() => {
+        toastText.value = ''
+      }, 1000)
+      return
+    }
+    if (newPassword.value.length < 6) {
+      toastText.value = '新密码长度不能小于6位'
+      setTimeout(() => {
+        toastText.value = ''
+      }, 1000)
+      return
+    }
+    const saveRes = await savePassword(userInfo.value.email, newPassword.value)
+    if (saveRes.code !== 200) return
+    const res = await getUserInfo(userInfo.value.email)
+    if (res.code !== 200) return
+    store.commit('user/setUserInfo', res.data)
+    localStorage.setItem('userInfo', JSON.stringify(res.data))
+    oldPassword.value = ''
+    newPassword.value = ''
+    authCode.value = ''
+    authCodeTimer.value = null
+    intervalId = null
+    changePasswordStep.value = 0
+    changePassword.value = false
+    clearInterval(intervalId)
+    toastText.value = '修改成功'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 onUnmounted(() => {
   if (intervalId) {
     clearInterval(intervalId)
@@ -474,5 +651,17 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 input {
   @apply outline-none h-8;
+}
+.password-container {
+  @apply relative inline-block max-w-[200px];
+  .pass-word {
+    @apply inline-block truncate max-w-full;
+  }
+  .toolTip {
+    @apply absolute -top-6 left-1/2 -translate-x-1/2 w-fit h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible whitespace-nowrap;
+  }
+  &:hover .toolTip {
+    @apply opacity-100 visible;
+  }
 }
 </style>

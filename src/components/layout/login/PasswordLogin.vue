@@ -5,14 +5,14 @@
         :value="account.trim()"
         type="text"
         placeholder="输入QQ邮箱/163邮箱"
-        class="border-b border-[#EBECED] w-full py-2"
+        class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
         @input="updateAccount($event.target.value)"
       />
       <input
         :value="password.trim()"
         type="password"
         placeholder="输入密码"
-        class="border-b border-[#EBECED] w-full py-2"
+        class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
         @input="updatePassword($event.target.value)"
       />
       <div class="flex justify-end py-2">
@@ -36,6 +36,13 @@
 <script setup>
 import { ref } from 'vue'
 import ToastView from '@/components/common/ToastView.vue'
+import { passwordLogin } from '@/api/login.js'
+import { getUserInfo } from '@/api/user.js'
+import { useStore } from 'vuex'
+
+const store = useStore()
+
+const emits = defineEmits(['closeLogin'])
 
 const account = ref('')
 const password = ref('')
@@ -49,7 +56,7 @@ const validateAccount = account => {
 const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updatePassword = value => (password.value = value.replace(/\s/g, ''))
 
-const login = () => {
+const login = async () => {
   if (!account.value.length) {
     toastText.value = '邮箱不能为空'
     setTimeout(() => {
@@ -71,15 +78,14 @@ const login = () => {
     }, 1000)
     return
   }
-  toastText.value = '邮箱或密码错误'
-  setTimeout(() => {
-    toastText.value = ''
-  }, 1000)
+  const res = await passwordLogin(account.value, password.value)
+  if (res.code !== 200) return
+  store.commit('user/setToken', res.data.token)
+  localStorage.setItem('token', res.data.token)
+  const { code, data } = await getUserInfo(account.value)
+  if (code !== 200) return
+  store.commit('user/setUserInfo', data)
+  localStorage.setItem('userInfo', JSON.stringify(data))
+  emits('closeLogin')
 }
 </script>
-
-<style lang="scss" scoped>
-input {
-  @apply outline-none h-12;
-}
-</style>

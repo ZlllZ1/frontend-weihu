@@ -159,7 +159,7 @@ const personalHeaders = ref([
     label: '粉丝',
     value: 'fan',
     num: 0,
-    active: true,
+    active: false,
     component: markRaw(PersonalFan)
   },
   {

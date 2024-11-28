@@ -15,3 +15,7 @@ export const saveSex = (account, sex) => {
 export const saveEmail = (account, email) => {
   return request.post('/user/changeEmail', { account, email })
 }
+
+export const savePassword = (account, password) => {
+  return request.post('/user/changePassword', { account, password })
+}

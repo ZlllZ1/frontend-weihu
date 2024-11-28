@@ -20,6 +20,13 @@ export const codeLogin = (account, authCode) => {
   })
 }
 
+export const passwordLogin = (account, password) => {
+  return request.post('/login/passwordLogin', {
+    account,
+    password
+  })
+}
+
 export const logout = account => {
   return request.post('/login/logout', {
     account
