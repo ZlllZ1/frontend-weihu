@@ -19,3 +19,7 @@ export const saveEmail = (account, email) => {
 export const savePassword = (account, password) => {
   return request.post('/user/changePassword', { account, password })
 }
+
+export const saveIntroduction = (account, introduction) => {
+  return request.post('/user/changeIntroduction', { account, introduction })
+}

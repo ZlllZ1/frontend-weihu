@@ -13,7 +13,7 @@
         <input
           ref="bgFileInput"
           type="file"
-          class="hidden"
+          class="hidden outline-none h-8"
           @change="handleBgChange"
         />
         <span
@@ -34,7 +34,7 @@
         <input
           ref="avatarFileInput"
           type="file"
-          class="hidden"
+          class="hidden outline-none h-8"
           @change="handleAvatarChange"
         />
         <div
@@ -78,7 +78,7 @@
               <input
                 v-model="newNickname"
                 type="text"
-                class="ml-4 border border-gray rounded w-64 px-2"
+                class="ml-4 border border-gray rounded w-64 px-2 outline-none h-8"
                 maxlength="20"
               />
               <button
@@ -123,11 +123,26 @@
           <div v-else class="flex items-center justify-between flex-1 px-8">
             <div class="flex items-center">
               <span>男</span
-              ><input v-model="sex" :value="0" type="radio" class="mr-6 ml-2" />
+              ><input
+                v-model="sex"
+                :value="0"
+                type="radio"
+                class="mr-6 ml-2 outline-none h-8"
+              />
               <span>女</span
-              ><input v-model="sex" :value="1" type="radio" class="mr-6 ml-2" />
+              ><input
+                v-model="sex"
+                :value="1"
+                type="radio"
+                class="mr-6 ml-2 outline-none h-8"
+              />
               <span>未知</span
-              ><input v-model="sex" :value="2" type="radio" class="mr-6 ml-2" />
+              ><input
+                v-model="sex"
+                :value="2"
+                type="radio"
+                class="mr-6 ml-2 outline-none h-8"
+              />
             </div>
             <div>
               <button
@@ -153,6 +168,43 @@
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">个人简介</div>
+          <div
+            v-if="!changeIntroduction"
+            class="flex items-center justify-between flex-1 px-8"
+          >
+            <div class="password-container">
+              <span class="pass-word">{{ userInfo?.introduction || '' }}</span>
+              <div class="toolTip">{{ userInfo?.introduction }}</div>
+            </div>
+            <button
+              class="ml-4 text-base text-blue"
+              @click="changeIntroduction = true"
+            >
+              修改
+            </button>
+          </div>
+          <div v-else class="flex flex-col flex-1 px-8 gap-2">
+            <textarea
+              v-model="introduction"
+              placeholder="输入200字以内的个人简介"
+              maxlength="200"
+              class="outline-none h-8 w-full border border-gray rounded p-2 min-h-32 text-sm"
+            ></textarea>
+            <div class="flex items-center gap-3 justify-end">
+              <button
+                class="w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                @click="cancelIntroduction"
+              >
+                取消
+              </button>
+              <button
+                class="w-16 h-8 py-1 px-2 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                @click="saveChangeIntroduction"
+              >
+                保存
+              </button>
+            </div>
+          </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">邮箱</div>
@@ -179,7 +231,7 @@
                     type="text"
                     placeholder="输入原邮箱"
                     maxlength="20"
-                    class="w-48 text-sm"
+                    class="w-48 text-sm outline-none h-8"
                     @input="updateAccount($event.target.value)"
                   />
                   <button
@@ -199,7 +251,7 @@
                   :value="authCode"
                   type="text"
                   placeholder="输入验证码"
-                  class="border border-gray rounded px-2 w-48 text-sm"
+                  class="border border-gray rounded px-2 w-48 text-sm outline-none h-8"
                   @input="updateAuthCode($event.target.value)"
                 />
               </div>
@@ -228,7 +280,7 @@
                     type="text"
                     placeholder="输入新邮箱(QQ/163)"
                     maxlength="20"
-                    class="w-48 text-sm"
+                    class="w-48 text-sm outline-none h-8"
                     @input="updateAccount($event.target.value)"
                   />
                   <button
@@ -248,7 +300,7 @@
                   type="text"
                   :value="authCode"
                   placeholder="输入验证码"
-                  class="border border-gray rounded px-2 w-48 text-sm"
+                  class="border border-gray rounded px-2 w-48 text-sm outline-none h-8"
                   @input="updateAuthCode($event.target.value)"
                 />
               </div>
@@ -297,7 +349,7 @@
                     type="text"
                     placeholder="输入邮箱"
                     maxlength="20"
-                    class="w-48 text-sm"
+                    class="w-48 text-sm outline-none h-8"
                     @input="updateAccount($event.target.value)"
                   />
                   <button
@@ -317,7 +369,7 @@
                   type="text"
                   :value="authCode"
                   placeholder="输入验证码"
-                  class="border border-gray rounded px-2 w-48 text-sm"
+                  class="border border-gray rounded px-2 w-48 text-sm outline-none h-8"
                   @input="updateAuthCode($event.target.value)"
                 />
               </div>
@@ -343,13 +395,13 @@
                     v-model="oldPassword"
                     type="text"
                     placeholder="输入原密码"
-                    class="border border-gray rounded px-2 w-64 text-sm"
+                    class="border border-gray rounded px-2 w-64 text-sm outline-none h-8"
                   />
                   <input
                     v-model="newPassword"
                     type="text"
                     placeholder="输入6-20位的新密码"
-                    class="border border-gray rounded px-2 w-64 text-sm"
+                    class="border border-gray rounded px-2 w-64 text-sm outline-none h-8"
                     minLength="6"
                     maxlength="20"
                   />
@@ -393,7 +445,8 @@ import {
   saveNickname,
   saveSex,
   saveEmail,
-  savePassword
+  savePassword,
+  saveIntroduction
 } from '@/api/user'
 import { judgeAuthCode, sendAuthCode } from '@/api/login'
 
@@ -416,6 +469,8 @@ const changePassword = ref(false)
 const changePasswordStep = ref(0)
 const oldPassword = ref('')
 const newPassword = ref('')
+const changeIntroduction = ref(false)
+const introduction = ref('')
 
 const getInfo = async () => {
   const res = await getUserInfo(userInfo?.value.email)
@@ -537,6 +592,11 @@ const cancelPassword = () => {
   clearInterval(intervalId)
 }
 
+const cancelIntroduction = () => {
+  changeIntroduction.value = false
+  introduction.value = ''
+}
+
 const nextEmailStep = async () => {
   try {
     const res = await judgeAuthCode(email.value, authCode.value)
@@ -641,6 +701,24 @@ const saveChangePassword = async () => {
   }
 }
 
+const saveChangeIntroduction = async () => {
+  try {
+    const { code } = await saveIntroduction(
+      userInfo.value.email,
+      introduction.value
+    )
+    if (code !== 200) return
+    changeIntroduction.value = false
+    getInfo()
+    toastText.value = '修改成功'
+    setTimeout(() => {
+      toastText.value = ''
+    }, 1000)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 onUnmounted(() => {
   if (intervalId) {
     clearInterval(intervalId)
@@ -652,13 +730,15 @@ onUnmounted(() => {
 input {
   @apply outline-none h-8;
 }
+textarea {
+}
 .password-container {
-  @apply relative inline-block max-w-[200px];
+  @apply relative inline-block max-w-96;
   .pass-word {
     @apply inline-block truncate max-w-full;
   }
   .toolTip {
-    @apply absolute -top-6 left-1/2 -translate-x-1/2 w-fit h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible whitespace-nowrap;
+    @apply text-wrap absolute top-6 w-full left-1/2 -translate-x-1/2 max-w-[200px] break-all h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible;
   }
   &:hover .toolTip {
     @apply opacity-100 visible;
