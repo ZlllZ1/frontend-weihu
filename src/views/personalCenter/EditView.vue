@@ -490,7 +490,9 @@ import {
   saveEmail,
   savePassword,
   saveIntroduction,
-  saveBirthDate
+  saveBirthDate,
+  uploadAvatar,
+  uploadHomeBg
 } from '@/api/user'
 import { judgeAuthCode, sendAuthCode } from '@/api/login'
 
@@ -528,19 +530,39 @@ const getInfo = async () => {
   localStorage.setItem('userInfo', JSON.stringify(res.data.data))
 }
 
-const handleBgChange = event => {
+const handleBgChange = async event => {
   const file = event.target.files[0]
   if (file) {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('homeBg', file)
+    formData.append('type', 'bg')
+    formData.append('account', userInfo.value.email)
+    try {
+      const res = await uploadHomeBg(formData)
+      if (res.data.code !== 200) return
+      await getInfo()
+      $toast.success('主页背景上传成功')
+    } catch (error) {
+      $toast.error('主页背景上传失败')
+    }
   }
 }
 
-const handleAvatarChange = event => {
+const handleAvatarChange = async event => {
   const file = event.target.files[0]
   if (file) {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('avatar', file)
+    formData.append('type', 'avatar')
+    formData.append('account', userInfo.value.email)
+    try {
+      const res = await uploadAvatar(formData)
+      if (res.data.code !== 200) return
+      await getInfo()
+      $toast.success('头像上传成功')
+    } catch (error) {
+      $toast.error('头像上传失败')
+    }
   }
 }
 

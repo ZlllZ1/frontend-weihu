@@ -51,3 +51,30 @@ export const saveBirthDate = (account, birthDate) => {
     { requiresAuth: true }
   )
 }
+
+export const uploadAvatar = formData => {
+  return request.post('/user/changeAvatar', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    requiresAuth: true
+  })
+}
+
+export const uploadHomeBg = formData => {
+  return request.post('/user/changeHomeBg', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    requiresAuth: true
+  })
+}
+
+export const uploadCircleBg = formData => {
+  return request.post('/user/changeCircleBg', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    requiresAuth: true
+  })
+}
