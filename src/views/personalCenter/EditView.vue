@@ -62,6 +62,9 @@
           </svg>
         </div>
       </div>
+      <span class="absolute top-[380px] left-[24px]"
+        >ip属地：{{ userInfo?.ipAddress }}</span
+      >
       <div class="pl-[220px] py-3 h-full pr-4">
         <div class="flex justify-between items-center w-full">
           <div class="flex items-center pr-8 justify-center">
