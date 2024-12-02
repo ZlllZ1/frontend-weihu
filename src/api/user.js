@@ -20,6 +20,14 @@ export const saveSex = (account, sex) => {
   )
 }
 
+export const saveLive = (account, live) => {
+  return request.post(
+    '/user/changeLive',
+    { account, live },
+    { requiresAuth: true }
+  )
+}
+
 export const saveEmail = (account, email) => {
   return request.post(
     '/user/changeEmail',

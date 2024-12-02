@@ -209,6 +209,39 @@
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">居住地</div>
+          <div
+            v-if="!changeLive"
+            class="flex items-center justify-between flex-1 px-8"
+          >
+            <span>{{ userInfo?.live }}</span>
+            <button class="ml-4 text-base text-blue" @click="changeLive = true">
+              修改
+            </button>
+          </div>
+          <div v-else class="flex items-center justify-between flex-1 px-8">
+            <div class="w-64">
+              <input
+                v-model="newLive"
+                type="text"
+                class="ml-4 border border-gray rounded w-64 px-2 outline-none h-8"
+                maxlength="20"
+              />
+            </div>
+            <div>
+              <button
+                class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+                @click="changeLive = false"
+              >
+                取消
+              </button>
+              <button
+                class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+                @click="saveChangeLive"
+              >
+                保存
+              </button>
+            </div>
+          </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
           <div class="w-32 border-r border-gray">个人简介</div>
@@ -492,7 +525,8 @@ import {
   saveIntroduction,
   saveBirthDate,
   uploadAvatar,
-  uploadHomeBg
+  uploadHomeBg,
+  saveLive
 } from '@/api/user'
 import { judgeAuthCode, sendAuthCode } from '@/api/login'
 
@@ -519,6 +553,8 @@ const changeIntroduction = ref(false)
 const introduction = ref(userInfo.value.introduction)
 const changeBirthDate = ref(false)
 const birthDate = ref(userInfo.value.birthDate)
+const changeLive = ref(false)
+const newLive = ref(userInfo.value.live)
 
 const format = date =>
   `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
@@ -583,6 +619,18 @@ const saveChangeSex = async () => {
     const res = await saveSex(userInfo.value.email, sex.value)
     if (res.data.code !== 200) return
     changeSex.value = false
+    getInfo()
+    $toast.success('修改成功')
+  } catch (error) {
+    $toast.error('修改失败')
+  }
+}
+
+const saveChangeLive = async () => {
+  try {
+    const res = await saveLive(userInfo.value.email, newLive.value)
+    if (res.data.code !== 200) return
+    changeLive.value = false
     getInfo()
     $toast.success('修改成功')
   } catch (error) {
