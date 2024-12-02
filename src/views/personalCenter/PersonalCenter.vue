@@ -117,14 +117,14 @@
 <script setup>
 import { ref, markRaw, computed } from 'vue'
 import { useStore } from 'vuex'
-import PersonalPost from './PersonalPost.vue'
-import PersonalQuestion from './PersonalQuestion.vue'
-import PersonalCircle from './PersonalCircle.vue'
-import PersonalFollow from './PersonalFollow.vue'
-import PersonalFan from './PersonalFan.vue'
-import PersonalPraise from './PersonalPraise.vue'
-import PersonalCollect from './PersonalCollect.vue'
-import PersonalShare from './PersonalShare.vue'
+import PersonalPost from './components/PersonalPost.vue'
+import PersonalQuestion from './components/PersonalQuestion.vue'
+import PersonalCircle from './components/PersonalCircle.vue'
+import PersonalFollow from './components/PersonalFollow.vue'
+import PersonalFan from './components/PersonalFan.vue'
+import PersonalPraise from './components/PersonalPraise.vue'
+import PersonalCollect from './components/PersonalCollect.vue'
+import PersonalShare from './components/PersonalShare.vue'
 
 const personalHeaders = ref([
   {
