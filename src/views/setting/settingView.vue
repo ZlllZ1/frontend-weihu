@@ -78,6 +78,5 @@ const handleClick = item => {
     item.active = false
   })
   item.active = true
-  currentComponent.value = item.component
 }
 </script>

@@ -63,3 +63,27 @@ export const changeShowLive = (account, showLive) => {
     { requiresAuth: true }
   )
 }
+
+export const changeChatLimit = (account, chatLimit) => {
+  return request.post(
+    '/setting/changeChatLimit',
+    { account, chatLimit },
+    { requiresAuth: true }
+  )
+}
+
+export const changeCircleLimit = (account, circleLimit) => {
+  return request.post(
+    '/setting/changeCircleLimit',
+    { account, circleLimit },
+    { requiresAuth: true }
+  )
+}
+
+export const changePostLimit = (account, postLimit) => {
+  return request.post(
+    '/setting/changePostLimit',
+    { account, postLimit },
+    { requiresAuth: true }
+  )
+}
