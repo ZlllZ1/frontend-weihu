@@ -40,7 +40,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/setting',
     name: 'setting',
-    component: () => import('@/views/setting/settingView.vue')
+    component: () => import('@/views/setting/SettingView.vue')
   },
   {
     path: '/post/:postId',

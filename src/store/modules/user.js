@@ -11,6 +11,9 @@ const userModule = {
     },
     setToken(state, token) {
       state.token = token
+    },
+    updateSetting(state, setting) {
+      state.userInfo.setting = { ...state.userInfo.setting, ...setting }
     }
   },
   actions: {}

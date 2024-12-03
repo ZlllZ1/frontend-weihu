@@ -11,6 +11,15 @@ class Request {
     this.store = store
   }
 
+  clearUserInfo() {
+    if (this.store) {
+      this.store.commit('user/SET_TOKEN', '')
+      this.store.commit('user/SET_USER_INFO', {})
+    }
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
+  }
+
   interceptors() {
     this.instance.interceptors.request.use(
       config => {
@@ -34,6 +43,10 @@ class Request {
       error => {
         if (error.requiresAuth) {
           eventBus.emit('showLoginModal')
+        }
+        if (error.response && error.response.status === 401) {
+          this.clearUserInfo()
+          eventBus.emit('showLoginModal', '登录已过期，请重新登录')
         }
         return Promise.reject(error)
       }

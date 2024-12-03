@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { useToast } from 'vue-toast-notification'
 import { useStore } from 'vuex'
 import { sendAuthCode, codeLogin } from '@/api/login.js'
@@ -75,10 +75,14 @@ const getAuthCode = async () => {
       $toast.error('邮箱格式错误')
       return
     }
-    const res = await sendAuthCode(account.value)
-    if (res.code !== 200) return
-    if (intervalId) clearInterval(intervalId)
     authCodeTimer.value = 60
+    const res = await sendAuthCode(account.value)
+    if (res.data.code !== 200) {
+      authCodeTimer.value = null
+      $toast.error('获取验证码失败')
+      return
+    }
+    if (intervalId) clearInterval(intervalId)
     intervalId = setInterval(() => {
       authCodeTimer.value--
       if (authCodeTimer.value <= 0) {
@@ -89,6 +93,7 @@ const getAuthCode = async () => {
     }, 1000)
     $toast.success('获取验证码成功')
   } catch (error) {
+    authCodeTimer.value = null
     $toast.error('获取验证码失败')
   }
 }
@@ -108,17 +113,23 @@ const login = async () => {
       return
     }
     const res = await codeLogin(account.value, authCode.value)
-    if (res.code !== 200) return
-    store.commit('user/setToken', res.data.token)
-    localStorage.setItem('token', res.data.token)
-    const { code, data } = await getUserInfo(account.value)
-    if (code !== 200) return
-    store.commit('user/setUserInfo', data)
-    localStorage.setItem('userInfo', JSON.stringify(data))
+    if (res.data.code !== 200) return
+    store.commit('user/setToken', res.data.data.token)
+    localStorage.setItem('token', res.data.data.token)
+    const userRes = await getUserInfo(account.value)
+    if (userRes.data.code !== 200) return
+    store.commit('user/setUserInfo', userRes.data.data)
+    localStorage.setItem('userInfo', JSON.stringify(userRes.data.data))
     $toast.success('登录成功')
     emits('closeLogin')
   } catch (error) {
     $toast.error('邮箱或验证码错误')
   }
 }
+
+onUnmounted(() => {
+  if (intervalId) {
+    clearInterval(intervalId)
+  }
+})
 </script>
