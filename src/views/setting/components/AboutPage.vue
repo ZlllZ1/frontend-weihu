@@ -1,48 +1,39 @@
 <template>
   <div class="py-8">
-    <p>关于微乎</p>
+    <p>{{ $t('message.aboutContent.title') }}</p>
+    <p>{{ $t('message.aboutContent.welcome') }}</p>
+
+    <p class="mt-6">{{ $t('message.aboutContent.vision.title') }}</p>
+    <p>{{ $t('message.aboutContent.vision.content') }}</p>
+
+    <p class="mt-6">{{ $t('message.aboutContent.mission.title') }}</p>
+    <p>{{ $t('message.aboutContent.mission.items[0]') }}</p>
+    <p>{{ $t('message.aboutContent.mission.items[1]') }}</p>
+    <p>{{ $t('message.aboutContent.mission.items[2]') }}</p>
+
+    <p class="mt-6">{{ $t('message.aboutContent.features.title') }}</p>
+    <p>{{ $t('message.aboutContent.features.items[0]') }}</p>
+    <p>{{ $t('message.aboutContent.features.items[1]') }}</p>
+    <p>{{ $t('message.aboutContent.features.items[2]') }}</p>
+    <p>{{ $t('message.aboutContent.features.items[3]') }}</p>
+
+    <p class="mt-6">{{ $t('message.aboutContent.privacy.title') }}</p>
     <p>
-      欢迎来到微乎，一个致力于连接你我、分享生活点滴、探索无限可能的网络社交平台。在这里，每个人都可以找到属于自己的声音，与志同道合的朋友相遇，共同创造一个更加多彩、温暖的世界。
-    </p>
-    <p class="mt-6">我们的愿景</p>
-    <p>
-      微乎的愿景是成为全球领先的社交平台，让每个人都能轻松分享自己的故事，发现世界的多样性和美好。我们希望通过技术的力量，打破地域和文化的界限，让每一个独特的个体都能在这个平台上找到归属感。
-    </p>
-    <p class="mt-6">我们的使命</p>
-    <p>促进交流：提供一个安全、友善的环境，鼓励用户之间的真诚交流和分享。</p>
-    <p>
-      激发创意：激发用户的创造力和想象力，让每个人都能成为内容的创造者和传播者。
-    </p>
-    <p>
-      传递价值：通过分享和传播有价值的内容，提升用户的知识水平、审美能力和社会责任感。
-    </p>
-    <p>
-      平台功能
-      个性化主页：用户可以创建自己的个性化主页，展示个人风采和兴趣爱好。
-    </p>
-    <p>
-      动态分享：支持文字、图片、视频等多种形式的动态分享，记录生活的每一个精彩瞬间。
-    </p>
-    <p>
-      互动交流：通过点赞、评论、私信等功能，与其他用户建立联系，分享彼此的看法和感受。
-    </p>
-    <p>发现新朋友：基于兴趣、地理位置等维度，发现新朋友和有趣的社群。</p>
-    <p class="mt-6">隐私政策与用户协议</p>
-    <p>
-      我们非常重视用户的隐私和数据安全。请仔细阅读我们的<a
+      {{ $t('message.aboutContent.privacy.content')
+      }}<a
         href="/privacyGuidelines"
         target="_blank"
         class="hover:text-blue font-semibold"
-        >[隐私政策]</a
-      >和<a
+        >{{ $t('message.privacy') }}</a
+      >
+      <a
         href="/protocol"
         target="_blank"
         class="hover:text-blue font-semibold"
-        >[用户协议]</a
-      >，了解我们如何收集、使用和保护您的个人信息。
+        >{{ $t('message.protocol') }}</a
+      >
     </p>
-    <p class="mt-6">
-      微乎是一个不断成长的社区，我们期待您的加入和贡献。无论您是寻找新朋友、分享生活点滴，还是寻找灵感和机会，这里都有属于您的舞台。让我们一起创造更多可能，共同书写属于我们的精彩故事！
-    </p>
+
+    <p class="mt-6">{{ $t('message.aboutContent.closing') }}</p>
   </div>
 </template>

@@ -84,7 +84,13 @@ const router = createRouter({
   routes
 })
 
-const publicRoutes = ['home']
+const publicRoutes = [
+  'home',
+  'privacyGuidelines',
+  'protocol',
+  'forgetPassword',
+  'feedbackError'
+]
 
 router.beforeEach((to, from, next) => {
   if (!publicRoutes.includes(to.name as string)) {

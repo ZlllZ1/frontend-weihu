@@ -62,7 +62,7 @@
           </svg>
         </div>
       </div>
-      <span class="absolute top-[380px] left-[24px]"
+      <span class="absolute top-[380px] left-[10px]"
         >{{ $t('message.ipAddress') }}：{{ userInfo?.ipAddress }}</span
       >
       <div class="pl-[220px] py-3 h-full pr-4">
@@ -103,7 +103,9 @@
           >
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">{{ $t('message.sex') }}</div>
+          <div class="w-36 border-r border-gray">
+            {{ $t('message.gender') }}
+          </div>
           <div
             v-if="!changeSex"
             class="flex items-center justify-between flex-1 px-8"
@@ -164,7 +166,7 @@
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">
+          <div class="w-36 border-r border-gray">
             {{ $t('message.dateOfBirth') }}
           </div>
           <div
@@ -213,7 +215,7 @@
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">{{ $t('message.live') }}</div>
+          <div class="w-36 border-r border-gray">{{ $t('message.live') }}</div>
           <div
             v-if="!changeLive"
             class="flex items-center justify-between flex-1 px-8"
@@ -249,7 +251,7 @@
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">
+          <div class="w-36 border-r border-gray">
             {{ $t('message.individualResume') }}
           </div>
           <div
@@ -291,7 +293,7 @@
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">{{ $t('message.email') }}</div>
+          <div class="w-36 border-r border-gray">{{ $t('message.email') }}</div>
           <div
             v-if="!changeEmail"
             class="flex items-center justify-between flex-1 px-8"
@@ -410,7 +412,7 @@
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">
+          <div class="w-36 border-r border-gray">
             {{ $t('message.password') }}
           </div>
           <div
@@ -517,7 +519,7 @@
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">
+          <div class="w-36 border-r border-gray">
             {{ $t('message.registrationDate') }}
           </div>
           <span class="px-8">{{ userInfo?.registrationDate }}</span>

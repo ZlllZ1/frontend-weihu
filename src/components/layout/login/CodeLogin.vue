@@ -32,7 +32,7 @@
           href="/feedbackError"
           target="_blank"
           class="hover:text-black w-fit"
-          >{{ $t('feedbackError') }}</a
+          >{{ $t('message.feedbackError') }}</a
         >
       </div>
     </div>

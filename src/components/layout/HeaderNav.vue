@@ -2,13 +2,13 @@
   <header
     class="shadow-[0_0_20px_0_rgba(0,0,0,0.1)] text-gray w-full sticky top-0 left-0 z-20"
   >
-    <nav class="flex justify-between pl-14 pr-10 bg-white h-14">
+    <nav class="flex justify-between px-2 bg-white h-14">
       <div class="inline-flex items-center justify-center">
         <router-link to="/" class="flex items-center cursor-pointer">
           <span class="text-3xl text-blue">{{ $t('message.wei') }}</span>
           <span class="text-3xl text-blue ml-1">{{ $t('message.hu') }}</span>
         </router-link>
-        <div class="nav-item ml-8 w-[280px] flex flex-1 gap-px text-lg">
+        <div class="nav-item ml-8 flex w-[320px] flex-1 gap-px text-lg">
           <router-link to="/" class="flex-1 text-center justify-center">{{
             $t('message.home')
           }}</router-link>
@@ -35,7 +35,7 @@
           {{ $t('message.search') }}
         </button>
       </div>
-      <div class="inline-flex items-center justify-center gap-5">
+      <div class="inline-flex items-center justify-center gap-4">
         <div class="relative clickOut">
           <button class="hover:text-blue" @click.stop="toggleMessage">
             {{ $t('message.message') }}
@@ -52,15 +52,15 @@
             <PrivateLetterCard v-if="showPrivateLetter" />
           </transition>
         </div>
-        <div v-if="!userInfo" class="relative clickOut ml-6">
+        <div v-if="!userInfo" class="relative clickOut ml-2">
           <button class="hover:text-blue" @click.stop="toggleLogin">
-            {{ $t('message.loginRegister') }}
+            {{ $t('message.login') }}
           </button>
           <transition name="fade">
             <LoginCard v-if="showLogin" @closeLogin="closeLogin" />
           </transition>
         </div>
-        <div v-else class="relative clickOut ml-6">
+        <div v-else class="relative clickOut ml-2">
           <img
             :src="userInfo.avatar || require('@/assets/avatar_default.png')"
             alt="用户头像"
@@ -106,7 +106,6 @@ const showMessage = ref(false)
 const showPrivateLetter = ref(false)
 const showLogin = ref(false)
 const showDropdown = ref(false)
-console.log(useI18n().locale)
 const changeLanguage = () => {
   locale.value = currentLanguage.value
   localStorage.setItem('language', currentLanguage.value)

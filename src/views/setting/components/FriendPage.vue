@@ -1,8 +1,8 @@
 <template>
   <div class="py-6">
-    <div class="border-b border-[#999]">
+    <div class="border-b border-[#999] pb-2">
       <span>{{ $t('message.circleOfFriendsVisibleRange') }}</span>
-      <div class="flex items-center justify-around py-4">
+      <div class="flex flex-col gap-y-2 mt-3">
         <template v-for="item in range" :key="item.value">
           <label :for="'range-' + item.value" class="flex items-center gap-x-2">
             <span>{{ item.label }}</span>
@@ -69,9 +69,9 @@ const handleChange = async item => {
       circleLimit: item.value
     })
     localStorage.setItem('userInfo', JSON.stringify(store.state.user.userInfo))
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
     selectedLimit.value = setting.value.postLimit
   }
 }

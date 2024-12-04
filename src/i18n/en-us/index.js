@@ -3,14 +3,13 @@ export default {
     wei: 'wei',
     hu: 'hu',
     home: 'home',
-    creativeCenter: 'creative center',
-    circleOfFriends: 'circle of friends',
+    creativeCenter: 'creative hub',
+    circleOfFriends: 'circle',
     searchContent: 'enter what you want to search for...',
     search: 'search',
-    loginRegister: 'login/register',
     message: 'message',
     privateLetter: 'private letter',
-    homePage: 'home page',
+    homePage: 'home',
     setting: 'setting',
     logout: 'logout',
     logoutSuccess: 'logout successfully',
@@ -32,8 +31,8 @@ export default {
     gender: 'gender',
     dateOfBirth: 'date of birth',
     live: 'place of abode',
-    individualResume: 'individual resume',
-    enterIndividualResume: 'enter a personal profile of 200 words or less',
+    individualResume: 'introduction',
+    enterIndividualResume: 'enter a personal introduction of 200 words or less',
     email: 'email',
     password: 'password',
     registrationDate: 'registration date',
@@ -44,7 +43,7 @@ export default {
     enterQQOr163: 'enter qq/163 email',
     enterPassword: 'enter password',
     enterAuthCode: 'enter verification code',
-    getAuthCode: 'get verification code',
+    getAuthCode: 'get authCode',
     feedbackError: 'feedback error',
     forgetPassword: 'forget password',
     login: 'login',
@@ -125,6 +124,154 @@ export default {
     passwordEmpty: 'the password cannot be empty',
     404: '404 - Page not found',
     remind404:
-      'Sorry, the page you are looking for does not appear to exist. Please check that the URL is correct. Or go back to the website according to the header.'
+      'Sorry, the page you are looking for does not appear to exist. Please check that the URL is correct. Or go back to the website according to the header.',
+    aboutContent: {
+      title: 'About Weihu',
+      welcome:
+        "Welcome to Weihu, a social networking platform dedicated to connecting people, sharing life's moments, and exploring endless possibilities. Here, everyone can find their own voice, meet like-minded friends, and create a more colorful and warm world together.",
+      vision: {
+        title: 'Our Vision',
+        content:
+          "Weihu's visionis to become the world's leading social platform, enabling everyone to easily share their stories and discover the diversity and beauty of the world. Through the power of technology, we aim to break down geographical and cultural boundaries, allowing every unique individual to find a sense of belonging on this platform."
+      },
+      mission: {
+        title: 'Our Mission',
+        items: [
+          'Promote Communication: Provide a safe and friendly environment that encourages genuine exchange and sharing among users.',
+          "Inspire Creativity: Stimulate users' creativity and imagination, enabling everyone to become content creators and disseminators.",
+          "Deliver Value: Enhance users' knowledge, aesthetic abilities, and social responsibility through sharing and spreading valuable content."
+        ]
+      },
+      features: {
+        title: 'Platform Features',
+        items: [
+          'Personalized Homepage: Users can create their own personalized homepage to showcase their individuality and interests.',
+          "Dynamic Sharing: Support various forms of content sharing including text, images, and videos to capture life's exciting moments.",
+          'Interactive Communication: Connect with other users through likes, comments, and private messages to share opinions and feelings.',
+          'Discover New Friends: Find new friends and interesting communities based on interests, geographic location, and other dimensions.'
+        ]
+      },
+      privacy: {
+        title: 'Privacy Policy and User Agreement',
+        content:
+          'We highly value user privacy and data security. Please carefully read our [Privacy Policy] and [User Agreement] to understand how we collect, use, and protect your personal information.'
+      },
+      closing:
+        "Weihu is a growing community, and we look forward to your participation and contribution. Whether you're looking for new friends, sharing life's moments, or seeking inspiration and opportunities, there's a stage here for you. Let's create more possibilities together and write our own exciting stories!",
+      privacyContent: {
+        title: 'Privacy Policy',
+        content: `
+        <p>Dear User:</p>
+        <p class="mt-8">
+          We understand the importance of your privacy and security. Therefore, we have issued this Privacy Policy to explain how we collect, use, store, and protect your personal information. Please carefully read and understand the following content before using our services.
+        </p>
+        <p class="mt-8">1. Information Collection</p>
+        <p>
+          Basic Information: When you register or use our services, we may require you to provide basic information such as name, gender, age, email address, phone number, etc. This information is necessary for providing our services.
+        </p>
+        <p>
+          Log Information: When you use our services, we may automatically collect your usage logs, including but not limited to IP address, access time, visited pages, device model, operating system, etc. This information helps us understand user habits and optimize our services.
+        </p>
+        <p>
+          Location Information: If you enable location services while using our services, we may collect your location information to provide location-based services.
+        </p>
+        <p class="mt-8">2. Information Usage</p>
+        <p>
+          Providing Services: We will use your information to provide services, including but not limited to registration, login, information push, personalized recommendations, etc.
+        </p>
+        <p>
+          Service Improvement: We may use your information for data analysis to understand user habits and improve service quality.
+        </p>
+        <p>
+          Legal Compliance: We may use your information to meet compliance requirements in accordance with laws and regulations.
+        </p>
+        <p>
+          Other Purposes: With your explicit consent, we may use your information for other legitimate purposes.
+        </p>
+        <p class="mt-8">3. Information Security</p>
+        <p>
+          Encrypted Storage: We will use advanced encryption technology to encrypt and store your information to prevent information leakage.
+        </p>
+        <p>
+          Access Control: We will implement strict permission management for employees accessing your information, ensuring that only authorized personnel can access your information.
+        </p>
+        <p>
+          Security Audits: We will conduct regular security audits of our systems to promptly identify and fix potential security vulnerabilities.
+        </p>
+        <p class="mt-8">4. Information Sharing and Disclosure</p>
+        <p>
+          Third-party Services: If we cooperate with third parties to provide services, we will sign confidentiality agreements with them to ensure your information is not leaked. However, in certain circumstances, such as legal requirements or with your authorization, we may provide your information to third parties.
+        </p>
+        <p>
+          Public Disclosure: We may publicly disclose certain information, such as user numbers and usage statistics, but this information will not contain your personal identifiers.
+        </p>
+        <p class="mt-8">5. Your Rights</p>
+        <p>Access Information: You have the right to access and view the information we collect about you at any time.</p>
+        <p>Correct Information: If you find any errors in the information we collect about you, you have the right to request corrections.</p>
+        <p>
+          Delete Information: In specific circumstances, such as when you no longer use our services or if we violate laws and regulations, you have the right to request that we delete your information.
+        </p>`
+      },
+      protocolContent: {
+        title: 'User Agreement',
+        content: `
+          <p>Dear User:</p>
+          <p class="mt-8">
+            Welcome to our website services! To ensure that you fully understand and comply with our service rules, we have formulated this agreement. Please carefully read and understand the following content before using our website services.
+          </p>
+          <p class="mt-8">I. Scope of Services</p>
+          <p>
+            Our website services include but are not limited to information browsing, publishing, communication, shopping, payment, etc. We are committed to providing you with a safe, convenient, and efficient online platform to meet your diverse needs.
+          </p>
+          <p class="mt-8">II. User Eligibility</p>
+          <p>
+            When using our services, you should ensure that you have full civil capacity and can be responsible for your own actions.
+          </p>
+          <p>
+            If you are a minor, you should use our services accompanied by a parent or guardian and comply with relevant laws and regulations.
+          </p>
+          <p class="mt-8">III. User Behavior</p>
+          <p>
+            When using our services, you should comply with national laws and regulations, social ethics, and the provisions of this agreement, and not engage in any illegal, infringing, or disruptive behavior to the normal operation of the website.
+          </p>
+          <p>
+            You must not publish or disseminate any content that is illegal, pornographic, violent, terrorist, superstitious, fraudulent, defamatory, or infringing on others' privacy.
+          </p>
+          <p>You should respect others' intellectual property rights and not copy, disseminate, or modify others' works without authorization.</p>
+          <p>
+            When using our services, you should ensure the security of your account and not disclose your account password to others or use others' accounts for illegal operations.
+          </p>
+          <p class="mt-8">IV. Information Protection</p>
+          <p>
+            We will take reasonable technical measures and management measures to protect your personal information and transaction security. However, please note that due to the complexity and unpredictability of the network environment, we cannot fully guarantee the absolute security of your information. Therefore, when using our services, you should bear certain information security risks on your own.
+          </p>
+          <p>
+            When using our services, you should properly safeguard your personal information and account password, and not disclose personal information to others or use others' personal information for illegal operations.
+          </p>
+          <p class="mt-8">V. Service Fees</p>
+          <p>
+            Some of the services we provide may require you to pay certain fees. Specific fee standards and payment methods will be clearly marked on the service page.
+          </p>
+          <p>
+            When using services that require payment, you should ensure that your account balance is sufficient or that you have bound a valid payment method. If the service cannot be used normally due to insufficient account balance or invalid payment method, we will not bear any responsibility.
+          </p>
+          <p class="mt-8">VI. Service Changes and Termination</p>
+          <p>
+            We have the right to change or terminate services based on changes in laws and regulations, business development needs, or user feedback. The specific time and method of changing or terminating services will be announced on our official website and notified to you through appropriate means.
+          </p>
+          <p>
+            If you have objections to our service changes or termination, you can contact us and express your opinion. However, please note that our decision is final, and you should bear any losses arising from service changes or termination on your own.
+          </p>
+          <p class="mt-8">VII. Breach of Contract</p>
+          <p>
+            If you violate the provisions of this agreement when using our services, we have the right to take measures such as warning, limiting functions, suspending services, terminating services, and pursuing legal liability.
+          </p>
+          <p>If our services suffer losses due to your fault, you should bear the corresponding compensation liability.</p>
+          <p class="mt-8">VIII. Dispute Resolution</p>
+          <p>
+            The interpretation, validity, and dispute resolution of this agreement shall be governed by the lawsof the People's Republic of China. If any dispute arises from or in connection with this agreement, both parties shall first resolve it through friendly negotiation; if the negotiation fails, either party has the right to file a lawsuit with a court of competent jurisdiction.
+          </p>`
+      }
+    }
   }
 }

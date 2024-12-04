@@ -113,9 +113,9 @@ const handleChange = async option => {
       [option.value]: option.selected
     })
     localStorage.setItem('userInfo', JSON.stringify(store.state.user.userInfo))
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
     options.value.find(item => item.value === option.value).selected =
       !option.selected
   }
