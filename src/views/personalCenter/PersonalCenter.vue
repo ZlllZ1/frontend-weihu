@@ -107,8 +107,10 @@
         </div>
         <component :is="currentComponent" class="px-4 py-2" />
       </div>
-      <div class="w-1/3 bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] h-fit">
-        右侧区域
+      <div
+        class="w-1/3 bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg"
+      >
+        <WeatherView />
       </div>
     </div>
   </div>
@@ -125,6 +127,7 @@ import PersonalFan from './components/PersonalFan.vue'
 import PersonalPraise from './components/PersonalPraise.vue'
 import PersonalCollect from './components/PersonalCollect.vue'
 import PersonalShare from './components/PersonalShare.vue'
+import WeatherView from '@/components/common/weather/WeatherView.vue'
 
 const personalHeaders = ref([
   {

@@ -1,6 +1,8 @@
 <template>
-  <div class="mx-32 my-5 bg-white rounded-sm min-h-[100vh] flex">
-    <div class="w-[15%] p-4 shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">
+  <div class="mx-32 my-5 min-h-[100vh] flex gap-x-3">
+    <div
+      class="w-[15%] p-4 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded"
+    >
       <div class="flex flex-col gap-y-6">
         <div
           v-for="item in nav"
@@ -18,7 +20,9 @@
         </div>
       </div>
     </div>
-    <div class="w-[85%] px-8">
+    <div
+      class="w-[85%] px-8 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded"
+    >
       <component :is="currentComponent" :setting="setting" />
     </div>
   </div>
