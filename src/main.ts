@@ -8,6 +8,7 @@ import VueToast from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-default.css'
 import LoadingData from './components/common/loading-data/LoadingData.vue'
 import request from './utils/request'
+import i18n from './i18n/index'
 
 const app = createApp(App)
 
@@ -16,6 +17,7 @@ app.use(VueToast, {
   position: 'top-right',
   duration: 2000
 })
+app.use(i18n)
 
 request.setStore(store)
 request.interceptors()

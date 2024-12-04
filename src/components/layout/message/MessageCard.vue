@@ -24,7 +24,9 @@
       <div
         class="flex flex-shrink-0 items-center py-4 px-2 justify-end h-10 border-t border-[#EBECED]"
       >
-        <a class="hover:text-blue cursor-pointer"> 查看所有通知</a>
+        <a class="hover:text-blue cursor-pointer">{{
+          $t('message.viewAllNotifications')
+        }}</a>
       </div>
     </div>
   </div>
@@ -35,21 +37,24 @@ import { ref, markRaw } from 'vue'
 import PraiseContent from './PraiseContent.vue'
 import CommentContent from './CommentContent.vue'
 import FollowContent from './FollowContent.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 const headerTab = [
   {
-    label: '点赞',
+    label: t('message.praise'),
     value: 0,
     selected: true,
     component: markRaw(PraiseContent)
   },
   {
-    label: '评论',
+    label: t('message.comment'),
     value: 1,
     selected: false,
     component: markRaw(CommentContent)
   },
   {
-    label: '关注',
+    label: t('message.follow'),
     value: 2,
     selected: false,
     component: markRaw(FollowContent)

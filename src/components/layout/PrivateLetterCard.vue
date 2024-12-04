@@ -7,7 +7,7 @@
       <div
         class="flex items-center justify-evenly h-12 w-full border-b border-[#EBECED] flex-shrink-0"
       >
-        我的私信
+        {{ $t('message.myPrivateMessage') }}
       </div>
       <div class="flex-grow overflow-y-auto">
         <div>1</div>
@@ -15,7 +15,9 @@
       <div
         class="flex flex-shrink-0 items-center py-4 px-2 justify-end h-10 border-t border-[#EBECED]"
       >
-        <a class="hover:text-blue cursor-pointer"> 查看所有私信</a>
+        <a class="hover:text-blue cursor-pointer">{{
+          $t('message.viewAllPrivateMessages')
+        }}</a>
       </div>
     </div>
   </div>

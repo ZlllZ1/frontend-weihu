@@ -22,7 +22,7 @@
         <span
           class="border border-white border-opacity-80 absolute top-4 right-4 text-white bg-black bg-opacity-20 text-opacity-80 px-2 py-1 text-sm rounded"
         >
-          上传主页背景图
+          {{ $t('message.uploadHomeBg') }}
         </span>
       </div>
       <div class="h-32 w-full">
@@ -81,7 +81,7 @@
               href="/personalCenter/edit"
               class="w-[120px] h-8 px-4 rounded flex items-center justify-center text-sm py-px border border-blue text-blue hover:text-white hover:bg-blue"
             >
-              编辑个人资料
+              {{ $t('message.edit') }}
             </a>
           </div>
         </div>
@@ -128,59 +128,61 @@ import PersonalPraise from './components/PersonalPraise.vue'
 import PersonalCollect from './components/PersonalCollect.vue'
 import PersonalShare from './components/PersonalShare.vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const personalHeaders = ref([
   {
-    label: '发帖',
+    label: t('message.post'),
     value: 'post',
     num: 0,
     active: true,
     component: markRaw(PersonalPost)
   },
   {
-    label: '提问',
+    label: t('message.ask'),
     value: 'question',
     num: 0,
     active: false,
     component: markRaw(PersonalQuestion)
   },
   {
-    label: '朋友圈',
+    label: t('message.circleOfFriends'),
     value: 'circle',
     num: 0,
     active: false,
     component: markRaw(PersonalCircle)
   },
   {
-    label: '关注',
+    label: t('message.follow'),
     value: 'follow',
     num: 0,
     active: false,
     component: markRaw(PersonalFollow)
   },
   {
-    label: '粉丝',
+    label: t('message.fans'),
     value: 'fan',
     num: 0,
     active: false,
     component: markRaw(PersonalFan)
   },
   {
-    label: '点赞',
+    label: t('message.praise'),
     value: 'praise',
     num: 0,
     active: false,
     component: markRaw(PersonalPraise)
   },
   {
-    label: '收藏',
+    label: t('message.collect'),
     value: 'collect',
     num: 0,
     active: false,
     component: markRaw(PersonalCollect)
   },
   {
-    label: '转发',
+    label: t('message.share'),
     value: 'share',
     num: 0,
     active: false,

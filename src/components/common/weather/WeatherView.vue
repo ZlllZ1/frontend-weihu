@@ -31,7 +31,7 @@
       </div>
       <div class="flex justify-between text-sm text-white opacity-80">
         <div>
-          最高
+          {{ $t('message.highest') }}
           {{
             Math.max(
               weatherData.casts[0].daytemp,
@@ -40,7 +40,7 @@
           }}°
         </div>
         <div>
-          最低
+          {{ $t('message.lowest') }}
           {{
             Math.min(
               weatherData.casts[0].daytemp,
@@ -57,18 +57,20 @@
 import request from '@/utils/request'
 import { computed, onMounted, ref, onUnmounted } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const weatherData = ref(null)
 const cityInfo = ref(null)
 const weekDay = [
   '',
-  '星期一',
-  '星期二',
-  '星期三',
-  '星期四',
-  '星期五',
-  '星期六',
-  '星期日'
+  t('message.Monday'),
+  t('message.Tuesday'),
+  t('message.Wednesday'),
+  t('message.Thursday'),
+  t('message.Friday'),
+  t('message.Saturday'),
+  t('message.Sunday')
 ]
 const time = ref('')
 const intervalId = ref(null)
@@ -76,7 +78,9 @@ const intervalId = ref(null)
 const date = computed(() => {
   const now = weatherData.value?.casts[0].date
   const part = now.split('-')
-  return `${part[0]}年${part[1]}月${part[2]}日`
+  return `${part[0]}${t('message.year')}${part[1]}${t('message.month')}${
+    part[2]
+  }${t('message.day')}`
 })
 
 const formattedTime = computed(() => {
@@ -105,11 +109,13 @@ const updateTime = () => {
 }
 
 const isDayTime = computed(() => {
-  const startOfDay = new Date().setHours(6, 0, 0, 0)
-  const endOfDay = new Date().setHours(18, 0, 0, 0)
-  const now = weatherData.value?.reporttime.split(' ')[1]
-  const inputTime = new Date(now.replace(/-|:|\./g, ' ') + ' GMT').getTime()
-  return inputTime >= startOfDay && inputTime < endOfDay
+  if (!weatherData.value?.reporttime) return false
+  const [datePart, timePart] = weatherData.value.reporttime.split(' ')
+  const [year, month, day] = datePart.split('-')
+  const [hour, minute, second] = timePart.split(':')
+  const reportDate = new Date(year, month - 1, day, hour, minute, second)
+  const reportHour = reportDate.getHours()
+  return reportHour >= 6 && reportHour < 18
 })
 
 const getCity = () => {

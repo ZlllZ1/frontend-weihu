@@ -9,17 +9,17 @@
         target="_blank"
         class="hover:bg-[#EEE] w-full rounded-lg flex items-center justify-center"
         @click="emit('closeDropdown')"
-        >我的主页</a
+        >{{ $t('message.homePage') }}</a
       >
       <a
         href="/setting"
         target="_blank"
         class="hover:bg-[#EEE] w-full rounded-lg flex items-center justify-center"
         @click="emit('closeDropdown')"
-        >设置</a
+        >{{ $t('message.setting') }}</a
       >
       <button class="hover:bg-[#EEE] w-full rounded-lg" @click="userLogout">
-        退出
+        {{ $t('message.logout') }}
       </button>
     </div>
   </div>
@@ -30,7 +30,9 @@ import { useStore } from 'vuex'
 import { logout } from '@/api/login'
 import { computed } from 'vue'
 import { useToast } from 'vue-toast-notification'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const emit = defineEmits('closeDropdown')
 const store = useStore()
 const $toast = useToast()
@@ -44,9 +46,9 @@ const userLogout = async () => {
     store.commit('user/setToken', null)
     localStorage.removeItem('userInfo')
     localStorage.removeItem('token')
-    $toast.success('退出成功')
+    $toast.success(t('message.logoutSuccess'))
   } catch (err) {
-    $toast.error('退出失败')
+    $toast.error(t('message.logoutFail'))
   }
 }
 </script>

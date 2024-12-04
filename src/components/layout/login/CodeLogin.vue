@@ -4,7 +4,7 @@
       <input
         :value="account.trim()"
         type="text"
-        placeholder="输入QQ邮箱/163邮箱"
+        :placeholder="$t('message.enterQQOr163')"
         class="border-b border-[#EBECED] w-full outline-none h-12"
         @input="updateAccount($event.target.value)"
       />
@@ -12,7 +12,7 @@
         <input
           :value="authCode.trim()"
           type="text"
-          placeholder="输入验证码"
+          :placeholder="$t('message.enterAuthCode')"
           class="flex-1 outline-none h-12"
           @input="updateAuthCode($event.target.value)"
         />
@@ -21,15 +21,18 @@
           class="text-blue hover:text-gray"
           @click="getAuthCode"
         >
-          获取验证码
+          {{ $t('message.getAuthCode') }}
         </button>
-        <span v-else class="flex items-center justify-center"
-          >{{ authCodeTimer }}秒后可重发</span
-        >
+        <span v-else class="flex items-center justify-center">{{
+          $t('message.afterSeconds', { seconds: authCodeTimer })
+        }}</span>
       </div>
       <div class="flex justify-end py-2">
-        <a href="/feedbackError" target="_blank" class="hover:text-black w-fit"
-          >反馈错误</a
+        <a
+          href="/feedbackError"
+          target="_blank"
+          class="hover:text-black w-fit"
+          >{{ $t('feedbackError') }}</a
         >
       </div>
     </div>
@@ -37,7 +40,7 @@
       class="bg-blue text-white rounded-sm h-9 hover:bg-[#0E66E7] mt-2"
       @click="login"
     >
-      登录
+      {{ $t('message.login') }}
     </button>
   </div>
 </template>
@@ -48,7 +51,9 @@ import { useToast } from 'vue-toast-notification'
 import { useStore } from 'vuex'
 import { sendAuthCode, codeLogin } from '@/api/login.js'
 import { getUserInfo } from '@/api/user.js'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const emits = defineEmits(['closeLogin'])
 const store = useStore()
 const account = ref('')
@@ -68,18 +73,18 @@ const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 const getAuthCode = async () => {
   try {
     if (!account.value.length) {
-      $toast.error('邮箱不能为空')
+      $toast.error(t('message.emailEmpty'))
       return
     }
     if (!validateAccount(account.value)) {
-      $toast.error('邮箱格式错误')
+      $toast.error(t('message.emailFormatError'))
       return
     }
     authCodeTimer.value = 60
     const res = await sendAuthCode(account.value)
     if (res.data.code !== 200) {
       authCodeTimer.value = null
-      $toast.error('获取验证码失败')
+      $toast.error(t('message.getAuthCodeError'))
       return
     }
     if (intervalId) clearInterval(intervalId)
@@ -91,25 +96,25 @@ const getAuthCode = async () => {
         intervalId = null
       }
     }, 1000)
-    $toast.success('获取验证码成功')
+    $toast.success(t('message.getAuthCodeSuccess'))
   } catch (error) {
     authCodeTimer.value = null
-    $toast.error('获取验证码失败')
+    $toast.error(t('message.getAuthCodeError'))
   }
 }
 
 const login = async () => {
   try {
     if (!account.value.length) {
-      $toast.error('邮箱不能为空')
+      $toast.error(t('message.emailEmpty'))
       return
     }
     if (!validateAccount(account.value)) {
-      $toast.error('邮箱格式错误')
+      $toast.error(t('message.emailFormatError'))
       return
     }
     if (!authCode.value.length) {
-      $toast.error('验证码不能为空')
+      $toast.error(t('message.authCodeEmpty'))
       return
     }
     const res = await codeLogin(account.value, authCode.value)
@@ -120,10 +125,10 @@ const login = async () => {
     if (userRes.data.code !== 200) return
     store.commit('user/setUserInfo', userRes.data.data)
     localStorage.setItem('userInfo', JSON.stringify(userRes.data.data))
-    $toast.success('登录成功')
+    $toast.success(t('message.loginSuccess'))
     emits('closeLogin')
   } catch (error) {
-    $toast.error('邮箱或验证码错误')
+    $toast.error(t('message.emailAuthCodeError'))
   }
 }
 

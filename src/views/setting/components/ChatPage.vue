@@ -1,7 +1,7 @@
 <template>
   <div class="py-6">
     <div class="border-b border-[#999]">
-      <span>私信范围</span>
+      <span>{{ $t('message.privateMessageRange') }}</span>
       <div class="flex items-center justify-around py-4">
         <template v-for="item in range" :key="item.value">
           <label :for="'range-' + item.value" class="flex items-center gap-x-2">
@@ -25,7 +25,9 @@ import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toast-notification'
 import { changeChatLimit } from '@/api/setting'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const store = useStore()
 const $toast = useToast()
 const setting = computed(() => store.state.user.userInfo.setting)
@@ -34,23 +36,23 @@ const selectedLimit = ref(setting.value.chatLimit)
 
 const range = ref([
   {
-    label: '全部人可私信',
+    label: t('message.chatAll'),
     value: 0
   },
   {
-    label: '好友可私信',
+    label: t('message.chatFriend'),
     value: 3
   },
   {
-    label: '关注和好友可私信',
+    label: t('message.chatFollowFriend'),
     value: 7
   },
   {
-    label: '关注、粉丝和好友可私信',
+    label: t('message.chatFollowFanFriend'),
     value: 30
   },
   {
-    label: '不可私信',
+    label: t('message.chatNone'),
     value: 180
   }
 ])

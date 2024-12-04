@@ -2,29 +2,29 @@
   <header
     class="shadow-[0_0_20px_0_rgba(0,0,0,0.1)] text-gray w-full sticky top-0 left-0 z-20"
   >
-    <nav class="flex justify-between pl-14 pr-24 bg-white h-14">
+    <nav class="flex justify-between pl-14 pr-10 bg-white h-14">
       <div class="inline-flex items-center justify-center">
         <router-link to="/" class="flex items-center cursor-pointer">
-          <span class="text-3xl text-blue">微</span>
-          <span class="text-3xl text-blue ml-1">乎</span>
+          <span class="text-3xl text-blue">{{ $t('message.wei') }}</span>
+          <span class="text-3xl text-blue ml-1">{{ $t('message.hu') }}</span>
         </router-link>
         <div class="nav-item ml-8 w-[280px] flex flex-1 gap-px text-lg">
-          <router-link to="/" class="flex-1 text-center justify-center"
-            >首页</router-link
-          >
-          <router-link to="/create" class="flex-1 text-center justify-center"
-            >创作中心</router-link
-          >
-          <router-link to="friend" class="flex-1 text-center justify-center"
-            >朋友圈</router-link
-          >
+          <router-link to="/" class="flex-1 text-center justify-center">{{
+            $t('message.home')
+          }}</router-link>
+          <router-link to="/create" class="flex-1 text-center justify-center">{{
+            $t('message.creativeCenter')
+          }}</router-link>
+          <router-link to="friend" class="flex-1 text-center justify-center">{{
+            $t('message.circleOfFriends')
+          }}</router-link>
         </div>
       </div>
       <div class="nav-item inline-flex items-center justify-center gap-4">
         <input
           v-model="searchText"
           type="text"
-          placeholder="输入要搜索的内容..."
+          :placeholder="$t('message.searchContent')"
           class="w-[350px] h-8 rounded-2xl px-3"
           @keyup.enter="search"
         />
@@ -32,13 +32,13 @@
           class="h-8 w-20 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
           @click="search"
         >
-          搜索
+          {{ $t('message.search') }}
         </button>
       </div>
       <div class="inline-flex items-center justify-center gap-5">
         <div class="relative clickOut">
           <button class="hover:text-blue" @click.stop="toggleMessage">
-            消息
+            {{ $t('message.message') }}
           </button>
           <transition name="fade">
             <MessageCard v-if="showMessage" />
@@ -46,7 +46,7 @@
         </div>
         <div class="relative clickOut">
           <button class="hover:text-blue" @click.stop="togglePrivateLetter">
-            私信
+            {{ $t('message.privateLetter') }}
           </button>
           <transition name="fade">
             <PrivateLetterCard v-if="showPrivateLetter" />
@@ -54,7 +54,7 @@
         </div>
         <div v-if="!userInfo" class="relative clickOut ml-6">
           <button class="hover:text-blue" @click.stop="toggleLogin">
-            注册/登录
+            {{ $t('message.loginRegister') }}
           </button>
           <transition name="fade">
             <LoginCard v-if="showLogin" @closeLogin="closeLogin" />
@@ -74,20 +74,31 @@
             />
           </transition>
         </div>
+        <select
+          v-model="currentLanguage"
+          class="shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-lg outline-none cursor-pointer px-1 py-[2px]"
+          @change="changeLanguage"
+        >
+          <option value="zh-cn">中文</option>
+          <option value="en-us">English</option>
+        </select>
       </div>
     </nav>
   </header>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import MessageCard from './message/MessageCard.vue'
 import PrivateLetterCard from './PrivateLetterCard.vue'
 import LoginCard from './login/LoginCard.vue'
 import UserDropdown from './UserDropdown.vue'
 import eventBus from '@/utils/eventBus'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
+const { locale } = useI18n()
+const currentLanguage = ref(localStorage.getItem('language') || 'zh-cn')
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
 const searchText = ref('')
@@ -95,6 +106,13 @@ const showMessage = ref(false)
 const showPrivateLetter = ref(false)
 const showLogin = ref(false)
 const showDropdown = ref(false)
+console.log(useI18n().locale)
+const changeLanguage = () => {
+  locale.value = currentLanguage.value
+  localStorage.setItem('language', currentLanguage.value)
+}
+
+watch(currentLanguage, changeLanguage)
 
 const search = () => {
   if (!localStorage.getItem('token')) {

@@ -36,7 +36,7 @@
       ></component>
       <div class="flex text-xs items-center">
         <div class="flex-1 h-px bg-[#EBECED] mr-2"></div>
-        <span>其他方式登录</span>
+        <span>{{ $t('message.otherLogin') }}</span>
         <div class="flex-1 h-px bg-[#EBECED] ml-2"></div>
       </div>
       <div class="py-6 flex items-center justify-center">
@@ -56,17 +56,19 @@
           @click.stop
         >
           <div class="bg-black w-full h-32"></div>
-          <button class="text-sm mt-4 text-blue">重新刷新</button>
+          <button class="text-sm mt-4 text-blue">
+            {{ $t('message.refresh') }}
+          </button>
         </div>
       </div>
       <div class="text-xs">
-        <span>未注册手机验证后自动登录，注册即代表同意</span>
-        <a href="/protocol" target="_blank" class="hover:text-black"
-          >《协议》</a
-        >
-        <a href="/privacyGuidelines" target="_blank" class="hover:text-black"
-          >《隐私保护指引》</a
-        >
+        <span>{{ $t('message.remind') }}</span>
+        <a href="/protocol" target="_blank" class="hover:text-black">{{
+          $t('message.protocol')
+        }}</a>
+        <a href="/privacyGuidelines" target="_blank" class="hover:text-black">{{
+          $t('message.privacy')
+        }}</a>
       </div>
     </div>
   </div>
@@ -76,17 +78,20 @@
 import { computed, ref, markRaw } from 'vue'
 import PasswordLogin from './PasswordLogin.vue'
 import CodeLogin from './CodeLogin.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 const emit = defineEmits(['closeLogin'])
 
 const loginMethod = ref([
   {
-    label: '邮箱登录',
+    label: t('message.emailLogin'),
     value: 'code',
     active: true,
     component: markRaw(CodeLogin)
   },
   {
-    label: '密码登录',
+    label: t('message.passwordLogin'),
     value: 'password',
     active: false,
     component: markRaw(PasswordLogin)

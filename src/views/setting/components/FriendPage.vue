@@ -1,7 +1,7 @@
 <template>
   <div class="py-6">
     <div class="border-b border-[#999]">
-      <span>朋友圈可见范围</span>
+      <span>{{ $t('message.circleOfFriendsVisibleRange') }}</span>
       <div class="flex items-center justify-around py-4">
         <template v-for="item in range" :key="item.value">
           <label :for="'range-' + item.value" class="flex items-center gap-x-2">
@@ -25,7 +25,9 @@ import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toast-notification'
 import { changeCircleLimit } from '@/api/setting'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const store = useStore()
 const $toast = useToast()
 const setting = computed(() => store.state.user.userInfo.setting)
@@ -34,27 +36,27 @@ const selectedLimit = ref(setting.value.circleLimit)
 
 const range = ref([
   {
-    label: '全部可见',
+    label: t('message.allVisible'),
     value: 0
   },
   {
-    label: '三天内可见',
+    label: t('message.visibleThree'),
     value: 3
   },
   {
-    label: '一周内可见',
+    label: t('message.visibleWeek'),
     value: 7
   },
   {
-    label: '一月内可见',
+    label: t('message.visibleMonth'),
     value: 30
   },
   {
-    label: '半年内可见',
+    label: t('message.visibleHalfYear'),
     value: 180
   },
   {
-    label: '一年内可见',
+    label: t('message.visibleYear'),
     value: 360
   }
 ])

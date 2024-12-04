@@ -36,37 +36,39 @@ import PostPage from './components/PostPage.vue'
 import AboutPage from './components/AboutPage.vue'
 import ChatPage from './components/ChatPage.vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
 const store = useStore()
 const setting = computed(() => store.state.user.userInfo.setting)
+const { t } = useI18n()
 
 const nav = ref([
   {
-    label: '主页',
+    label: t('message.homePage'),
     value: 'home',
     active: true,
     component: markRaw(HomePage)
   },
   {
-    label: '私信',
+    label: t('message.privateLetter'),
     value: 'chat',
     active: false,
     component: markRaw(ChatPage)
   },
   {
-    label: '朋友圈',
+    label: t('message.circleOfFriends'),
     value: 'friend',
     active: false,
     component: markRaw(FriendPage)
   },
   {
-    label: '帖子',
+    label: t('message.post'),
     value: 'post',
     active: false,
     component: markRaw(PostPage)
   },
   {
-    label: '关于',
+    label: t('message.about'),
     value: 'about',
     active: false,
     component: markRaw(AboutPage)

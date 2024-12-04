@@ -33,50 +33,52 @@ import {
   changeShowFriend,
   changeShowLive
 } from '@/api/setting'
+import { useI18n } from 'vue-i18n'
 
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
 const setting = computed(() => store.state.user.userInfo.setting)
 const $toast = useToast()
+const { t } = useI18n()
 
 const options = ref([
   {
-    label: '展示Ip属地',
+    label: t('message.showIp'),
     value: 'showIp',
     selected: setting.value.showIp
   },
   {
-    label: '展示粉丝',
+    label: t('message.showFan'),
     value: 'showFan',
     selected: setting.value.showFan
   },
   {
-    label: '展示关注',
+    label: t('message.showFollow'),
     value: 'showFollow',
     selected: setting.value.showFollow
   },
   {
-    label: '展示点赞',
+    label: t('message.showPraise'),
     value: 'showPraise',
     selected: setting.value.showPraise
   },
   {
-    label: '展示收藏',
+    label: t('message.showCollect'),
     value: 'showCollect',
     selected: setting.value.showCollect
   },
   {
-    label: '展示分享',
+    label: t('message.showShare'),
     value: 'showShare',
     selected: setting.value.showShare
   },
   {
-    label: '展示朋友',
+    label: t('message.showFriend'),
     value: 'showFriend',
     selected: setting.value.showFriend
   },
   {
-    label: '展示居住地',
+    label: t('message.showLive'),
     value: 'showLive',
     selected: setting.value.showLive
   }

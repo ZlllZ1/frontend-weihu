@@ -19,7 +19,7 @@
         <span
           class="border border-white border-opacity-80 absolute top-4 right-4 text-white bg-black bg-opacity-20 text-opacity-80 px-2 py-1 text-sm rounded"
         >
-          上传主页背景图
+          {{ $t('message.uploadHomeBg') }}
         </span>
       </div>
       <div
@@ -63,7 +63,7 @@
         </div>
       </div>
       <span class="absolute top-[380px] left-[24px]"
-        >ip属地：{{ userInfo?.ipAddress }}</span
+        >{{ $t('message.ipAddress') }}：{{ userInfo?.ipAddress }}</span
       >
       <div class="pl-[220px] py-3 h-full pr-4">
         <div class="flex justify-between items-center w-full">
@@ -73,11 +73,11 @@
               <span
                 class="ml-4 text-base text-blue cursor-pointer"
                 @click="changeNickname = true"
-                >修改</span
+                >{{ $t('message.modify') }}</span
               >
             </template>
             <template v-else>
-              <span class="text-2xl">用户名</span>
+              <span class="text-2xl">{{ $t('message.nickname') }}</span>
               <input
                 v-model="newNickname"
                 type="text"
@@ -88,22 +88,22 @@
                 class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                 @click="changeNickname = false"
               >
-                取消
+                {{ $t('message.cancel') }}
               </button>
               <button
                 class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                 @click="saveChangeNickname"
               >
-                保存
+                {{ $t('message.save') }}
               </button>
             </template>
           </div>
           <a href="/personalCenter" class="text-sm text-[#666] hover:text-blue"
-            >返回我的主页 &gt;</a
+            >{{ $t('message.return') }} &gt;</a
           >
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">性别</div>
+          <div class="w-32 border-r border-gray">{{ $t('message.sex') }}</div>
           <div
             v-if="!changeSex"
             class="flex items-center justify-between flex-1 px-8"
@@ -111,35 +111,35 @@
             <span>
               {{
                 userInfo?.sex === 0
-                  ? '男'
+                  ? $t('message.male')
                   : userInfo?.sex === 1
-                  ? '女'
+                  ? $t('message.female')
                   : userInfo?.sex === 2
-                  ? '未知'
+                  ? $t('message.other')
                   : ''
               }}
             </span>
             <button class="ml-4 text-base text-blue" @click="changeSex = true">
-              修改
+              {{ $t('message.modify') }}
             </button>
           </div>
           <div v-else class="flex items-center justify-between flex-1 px-8">
             <div class="flex items-center">
-              <span>男</span
+              <span>{{ $t('message.male') }}</span
               ><input
                 v-model="sex"
                 :value="0"
                 type="radio"
                 class="mr-6 ml-2 outline-none h-8"
               />
-              <span>女</span
+              <span>{{ $t('message.female') }}</span
               ><input
                 v-model="sex"
                 :value="1"
                 type="radio"
                 class="mr-6 ml-2 outline-none h-8"
               />
-              <span>未知</span
+              <span>{{ $t('message.other') }}</span
               ><input
                 v-model="sex"
                 :value="2"
@@ -152,19 +152,21 @@
                 class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                 @click="changeSex = false"
               >
-                取消
+                {{ $t('message.cancel') }}
               </button>
               <button
                 class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                 @click="saveChangeSex"
               >
-                保存
+                {{ $t('message.save') }}
               </button>
             </div>
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">出生日期</div>
+          <div class="w-32 border-r border-gray">
+            {{ $t('message.dateOfBirth') }}
+          </div>
           <div
             v-if="!changeBirthDate"
             class="flex items-center justify-between flex-1 px-8"
@@ -174,7 +176,7 @@
               class="ml-4 text-base text-blue"
               @click="changeBirthDate = true"
             >
-              修改
+              {{ $t('message.modify') }}
             </button>
           </div>
           <div v-else class="flex items-center justify-between flex-1 px-8">
@@ -182,15 +184,15 @@
               <VueDatePicker
                 v-model="birthDate"
                 input-format="yyyy-MM-dd"
-                placeholder="选择日期"
+                :placeholder="$t('message.pickDate')"
                 :enable-time-picker="false"
                 :format="format"
                 hide-offset-dates
                 :max-date="new Date()"
                 hide-input-icon
                 locale="zh-CN"
-                select-text="选择"
-                cancel-text="取消"
+                :select-text="$t('message.select')"
+                :cancel-text="$t('message.cancel')"
                 :clearable="false"
               />
             </div>
@@ -199,26 +201,26 @@
                 class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                 @click="changeBirthDate = false"
               >
-                取消
+                {{ $t('message.cancel') }}
               </button>
               <button
                 class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                 @click="saveChangeBirthDate"
               >
-                保存
+                {{ $t('message.save') }}
               </button>
             </div>
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">居住地</div>
+          <div class="w-32 border-r border-gray">{{ $t('message.live') }}</div>
           <div
             v-if="!changeLive"
             class="flex items-center justify-between flex-1 px-8"
           >
             <span>{{ userInfo?.live }}</span>
             <button class="ml-4 text-base text-blue" @click="changeLive = true">
-              修改
+              {{ $t('message.modify') }}
             </button>
           </div>
           <div v-else class="flex items-center justify-between flex-1 px-8">
@@ -235,19 +237,21 @@
                 class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                 @click="changeLive = false"
               >
-                取消
+                {{ $t('message.cancel') }}
               </button>
               <button
                 class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                 @click="saveChangeLive"
               >
-                保存
+                {{ $t('message.save') }}
               </button>
             </div>
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">个人简介</div>
+          <div class="w-32 border-r border-gray">
+            {{ $t('message.individualResume') }}
+          </div>
           <div
             v-if="!changeIntroduction"
             class="flex items-center justify-between flex-1 px-8"
@@ -260,13 +264,13 @@
               class="ml-4 text-base text-blue"
               @click="changeIntroduction = true"
             >
-              修改
+              {{ $t('message.modify') }}
             </button>
           </div>
           <div v-else class="flex flex-col flex-1 px-8 gap-2">
             <textarea
               v-model="introduction"
-              placeholder="输入200字以内的个人简介"
+              :placeholder="$t('message.enterIndividualResume')"
               maxlength="200"
               class="outline-none h-8 w-full border border-gray rounded p-2 min-h-32 text-sm"
             ></textarea>
@@ -275,19 +279,19 @@
                 class="w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                 @click="cancelIntroduction"
               >
-                取消
+                {{ $t('message.cancel') }}
               </button>
               <button
                 class="w-16 h-8 py-1 px-2 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                 @click="saveChangeIntroduction"
               >
-                保存
+                {{ $t('message.save') }}
               </button>
             </div>
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">邮箱</div>
+          <div class="w-32 border-r border-gray">{{ $t('message.email') }}</div>
           <div
             v-if="!changeEmail"
             class="flex items-center justify-between flex-1 px-8"
@@ -297,7 +301,7 @@
               class="ml-4 text-base text-blue"
               @click="changeEmail = true"
             >
-              修改
+              {{ $t('message.modify') }}
             </button>
           </div>
           <div v-else class="flex items-center justify-between flex-1 px-8">
@@ -309,7 +313,7 @@
                   <input
                     :value="email"
                     type="text"
-                    placeholder="输入原邮箱"
+                    :placeholder="$t('message.enterOriginalEmail')"
                     maxlength="20"
                     class="w-48 text-sm outline-none h-8"
                     @input="updateAccount($event.target.value)"
@@ -319,18 +323,20 @@
                     class="text-blue text-sm px-2 rounded"
                     @click="getAuthCode('old')"
                   >
-                    获取验证码
+                    {{ $t('message.getAuthCode') }}
                   </button>
                   <span
                     v-else
                     class="flex items-center justify-center text-xs mr-2 text-gray"
-                    >{{ authCodeTimer }}秒后可重发</span
+                    >{{
+                      ($t('message.afterSeconds'), { seconds: authCodeTimer })
+                    }}</span
                   >
                 </div>
                 <input
                   :value="authCode"
                   type="text"
-                  placeholder="输入验证码"
+                  :placeholder="$t('message.enterAuthCode')"
                   class="border border-gray rounded px-2 w-48 text-sm outline-none h-8"
                   @input="updateAuthCode($event.target.value)"
                 />
@@ -340,13 +346,13 @@
                   class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                   @click="cancelEmail"
                 >
-                  取消
+                  {{ $t('message.cancel') }}
                 </button>
                 <button
                   class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                   @click="nextEmailStep"
                 >
-                  下一步
+                  {{ $t('message.nextStep') }}
                 </button>
               </div>
             </template>
@@ -358,7 +364,7 @@
                   <input
                     :value="email"
                     type="text"
-                    placeholder="输入新邮箱(QQ/163)"
+                    :placeholder="$t('message.enterNewEmail')"
                     maxlength="20"
                     class="w-48 text-sm outline-none h-8"
                     @input="updateAccount($event.target.value)"
@@ -368,18 +374,20 @@
                     class="text-blue text-sm px-2 rounded"
                     @click="getAuthCode"
                   >
-                    获取验证码
+                    {{ $t('message.getAuthCode') }}
                   </button>
                   <span
                     v-else
                     class="flex items-center justify-center text-xs mr-2 text-gray"
-                    >{{ authCodeTimer }}秒后可重发</span
+                    >{{
+                      ($t('message.afterSeconds'), { seconds: authCodeTimer })
+                    }}</span
                   >
                 </div>
                 <input
                   type="text"
                   :value="authCode"
-                  placeholder="输入验证码"
+                  :placeholder="$t('message.getAuthCode')"
                   class="border border-gray rounded px-2 w-48 text-sm outline-none h-8"
                   @input="updateAuthCode($event.target.value)"
                 />
@@ -389,20 +397,22 @@
                   class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                   @click="cancelEmail"
                 >
-                  取消
+                  {{ $t('message.cancel') }}
                 </button>
                 <button
                   class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                   @click="saveChangeEmail"
                 >
-                  保存
+                  {{ $t('message.save') }}
                 </button>
               </div>
             </template>
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">密码</div>
+          <div class="w-32 border-r border-gray">
+            {{ $t('message.password') }}
+          </div>
           <div
             v-if="!changePassword"
             class="flex items-center justify-between flex-1 px-8 relative"
@@ -415,7 +425,7 @@
               class="ml-4 text-base text-blue"
               @click="changePassword = true"
             >
-              修改
+              {{ $t('message.modify') }}
             </button>
           </div>
           <div v-else class="flex justify-between items-center px-8 flex-1">
@@ -427,7 +437,7 @@
                   <input
                     :value="email"
                     type="text"
-                    placeholder="输入邮箱"
+                    :placeholder="$t('message.enterEmail')"
                     maxlength="20"
                     class="w-48 text-sm outline-none h-8"
                     @input="updateAccount($event.target.value)"
@@ -437,18 +447,20 @@
                     class="text-blue text-sm px-2 rounded"
                     @click="getAuthCode"
                   >
-                    获取验证码
+                    {{ $t('message.getAuthCode') }}
                   </button>
                   <span
                     v-else
                     class="flex items-center justify-center text-xs mr-2 text-gray"
-                    >{{ authCodeTimer }}秒后可重发</span
+                    >{{
+                      ($t('message.afterSeconds'), { seconds: authCodeTimer })
+                    }}</span
                   >
                 </div>
                 <input
                   type="text"
                   :value="authCode"
-                  placeholder="输入验证码"
+                  :placeholder="$t('message.enterAuthCode')"
                   class="border border-gray rounded px-2 w-48 text-sm outline-none h-8"
                   @input="updateAuthCode($event.target.value)"
                 />
@@ -458,13 +470,13 @@
                   class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                   @click="cancelPassword"
                 >
-                  取消
+                  {{ $t('message.cancel') }}
                 </button>
                 <button
                   class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                   @click="nextPasswordStep"
                 >
-                  下一步
+                  {{ $t('message.nextStep') }}
                 </button>
               </div>
             </template>
@@ -474,13 +486,13 @@
                   <input
                     v-model="oldPassword"
                     type="text"
-                    placeholder="输入原密码"
+                    :placeholder="$t('message.enterOldPassword')"
                     class="border border-gray rounded px-2 w-64 text-sm outline-none h-8"
                   />
                   <input
                     v-model="newPassword"
                     type="text"
-                    placeholder="输入6-20位的新密码"
+                    :placeholder="$t('message.enterNewPassword')"
                     class="border border-gray rounded px-2 w-64 text-sm outline-none h-8"
                     minLength="6"
                     maxlength="20"
@@ -492,20 +504,22 @@
                   class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
                   @click="cancelPassword"
                 >
-                  取消
+                  {{ $t('message.cancel') }}
                 </button>
                 <button
                   class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
                   @click="saveChangePassword"
                 >
-                  保存
+                  {{ $t('message.save') }}
                 </button>
               </div>
             </template>
           </div>
         </div>
         <div class="border-b border-[#999] py-8 flex items-center">
-          <div class="w-32 border-r border-gray">注册日期</div>
+          <div class="w-32 border-r border-gray">
+            {{ $t('message.registrationDate') }}
+          </div>
           <span class="px-8">{{ userInfo?.registrationDate }}</span>
         </div>
       </div>
@@ -532,7 +546,9 @@ import {
   saveLive
 } from '@/api/user'
 import { judgeAuthCode, sendAuthCode } from '@/api/login'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
 const bgFileInput = ref(null)
@@ -580,9 +596,9 @@ const handleBgChange = async event => {
       const res = await uploadHomeBg(formData)
       if (res.data.code !== 200) return
       await getInfo()
-      $toast.success('主页背景上传成功')
+      $toast.success(t('message.uploadSuccess'))
     } catch (error) {
-      $toast.error('主页背景上传失败')
+      $toast.error(t('message.uploadError'))
     }
   }
 }
@@ -598,9 +614,9 @@ const handleAvatarChange = async event => {
       const res = await uploadAvatar(formData)
       if (res.data.code !== 200) return
       await getInfo()
-      $toast.success('头像上传成功')
+      $toast.success(t('message.uploadSuccess'))
     } catch (error) {
-      $toast.error('头像上传失败')
+      $toast.error(t('message.uploadError'))
     }
   }
 }
@@ -611,9 +627,9 @@ const saveChangeNickname = async () => {
     if (res.data.code !== 200) return
     changeNickname.value = false
     getInfo()
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
   }
 }
 
@@ -623,9 +639,9 @@ const saveChangeSex = async () => {
     if (res.data.code !== 200) return
     changeSex.value = false
     getInfo()
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
   }
 }
 
@@ -635,9 +651,9 @@ const saveChangeLive = async () => {
     if (res.data.code !== 200) return
     changeLive.value = false
     getInfo()
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
   }
 }
 
@@ -650,15 +666,15 @@ const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
 const getAuthCode = async (type = '') => {
   if (email.value !== userInfo.value.email && type === 'old') {
-    $toast.error('请输入原邮箱')
+    $toast.error(t('message.enterOldEmail'))
     return
   }
   if (!email.value.length) {
-    $toast.error('邮箱不能为空')
+    $toast.error(t('message.emailEmpty'))
     return
   }
   if (!validateAccount(email.value)) {
-    $toast.error('邮箱格式错误')
+    $toast.error(t('message.emailFormatError'))
     return
   }
   try {
@@ -674,9 +690,9 @@ const getAuthCode = async (type = '') => {
         intervalId = null
       }
     }, 1000)
-    $toast.success('获取验证码成功')
+    $toast.success(t('message.getAuthCodeSuccess'))
   } catch (error) {
-    $toast.error('获取验证码失败')
+    $toast.error(t('message.getAuthCodeError'))
   }
 }
 
@@ -716,7 +732,7 @@ const nextEmailStep = async () => {
     changeEmailStep.value = 1
     clearInterval(intervalId)
   } catch (error) {
-    $toast.error('验证码错误')
+    $toast.error(t('message.authCodeError'))
   }
 }
 
@@ -731,7 +747,7 @@ const nextPasswordStep = async () => {
     changePasswordStep.value = 1
     clearInterval(intervalId)
   } catch (error) {
-    $toast.error('验证码错误')
+    $toast.error(t('message.authCodeError'))
   }
 }
 
@@ -752,20 +768,20 @@ const saveChangeEmail = async () => {
     changeEmailStep.value = 0
     changeEmail.value = false
     clearInterval(intervalId)
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
   }
 }
 
 const saveChangePassword = async () => {
   try {
     if (userInfo.value.password !== oldPassword.value) {
-      $toast.error('原密码错误')
+      $toast.error(t('message.oldPasswordError'))
       return
     }
     if (newPassword.value.length < 6) {
-      $toast.error('新密码长度不能小于6位')
+      $toast.error(t('message.newPasswordLength'))
       return
     }
     const saveRes = await savePassword(userInfo.value.email, newPassword.value)
@@ -782,9 +798,9 @@ const saveChangePassword = async () => {
     changePasswordStep.value = 0
     changePassword.value = false
     clearInterval(intervalId)
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
   }
 }
 
@@ -794,9 +810,9 @@ const saveChangeIntroduction = async () => {
     if (res.data.code !== 200) return
     changeIntroduction.value = false
     getInfo()
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
   }
 }
 
@@ -809,9 +825,9 @@ const saveChangeBirthDate = async () => {
     if (res.data.code !== 200) return
     changeBirthDate.value = false
     getInfo()
-    $toast.success('修改成功')
+    $toast.success(t('message.modifySuccess'))
   } catch (error) {
-    $toast.error('修改失败')
+    $toast.error(t('message.modifyError'))
   }
 }
 

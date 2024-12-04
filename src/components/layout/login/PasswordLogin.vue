@@ -4,20 +4,23 @@
       <input
         :value="account.trim()"
         type="text"
-        placeholder="输入QQ邮箱/163邮箱"
+        :placeholder="$t('message.enterQQOr163')"
         class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
         @input="updateAccount($event.target.value)"
       />
       <input
         :value="password.trim()"
         type="password"
-        placeholder="输入密码"
+        :placeholder="$t('message.enterPassword')"
         class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
         @input="updatePassword($event.target.value)"
       />
       <div class="flex justify-end py-2">
-        <a href="/forgetPassword" target="_blank" class="hover:text-black w-fit"
-          >忘记密码</a
+        <a
+          href="/forgetPassword"
+          target="_blank"
+          class="hover:text-black w-fit"
+          >{{ $t('message.forgetPassword') }}</a
         >
       </div>
     </div>
@@ -25,7 +28,7 @@
       class="bg-blue text-white rounded-sm h-9 hover:bg-[#0E66E7] mt-2"
       @click="login"
     >
-      登录
+      {{ $t('message.login') }}
     </button>
   </div>
 </template>
@@ -36,7 +39,9 @@ import { useToast } from 'vue-toast-notification'
 import { passwordLogin } from '@/api/login.js'
 import { getUserInfo } from '@/api/user.js'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const store = useStore()
 
 const emits = defineEmits(['closeLogin'])
@@ -56,15 +61,15 @@ const updatePassword = value => (password.value = value.replace(/\s/g, ''))
 const login = async () => {
   try {
     if (!account.value.length) {
-      $toast.error('邮箱不能为空')
+      $toast.error(t('message.emailEmpty'))
       return
     }
     if (!validateAccount(account.value)) {
-      $toast.error('邮箱格式错误')
+      $toast.error(t('message.emailFormatError'))
       return
     }
     if (!password.value.length) {
-      $toast.error('密码不能为空')
+      $toast.error(t('message.passwordEmpty'))
       return
     }
     const res = await passwordLogin(account.value, password.value)
@@ -75,10 +80,10 @@ const login = async () => {
     if (data.code !== 200) return
     store.commit('user/setUserInfo', data.data)
     localStorage.setItem('userInfo', JSON.stringify(data.data))
-    $toast.success('登录成功')
+    $toast.success(t('message.loginSuccess'))
     emits('closeLogin')
   } catch (error) {
-    $toast.error('邮箱或密码错误')
+    $toast.error(t('message.emailPasswordError'))
   }
 }
 </script>
