@@ -48,6 +48,8 @@ export default {
     forgetPassword: 'forget password',
     login: 'login',
     otherLogin: 'other login methods',
+    postTopic: 'post topic',
+    postMoment: 'post moment',
     remind:
       'unregistered mobile phone verification after automatic login, registration means consent',
     protocol: '<protocol>',

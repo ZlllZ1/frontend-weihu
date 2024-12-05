@@ -80,21 +80,26 @@
             <div class="text-[#666] flex flex-col w-[400px] gap-2">
               <div class="flex items-center justify-between">
                 <span
-                  >性别:
+                  >{{ $t('message.gender') }}:
                   {{
                     userInfo?.sex === 0
-                      ? '男'
+                      ? $t('message.male')
                       : userInfo?.sex === 1
-                      ? '女'
-                      : '未知'
+                      ? $t('message.female')
+                      : $t('message.other')
                   }}</span
                 >
-                <span>出生日期: {{ userInfo?.birthDate }}</span>
+                <span
+                  >{{ $t('message.birthDate') }}:
+                  {{ userInfo?.birthDate }}</span
+                >
               </div>
-              <span>居住地: {{ userInfo?.live }}</span>
+              <span>{{ $t('message.live') }}: {{ userInfo?.live }}</span>
               <div class="introduction-container">
                 <span class="self-introduction"
-                  >个人简介:{{ userInfo?.introduction || '' }}</span
+                  >{{ $t('message.individualResume') }}:{{
+                    userInfo?.introduction || ''
+                  }}</span
                 >
                 <div class="toolTip">{{ userInfo?.introduction }}</div>
               </div>

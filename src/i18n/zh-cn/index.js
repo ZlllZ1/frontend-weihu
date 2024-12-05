@@ -133,6 +133,8 @@ export default {
     newPasswordEmpty: '新密码不能为空',
     newPasswordAgainEmpty: '再次输入密码',
     newPasswordNotEqual: '两次密码不一致',
+    postTopic: '发表帖',
+    postMoment: '发表朋友圈',
     aboutContent: {
       title: '关于微乎',
       welcome:
