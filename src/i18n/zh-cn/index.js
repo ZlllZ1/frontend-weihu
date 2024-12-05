@@ -123,6 +123,11 @@ export default {
     404: '404 - 页面未找到',
     remind404:
       '抱歉，您访问的页面似乎不存在。请检查URL是否正确。或根据header回到网站。',
+    commit: '提交',
+    commitErrorLogEmpty: '未填写反馈内容',
+    commitErrorLogSuccess: '反馈成功',
+    commitErrorLogError: '反馈失败',
+    feedbackErrorContent: '输入需要反馈的错误内容',
     aboutContent: {
       title: '关于微乎',
       welcome:

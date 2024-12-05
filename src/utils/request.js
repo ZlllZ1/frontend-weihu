@@ -13,8 +13,8 @@ class Request {
 
   clearUserInfo() {
     if (this.store) {
-      this.store.commit('user/SET_TOKEN', '')
-      this.store.commit('user/SET_USER_INFO', {})
+      this.store.commit('user/setToken', '')
+      this.store.commit('user/setUserInfo', null)
     }
     localStorage.removeItem('token')
     localStorage.removeItem('userInfo')
@@ -53,10 +53,14 @@ class Request {
     )
   }
   get(url, params, config = {}) {
-    return this.instance.get(url, { params, ...config })
+    return this.instance.get(url, { params, ...config }).catch(error => {
+      return Promise.reject(error)
+    })
   }
   post(url, data, config = {}) {
-    return this.instance.post(url, data, { ...config })
+    return this.instance.post(url, data, { ...config }).catch(error => {
+      return Promise.reject(error)
+    })
   }
 }
 

@@ -123,6 +123,11 @@ export default {
     refresh: 'refresh',
     passwordEmpty: 'the password cannot be empty',
     404: '404 - Page not found',
+    commitErrorLogEmpty: 'the feedback content is not filled in',
+    commit: 'commit',
+    commitErrorLogSuccess: 'feedback success',
+    commitErrorLogError: 'feedback fail',
+    feedbackErrorContent: 'enter errors that require feedback',
     remind404:
       'Sorry, the page you are looking for does not appear to exist. Please check that the URL is correct. Or go back to the website according to the header.',
     aboutContent: {

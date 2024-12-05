@@ -28,12 +28,9 @@
         }}</span>
       </div>
       <div class="flex justify-end py-2">
-        <a
-          href="/feedbackError"
-          target="_blank"
-          class="hover:text-black w-fit"
-          >{{ $t('message.feedbackError') }}</a
-        >
+        <button class="hover:text-black w-fit" @click="openLog">
+          {{ $t('message.feedbackError') }}
+        </button>
       </div>
     </div>
     <button
@@ -42,6 +39,44 @@
     >
       {{ $t('message.login') }}
     </button>
+    <div
+      v-if="showErrorLog"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-1 cursor-pointer"
+      @mousedown.self="showErrorLog = false"
+    >
+      <div
+        class="w-[400px] h-[280px] cursor-default p-4 bg-white rounded-lg flex flex-col justify-between"
+        @click.stop
+      >
+        <div
+          class="text-lg flex items-center justify-center text-black font-lg"
+        >
+          {{ $t('message.feedbackError') }}
+        </div>
+        <div class="flex items-center justify-center my-4">
+          <textarea
+            v-model="commitErrorLog"
+            name="errorLog"
+            :placeholder="$t('message.feedbackErrorContent')"
+            class="border border-gray rounded-lg w-80 h-36 outline-none p-2"
+          ></textarea>
+        </div>
+        <div class="px-4 flex items-center justify-center">
+          <button
+            class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+            @click="showErrorLog = false"
+          >
+            {{ $t('message.cancel') }}
+          </button>
+          <button
+            class="w-16 h-8 py-1 px-2 ml-3 text-sm rounded bg-blue text-white hover:bg-[#0E66E7]"
+            @click="commit"
+          >
+            {{ $t('message.commit') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -52,6 +87,7 @@ import { useStore } from 'vuex'
 import { sendAuthCode, codeLogin } from '@/api/login.js'
 import { getUserInfo } from '@/api/user.js'
 import { useI18n } from 'vue-i18n'
+import { commitError } from '@/api/other'
 
 const { t } = useI18n()
 const emits = defineEmits(['closeLogin'])
@@ -61,6 +97,8 @@ const authCode = ref('')
 const authCodeTimer = ref(null)
 let intervalId = null
 const $toast = useToast()
+const showErrorLog = ref(false)
+const commitErrorLog = ref('')
 
 const validateAccount = account => {
   const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
@@ -69,6 +107,10 @@ const validateAccount = account => {
 
 const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
+
+const openLog = () => {
+  showErrorLog.value = true
+}
 
 const getAuthCode = async () => {
   try {
@@ -129,6 +171,22 @@ const login = async () => {
     emits('closeLogin')
   } catch (error) {
     $toast.error(t('message.emailAuthCodeError'))
+  }
+}
+
+const commit = async () => {
+  if (!commitErrorLog.value.length) {
+    $toast.error(t('message.commitErrorLogEmpty'))
+    return
+  }
+  try {
+    const res = await commitError(commitErrorLog.value)
+    console.log(res)
+    if (res.data.code !== 200) return
+    $toast.success(t('message.commitErrorLogSuccess'))
+    showErrorLog.value = false
+  } catch (error) {
+    $toast.error(t('message.commitErrorLogError'))
   }
 }
 

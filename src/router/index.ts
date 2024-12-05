@@ -68,11 +68,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/forgetPassword/ForgetPassword.vue')
   },
   {
-    path: '/feedbackError',
-    name: 'feedbackError',
-    component: () => import('@/views/feedbackError/FeedbackError.vue')
-  },
-  {
     path: '/:pathMatch(.*)*',
     name: 'notFound',
     component: () => import('@/views/notFound/NotFound.vue')

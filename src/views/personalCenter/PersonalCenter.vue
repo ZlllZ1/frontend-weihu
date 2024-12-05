@@ -105,7 +105,9 @@
             </div>
           </template>
         </div>
-        <component :is="currentComponent" class="px-4 py-2" />
+        <keep-alive>
+          <component :is="currentComponent" class="px-4 py-2" />
+        </keep-alive>
       </div>
       <div
         class="w-1/3 bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg"
@@ -120,13 +122,11 @@
 import { ref, markRaw, computed } from 'vue'
 import { useStore } from 'vuex'
 import PersonalPost from './components/PersonalPost.vue'
-import PersonalQuestion from './components/PersonalQuestion.vue'
 import PersonalCircle from './components/PersonalCircle.vue'
 import PersonalFollow from './components/PersonalFollow.vue'
 import PersonalFan from './components/PersonalFan.vue'
 import PersonalPraise from './components/PersonalPraise.vue'
 import PersonalCollect from './components/PersonalCollect.vue'
-import PersonalShare from './components/PersonalShare.vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -138,13 +138,6 @@ const personalHeaders = ref([
     num: 0,
     active: true,
     component: markRaw(PersonalPost)
-  },
-  {
-    label: t('message.ask'),
-    value: 'question',
-    num: 0,
-    active: false,
-    component: markRaw(PersonalQuestion)
   },
   {
     label: t('message.circleOfFriends'),
@@ -180,13 +173,6 @@ const personalHeaders = ref([
     num: 0,
     active: false,
     component: markRaw(PersonalCollect)
-  },
-  {
-    label: t('message.share'),
-    value: 'share',
-    num: 0,
-    active: false,
-    component: markRaw(PersonalShare)
   }
 ])
 
