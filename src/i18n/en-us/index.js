@@ -130,6 +130,11 @@ export default {
     feedbackErrorContent: 'enter errors that require feedback',
     remind404:
       'Sorry, the page you are looking for does not appear to exist. Please check that the URL is correct. Or go back to the website according to the header.',
+    newPassword: 'enter a new password of 6-20 characters',
+    newPasswordAgain: 'enter the new password again',
+    newPasswordEmpty: 'the new password cannot be empty',
+    newPasswordAgainEmpty: 'reenter password',
+    newPasswordNotEqual: 'two passwords do not match',
     aboutContent: {
       title: 'About Weihu',
       welcome:

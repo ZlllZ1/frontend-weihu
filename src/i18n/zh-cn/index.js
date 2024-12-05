@@ -128,6 +128,11 @@ export default {
     commitErrorLogSuccess: '反馈成功',
     commitErrorLogError: '反馈失败',
     feedbackErrorContent: '输入需要反馈的错误内容',
+    newPassword: '输入6-20位新密码',
+    newPasswordAgain: '再次输入新密码',
+    newPasswordEmpty: '新密码不能为空',
+    newPasswordAgainEmpty: '再次输入密码',
+    newPasswordNotEqual: '两次密码不一致',
     aboutContent: {
       title: '关于微乎',
       welcome:
