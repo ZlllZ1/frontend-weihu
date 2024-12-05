@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] rounded-sm overflow-hidden"
+    class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
   >
     <div class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">
       <div
@@ -90,7 +90,7 @@
                   }}</span
                 >
                 <span
-                  >{{ $t('message.birthDate') }}:
+                  >{{ $t('message.dateOfBirth') }}:
                   {{ userInfo?.birthDate }}</span
                 >
               </div>
@@ -118,7 +118,7 @@
     </div>
     <div class="w-full flex gap-x-2">
       <div
-        class="w-2/3 bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
+        class="w-2/3 bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
       >
         <div
           class="flex text-sm text-center justify-around border-b border-[#EBECED] pt-2 pb-2"
@@ -139,7 +139,7 @@
         </keep-alive>
       </div>
       <div
-        class="w-1/3 bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg"
+        class="w-1/3 bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg"
       >
         <WeatherView />
       </div>
@@ -156,6 +156,7 @@ import PersonalFollow from './components/PersonalFollow.vue'
 import PersonalFan from './components/PersonalFan.vue'
 import PersonalPraise from './components/PersonalPraise.vue'
 import PersonalCollect from './components/PersonalCollect.vue'
+import PersonalFriend from './components/PersonalFriend.vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -188,6 +189,13 @@ const personalHeaders = ref([
     num: 0,
     active: false,
     component: markRaw(PersonalFan)
+  },
+  {
+    label: t('message.friend'),
+    value: 'friend',
+    num: 0,
+    active: false,
+    component: markRaw(PersonalFriend)
   },
   {
     label: t('message.praise'),

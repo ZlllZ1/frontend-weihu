@@ -16,6 +16,7 @@ export default {
     logoutFail: 'logout fail',
     praise: 'praise',
     comment: 'comment',
+    friend: 'friend',
     follow: 'follow',
     about: 'about',
     viewAllNotifications: 'view all notifications',
