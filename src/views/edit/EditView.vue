@@ -1,5 +1,7 @@
 <template>
-  <div class="mx-32 my-5 bg-white rounded-sm relative">
+  <div
+    class="mx-32 my-5 bg-white rounded-sm relative overflow-hidden shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
+  >
     <div class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">
       <div
         class="h-56 bg-cover bg-center relative cursor-pointer"

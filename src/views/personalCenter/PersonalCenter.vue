@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] rounded-sm"
+    class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] rounded-sm overflow-hidden"
   >
     <div class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">
       <div
@@ -25,9 +25,9 @@
           {{ $t('message.uploadHomeBg') }}
         </span>
       </div>
-      <div class="h-32 w-full">
+      <div class="w-full">
         <div
-          class="w-40 h-40 rounded-lg absolute bottom-6 left-6 border-4 border-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] overflow-hidden group cursor-pointer"
+          class="w-40 h-40 rounded-lg absolute bottom-12 left-6 border-4 border-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] overflow-hidden group cursor-pointer"
           @click="avatarFileInput.click()"
         >
           <img
@@ -69,27 +69,51 @@
             </svg>
           </div>
         </div>
-        <div class="pl-[200px] py-3 h-full pr-4">
+        <div class="pl-[200px] pt-3 pb-6 h-full pr-4">
           <div class="flex justify-between items-center w-full">
-            <span class="text-2xl">{{
-              store.state.user.userInfo.nickname
-            }}</span>
-          </div>
-          <div class="flex justify-between mt-8">
-            <div>基本资料</div>
-            <a
-              href="/personalCenter/edit"
-              class="w-[120px] h-8 px-4 rounded flex items-center justify-center text-sm py-px border border-blue text-blue hover:text-white hover:bg-blue"
+            <span class="text-2xl">{{ userInfo?.nickname }}</span>
+            <span
+              >{{ $t('message.ipAddress') }}: {{ userInfo?.ipAddress }}</span
             >
-              {{ $t('message.edit') }}
-            </a>
+          </div>
+          <div class="flex justify-between mt-2">
+            <div class="text-[#666] flex flex-col w-[400px] gap-2">
+              <div class="flex items-center justify-between">
+                <span
+                  >性别:
+                  {{
+                    userInfo?.sex === 0
+                      ? '男'
+                      : userInfo?.sex === 1
+                      ? '女'
+                      : '未知'
+                  }}</span
+                >
+                <span>出生日期: {{ userInfo?.birthDate }}</span>
+              </div>
+              <span>居住地: {{ userInfo?.live }}</span>
+              <div class="introduction-container">
+                <span class="self-introduction"
+                  >个人简介:{{ userInfo?.introduction || '' }}</span
+                >
+                <div class="toolTip">{{ userInfo?.introduction }}</div>
+              </div>
+            </div>
+            <div class="flex items-end justify-center">
+              <a
+                href="/personalCenter/edit"
+                class="w-[120px] h-8 px-4 rounded flex items-center justify-center text-sm py-px border border-blue text-blue hover:text-white hover:bg-blue"
+              >
+                {{ $t('message.edit') }}
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="w-full flex gap-x-2">
       <div
-        class="w-2/3 bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2"
+        class="w-2/3 bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
       >
         <div
           class="flex text-sm text-center justify-around border-b border-[#EBECED] pt-2 pb-2"
@@ -177,6 +201,7 @@ const personalHeaders = ref([
 ])
 
 const store = useStore()
+const userInfo = computed(() => store.state.user.userInfo)
 const bgFileInput = ref(null)
 const avatarFileInput = ref(null)
 const currentComponent = computed(() => {
@@ -205,3 +230,18 @@ const togglePersonalHeader = value => {
   })
 }
 </script>
+
+<style lang="scss" scoped>
+.introduction-container {
+  @apply relative inline-block max-w-96;
+  .self-introduction {
+    @apply inline-block truncate max-w-full;
+  }
+  .toolTip {
+    @apply text-wrap absolute top-6 w-full left-1/2 -translate-x-1/2 max-w-[200px] break-all h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible;
+  }
+  &:hover .toolTip {
+    @apply opacity-100 visible;
+  }
+}
+</style>
