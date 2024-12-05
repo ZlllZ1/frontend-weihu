@@ -7,25 +7,18 @@
         <template v-for="nav in sideNav" :key="nav.value">
           <button
             class="w-full py-3 hover:bg-[#EBECED] rounded-lg"
-            :class="{ 'bg-[#EBECED]': nav.active }"
+            :class="{ 'bg-[#EBECED] font-semibold': nav.active }"
             @click="changeNav(nav.value)"
           >
-            <span
-              class="w-fit border-b-2 border-transparent py-2"
-              :class="{ '!border-blue font-semibold': nav.active }"
-            >
+            <span class="w-fit border-b-2 border-transparent py-2">
               {{ nav.label }}
             </span>
           </button>
         </template>
       </div>
     </div>
-    <div
-      class="w-[85%] px-8 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded"
-    >
-      <keep-alive>
-        <component :is="currentComponent"></component>
-      </keep-alive>
+    <div class="w-[85%] shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded">
+      <component :is="currentComponent"></component>
     </div>
   </div>
 </template>
@@ -35,6 +28,7 @@ import { ref, markRaw, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import PostMoment from './components/PostMoment.vue'
 import PostTopic from './components/PostTopic.vue'
+import TopicDrafts from './components/TopicDrafts.vue'
 
 const { t } = useI18n()
 
@@ -44,6 +38,12 @@ const sideNav = ref([
     value: 'postTopic',
     active: true,
     component: markRaw(PostTopic)
+  },
+  {
+    label: t('message.drafts'),
+    value: 'drafts',
+    active: false,
+    component: markRaw(TopicDrafts)
   },
   {
     label: t('message.postMoment'),

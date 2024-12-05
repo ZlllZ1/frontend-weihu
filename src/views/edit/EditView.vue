@@ -31,7 +31,6 @@
         <img
           :src="userInfo?.avatar || require('@/assets/avatar_default.png')"
           class="rounded-sm"
-          alt="个人头像"
         />
         <input
           ref="avatarFileInput"
