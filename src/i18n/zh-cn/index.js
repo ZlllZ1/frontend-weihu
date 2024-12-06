@@ -57,6 +57,8 @@ export default {
     titleEmpty: '标题不能为空',
     contentEmpty: '内容不能为空',
     introductionEmpty: '简介不能为空',
+    saveDraftSuccess: '保存至草稿箱成功',
+    saveDraftError: '保存至草稿箱失败',
     selectSendTimeEmpty: '勾选定时发送下,发送时间不能为空',
     coverEmpty: '封面不能为空',
     publishSuccess: '发布成功',

@@ -14,3 +14,13 @@ export const publishPost = data => {
     requiresAuth: true
   })
 }
+
+export const getDraft = email => {
+  return request.get('/post/getDraft', { email }, { requiresAuth: true })
+}
+
+export const saveDraft = data => {
+  return request.post('/post/saveToDraft', data, {
+    requiresAuth: true
+  })
+}

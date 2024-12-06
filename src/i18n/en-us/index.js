@@ -25,6 +25,8 @@ export default {
     publishSuccess: 'publishing success',
     introductionEmpty: 'the profile cannot be empty',
     publishError: 'publishing fail',
+    saveDraftSuccess: 'saved to draft box successfully',
+    saveDraftError: 'failed to save to draft box',
     selectSendTimeEmpty:
       'if scheduled send is selected, the sending time cannot be empty',
     follow: 'follow',

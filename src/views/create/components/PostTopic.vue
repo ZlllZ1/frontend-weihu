@@ -100,7 +100,7 @@
         </div>
         <button
           class="w-fit h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
-          @click="saveToDrafts"
+          @click="saveToDraft"
         >
           {{ $t('message.saveToDraft') }}
         </button>
@@ -112,7 +112,6 @@
         </button>
       </div>
     </div>
-    <span v-html="test"></span>
   </div>
 </template>
 
@@ -124,7 +123,7 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import { uploadCover, publishPost } from '@/api/post'
+import { uploadCover, publishPost, saveDraft } from '@/api/post'
 import { useStore } from 'vuex'
 
 const store = useStore()
@@ -139,8 +138,6 @@ const scheduledDate = ref(null)
 const introduction = ref('')
 const coverUrl = ref('')
 const userInfo = computed(() => store.state.user.userInfo)
-
-const test = ref('')
 
 const toolbarOptions = [
   ['bold', 'italic', 'underline', 'strike'],
@@ -190,12 +187,28 @@ const getContent = () => {
   return { delta, html }
 }
 
-const saveToDrafts = () => {
-  console.log('存至草稿箱')
+const saveToDraft = async () => {
+  const { delta, html } = getContent()
+  try {
+    const data = {
+      email: userInfo.value.email,
+      title: title.value,
+      content: html,
+      coverUrl: coverUrl.value,
+      introduction: introduction.value,
+      draftDate: Date.now(),
+      delta
+    }
+    const res = await saveDraft(data)
+    if (res.data.code !== 200) return
+    $toast.success(t('message.saveDraftSuccess'))
+  } catch (error) {
+    $toast.error(t('message.saveDraftError'))
+  }
 }
 
 const publish = async () => {
-  const { html } = getContent()
+  const { delta, html } = getContent()
   if (!title.value) {
     $toast.error(t('message.titleEmpty'))
     return
@@ -225,7 +238,8 @@ const publish = async () => {
       content: html,
       coverUrl: coverUrl.value,
       scheduledDate: isScheduled.value ? scheduledDate.value : null,
-      introduction: introduction.value
+      introduction: introduction.value,
+      delta
     }
     const res = await publishPost(data)
     if (res.data.code !== 200) return
