@@ -257,6 +257,7 @@ const publish = async () => {
     title.value = ''
     coverUrl.value = ''
     introduction.value = ''
+    isScheduled.value = false
     quill.value.setContents([])
   } catch (error) {
     $toast.error(t('message.publishError'))

@@ -4,7 +4,7 @@
       <input
         :value="account.trim()"
         type="text"
-        :placeholder="$t('message.enterQQOr163')"
+        :placeholder="$t('message.enterEmail')"
         class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
         @input="updateAccount($event.target.value)"
       />
@@ -49,7 +49,7 @@
             <input
               :value="forgetAccount.trim()"
               type="text"
-              :placeholder="$t('message.enterQQOr163')"
+              :placeholder="$t('message.enterEmail')"
               class="border-b border-[#EBECED] w-full outline-none h-12"
               @input="updateForgetAccount($event.target.value)"
             />
@@ -164,8 +164,8 @@ const newPassword = ref('')
 const newPasswordAgain = ref('')
 
 const validateAccount = account => {
-  const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
-  return accountRegex.test(account)
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  return emailRegex.test(account)
 }
 
 const updateAccount = value => (account.value = value.replace(/\s/g, ''))
@@ -198,7 +198,6 @@ const login = async () => {
     localStorage.setItem('userInfo', JSON.stringify(data.data))
     $toast.success(t('message.loginSuccess'))
     emits('closeLogin')
-    location.reload()
   } catch (error) {
     $toast.error(t('message.emailPasswordError'))
   }

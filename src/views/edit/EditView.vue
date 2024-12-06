@@ -661,8 +661,8 @@ const saveChangeLive = async () => {
 }
 
 const validateAccount = account => {
-  const accountRegex = /[a-zA-Z0-9._%+-]+@(?:163\.com|qq\.com)/
-  return accountRegex.test(account)
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  return emailRegex.test(account)
 }
 const updateAccount = value => (email.value = value.replace(/\s/g, ''))
 const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
