@@ -30,7 +30,7 @@
       >
         <img
           :src="userInfo?.avatar || require('@/assets/avatar_default.png')"
-          class="rounded-sm"
+          class="rounded-sm w-full h-full"
         />
         <input
           ref="avatarFileInput"

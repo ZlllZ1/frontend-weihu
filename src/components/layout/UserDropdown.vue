@@ -47,6 +47,7 @@ const userLogout = async () => {
     localStorage.removeItem('userInfo')
     localStorage.removeItem('token')
     $toast.success(t('message.logoutSuccess'))
+    location.reload()
   } catch (err) {
     $toast.error(t('message.logoutFail'))
   }

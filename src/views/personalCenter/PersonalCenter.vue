@@ -7,8 +7,7 @@
         class="h-32 bg-cover bg-center relative cursor-pointer"
         :style="{
           backgroundImage: `url(${
-            store.state.user.userInfo.homeBg ||
-            require('@/assets/bg_default.png')
+            userInfo.homeBg || require('@/assets/bg_default.png')
           })`
         }"
         @click="bgFileInput.click()"
@@ -35,8 +34,7 @@
               store.state.user.userInfo.avatar ||
               require('@/assets/avatar_default.png')
             "
-            class="rounded-sm"
-            alt="个人头像"
+            class="rounded-sm h-full w-full"
           />
           <input
             ref="avatarFileInput"
@@ -159,8 +157,11 @@ import PersonalCollect from './components/PersonalCollect.vue'
 import PersonalFriend from './components/PersonalFriend.vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useI18n } from 'vue-i18n'
+import { getUserInfo, uploadAvatar, uploadHomeBg } from '@/api/user'
+import { useToast } from 'vue-toast-notification'
 
 const { t } = useI18n()
+const $toast = useToast()
 const personalHeaders = ref([
   {
     label: t('message.post'),
@@ -221,19 +222,46 @@ const currentComponent = computed(() => {
   return personalHeaders.value.find(header => header.active)?.component
 })
 
-const handleBgChange = event => {
+const getInfo = async () => {
+  const res = await getUserInfo(userInfo?.value.email)
+  if (res.data.code !== 200) return
+  store.commit('user/setUserInfo', res.data.data)
+  localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+}
+
+const handleBgChange = async event => {
   const file = event.target.files[0]
   if (file) {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('homeBg', file)
+    formData.append('type', 'bg')
+    formData.append('account', userInfo.value.email)
+    try {
+      const res = await uploadHomeBg(formData)
+      if (res.data.code !== 200) return
+      await getInfo()
+      $toast.success(t('message.uploadSuccess'))
+    } catch (error) {
+      $toast.error(t('message.uploadError'))
+    }
   }
 }
 
-const handleAvatarChange = event => {
+const handleAvatarChange = async event => {
   const file = event.target.files[0]
   if (file) {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('avatar', file)
+    formData.append('type', 'avatar')
+    formData.append('account', userInfo.value.email)
+    try {
+      const res = await uploadAvatar(formData)
+      if (res.data.code !== 200) return
+      await getInfo()
+      $toast.success(t('message.uploadSuccess'))
+    } catch (error) {
+      $toast.error(t('message.uploadError'))
+    }
   }
 }
 
