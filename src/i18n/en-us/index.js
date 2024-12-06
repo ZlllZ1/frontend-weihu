@@ -17,6 +17,8 @@ export default {
     praise: 'praise',
     comment: 'comment',
     friend: 'friend',
+    uploadCoverSuccess: 'upload cover success',
+    uploadCoverFail: 'upload cover fail',
     follow: 'follow',
     about: 'about',
     viewAllNotifications: 'view all notifications',

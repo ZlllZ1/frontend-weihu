@@ -19,15 +19,22 @@
         <span>{{ $t('message.uploadCover') }}</span>
         <div
           class="ml-24 mt-2 flex items-center justify-center mb-2 w-[150px] h-[100px] border border-dashed border-gray cursor-pointer rounded"
+          :style="{
+            backgroundImage: coverUrl ? `url('${coverUrl}')` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }"
           @click="coverRef.click()"
         >
-          <span class="text-xs text-[#999]">+{{ $t('message.addCover') }}</span>
+          <span v-if="!coverUrl" class="text-xs text-[#999]"
+            >+{{ $t('message.addCover') }}</span
+          >
           <input
             ref="coverRef"
             type="file"
             class="hidden"
             accept=".jpeg,.png,.jpg"
-            @change="coverRefChange"
+            @change="coverChange"
           />
         </div>
         <span class="text-xs ml-24 text-[#999]">{{
@@ -42,10 +49,15 @@
           <textarea
             :value="articleIntroduction"
             :placeholder="$t('message.enterArticleIntroduction')"
-            class="w-full h-full outline-none scroll-auto p-2 resize-none text-sm"
+            class="w-full h-[80%] outline-none scroll-auto px-2 pt-2 resize-none text-sm"
             maxlength="200"
-            @input="updateTitle($event.target.value)"
+            @input="updateIntroduction($event.target.value)"
           ></textarea>
+          <div class="flex justify-end items-center">
+            <span class="text-sm text-[#999]"
+              >{{ articleIntroduction.length }}/200</span
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -111,8 +123,11 @@ import 'quill/dist/quill.snow.css'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useI18n } from 'vue-i18n'
+import { useToast } from 'vue-toast-notification'
+import { uploadCover } from '@/api/post'
 
 const { t } = useI18n()
+const $toast = useToast()
 
 const quill = ref(null)
 const title = ref('')
@@ -120,6 +135,7 @@ const coverRef = ref(null)
 const isScheduled = ref(false)
 const scheduledDate = ref(null)
 const articleIntroduction = ref('')
+const coverUrl = ref('')
 
 const test = ref('')
 
@@ -144,12 +160,24 @@ const minDate = computed(() => {
   date.setMinutes(date.getMinutes() + 10)
   return date
 })
+const updateTitle = value => (title.value = value.replace(/\s/g, ''))
+const updateIntroduction = value =>
+  (articleIntroduction.value = value.replace(/\s/g, ''))
 
-const coverRefChange = event => {
+const coverChange = async event => {
   const file = event.target.files[0]
   if (file) {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('cover', file)
+    formData.append('type', 'cover')
+    try {
+      const res = await uploadCover(formData)
+      if (res.data.code !== 200) return
+      coverUrl.value = res.data.data.coverUrl
+      $toast.success(t('message.uploadCoverSuccess'))
+    } catch (error) {
+      $toast.error(t('message.uploadCoverFail'))
+    }
   }
 }
 

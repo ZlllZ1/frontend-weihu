@@ -51,6 +51,8 @@ export default {
     enterArticleIntroduction: '输入文章简介(最多200字)',
     toTop: '回到顶部',
     publish: '发布',
+    uploadCoverSuccess: '上传封面成功',
+    uploadCoverFail: '上传封面失败',
     enterQQOr163: '输入QQ/163邮箱',
     enterPassword: '输入密码',
     enterAuthCode: '输入验证码',
