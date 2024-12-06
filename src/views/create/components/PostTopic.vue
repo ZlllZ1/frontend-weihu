@@ -123,7 +123,12 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import { uploadCover, publishPost, saveDraft } from '@/api/post'
+import {
+  uploadCover,
+  publishPost,
+  saveDraft,
+  publishSchedulePost
+} from '@/api/post'
 import { useStore } from 'vuex'
 
 const store = useStore()
@@ -157,7 +162,7 @@ const toolbarOptions = [
 
 const minDate = computed(() => {
   const date = new Date()
-  date.setMinutes(date.getMinutes() + 10)
+  date.setMinutes(date.getMinutes() + 5)
   return date
 })
 const updateTitle = value => (title.value = value.replace(/\s/g, ''))
@@ -237,11 +242,16 @@ const publish = async () => {
       title: title.value,
       content: html,
       coverUrl: coverUrl.value,
-      scheduledDate: isScheduled.value ? scheduledDate.value : null,
+      publishDate: isScheduled.value ? scheduledDate.value : null,
       introduction: introduction.value,
       delta
     }
-    const res = await publishPost(data)
+    let res
+    if (isScheduled.value) {
+      res = await publishSchedulePost(data)
+    } else {
+      res = await publishPost(data)
+    }
     if (res.data.code !== 200) return
     $toast.success(t('message.publishSuccess'))
     title.value = ''

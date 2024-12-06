@@ -24,3 +24,9 @@ export const saveDraft = data => {
     requiresAuth: true
   })
 }
+
+export const publishSchedulePost = data => {
+  return request.post('/post/publishScheduledPost', data, {
+    requiresAuth: true
+  })
+}

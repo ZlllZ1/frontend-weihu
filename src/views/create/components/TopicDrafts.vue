@@ -116,14 +116,20 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, nextTick } from 'vue'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import { uploadCover, publishPost, getDraft, saveDraft } from '@/api/post'
+import {
+  uploadCover,
+  publishPost,
+  getDraft,
+  saveDraft,
+  publishSchedulePost
+} from '@/api/post'
 import { useStore } from 'vuex'
 
 const store = useStore()
@@ -157,7 +163,7 @@ const toolbarOptions = [
 
 const minDate = computed(() => {
   const date = new Date()
-  date.setMinutes(date.getMinutes() + 10)
+  date.setMinutes(date.getMinutes() + 5)
   return date
 })
 
@@ -167,13 +173,17 @@ const updateIntroduction = value =>
 
 const getDraftData = async () => {
   try {
+    await new Promise(resolve => setTimeout(resolve, 100))
     const res = await getDraft(userInfo.value.email)
     const draft = res.data.data.draft
     if (res.data.code !== 200 || !draft) return
     title.value = draft?.title || ''
     coverUrl.value = draft?.coverUrl || ''
     introduction.value = draft?.introduction || ''
-    quill.value.setContents(draft?.delta, 'silent')
+    if (quill.value && draft?.delta) {
+      await nextTick()
+      quill.value.setContents(draft.delta, 'silent')
+    }
   } catch (error) {
     console.error(error)
   }
@@ -252,12 +262,19 @@ const publish = async () => {
       title: title.value,
       content: html,
       coverUrl: coverUrl.value,
-      scheduledDate: isScheduled.value ? scheduledDate.value : null,
+      publishDate: isScheduled.value ? scheduledDate.value : null,
       introduction: introduction.value,
       delta,
       type: 'draft'
     }
-    const res = await publishPost(data)
+    let res
+    console.log(isScheduled.value)
+    console.log(scheduledDate.value)
+    if (isScheduled.value && scheduledDate.value) {
+      res = await publishSchedulePost(data)
+    } else {
+      res = await publishPost(data)
+    }
     if (res.data.code !== 200) return
     $toast.success(t('message.publishSuccess'))
     title.value = ''
@@ -270,21 +287,24 @@ const publish = async () => {
 }
 
 const initEditor = () => {
-  const container = document.getElementById('editor')
-  quill.value = new Quill(container, {
-    theme: 'snow',
-    modules: {
-      toolbar: toolbarOptions,
-      history: {
-        delay: 1000,
-        maxStack: 100,
-        userOnly: false
+  return new Promise(resolve => {
+    const container = document.getElementById('editor')
+    quill.value = new Quill(container, {
+      theme: 'snow',
+      modules: {
+        toolbar: toolbarOptions,
+        history: {
+          delay: 1000,
+          maxStack: 100,
+          userOnly: false
+        },
+        clipboard: {
+          matchVisual: true
+        }
       },
-      clipboard: {
-        matchVisual: true
-      }
-    },
-    placeholder: t('message.enterContent')
+      placeholder: t('message.enterContent')
+    })
+    resolve()
   })
 }
 
@@ -297,6 +317,7 @@ const goTop = () => {
 
 onMounted(async () => {
   await initEditor()
+  await nextTick()
   await getDraftData()
 })
 </script>
