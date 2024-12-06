@@ -8,3 +8,9 @@ export const uploadCover = formData => {
     requiresAuth: true
   })
 }
+
+export const publishPost = data => {
+  return request.post('/post/publishPost', data, {
+    requiresAuth: true
+  })
+}

@@ -47,7 +47,7 @@
           class="ml-24 mt-2 border border-dashed border-gray rounded overflow-hidden w-[480px] h-32"
         >
           <textarea
-            :value="articleIntroduction"
+            :value="introduction"
             :placeholder="$t('message.enterArticleIntroduction')"
             class="w-full h-[80%] outline-none scroll-auto px-2 pt-2 resize-none text-sm"
             maxlength="200"
@@ -55,7 +55,7 @@
           ></textarea>
           <div class="flex justify-end items-center">
             <span class="text-sm text-[#999]"
-              >{{ articleIntroduction.length }}/200</span
+              >{{ introduction.length }}/200</span
             >
           </div>
         </div>
@@ -124,8 +124,10 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import { uploadCover } from '@/api/post'
+import { uploadCover, publishPost } from '@/api/post'
+import { useStore } from 'vuex'
 
+const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
@@ -134,8 +136,9 @@ const title = ref('')
 const coverRef = ref(null)
 const isScheduled = ref(false)
 const scheduledDate = ref(null)
-const articleIntroduction = ref('')
+const introduction = ref('')
 const coverUrl = ref('')
+const userInfo = computed(() => store.state.user.userInfo)
 
 const test = ref('')
 
@@ -162,7 +165,7 @@ const minDate = computed(() => {
 })
 const updateTitle = value => (title.value = value.replace(/\s/g, ''))
 const updateIntroduction = value =>
-  (articleIntroduction.value = value.replace(/\s/g, ''))
+  (introduction.value = value.replace(/\s/g, ''))
 
 const coverChange = async event => {
   const file = event.target.files[0]
@@ -191,11 +194,49 @@ const saveToDrafts = () => {
   console.log('存至草稿箱')
 }
 
-const publish = () => {
-  const { delta, html } = getContent()
-  console.log(delta)
-  console.log(html)
-  test.value = html
+const publish = async () => {
+  const { html } = getContent()
+  if (!title.value) {
+    $toast.error(t('message.titleEmpty'))
+    return
+  }
+  if (!html.replace(/<[^>]*>/g, '').trim()) {
+    $toast.error(t('message.contentEmpty'))
+    return
+  }
+  if (isScheduled.value) {
+    if (!scheduledDate.value) {
+      $toast.error(t('message.selectSendTimeEmpty'))
+      return
+    }
+  }
+  if (!coverUrl.value) {
+    $toast.error(t('message.coverEmpty'))
+    return
+  }
+  if (!introduction.value) {
+    $toast.error(t('message.introductionEmpty'))
+    return
+  }
+  try {
+    const data = {
+      email: userInfo.value.email,
+      title: title.value,
+      content: html,
+      coverUrl: coverUrl.value,
+      scheduledDate: isScheduled.value ? scheduledDate.value : null,
+      introduction: introduction.value
+    }
+    const res = await publishPost(data)
+    if (res.data.code !== 200) return
+    $toast.success(t('message.publishSuccess'))
+    title.value = ''
+    coverUrl.value = ''
+    introduction.value = ''
+    quill.value.setContents([])
+  } catch (error) {
+    $toast.error(t('message.publishError'))
+  }
 }
 
 const initEditor = () => {
