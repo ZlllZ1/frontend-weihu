@@ -94,12 +94,13 @@
               </div>
               <span>{{ $t('message.live') }}: {{ userInfo?.live }}</span>
               <div class="introduction-container">
-                <span class="self-introduction"
-                  >{{ $t('message.individualResume') }}:{{
-                    userInfo?.introduction || ''
-                  }}</span
-                >
-                <div class="toolTip">{{ userInfo?.introduction }}</div>
+                <div class="self-introduction">
+                  <span>{{ $t('message.individualResume') }} :</span>
+                  <div class="flex items-center">
+                    <span>{{ userInfo?.introduction || '' }}</span>
+                    <span class="toolTip">{{ userInfo?.introduction }}</span>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="flex items-end justify-center">
@@ -296,13 +297,13 @@ onUnmounted(() => {
 .introduction-container {
   @apply relative inline-block max-w-96;
   .self-introduction {
-    @apply inline-block truncate max-w-full;
+    @apply flex items-center truncate w-fit max-w-full;
+    &:hover .toolTip {
+      @apply opacity-100 visible;
+    }
   }
   .toolTip {
     @apply text-wrap absolute top-6 w-full left-1/2 -translate-x-1/2 max-w-[200px] break-all h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible;
-  }
-  &:hover .toolTip {
-    @apply opacity-100 visible;
   }
 }
 </style>
