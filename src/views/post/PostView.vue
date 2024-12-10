@@ -17,23 +17,44 @@
                 alt="user avatar"
                 class="rounded-full w-16 h-16"
               />
-              <div class="flex flex-col items-center justify-center mr-8">
+              <div
+                class="flex flex-col items-center justify-center mr-8 gap-y-1"
+              >
                 <span class="truncate w-[300px]">{{ userInfo?.nickname }}</span>
                 <span class="truncate w-[300px] text-xs text-[#999]">{{
                   userInfo?.introduction
                 }}</span>
               </div>
             </div>
-            <button
-              class="py-1 px-3 bg-red-200 rounded-xl text-sm text-red-600"
-            >
-              +{{ $t('message.follow') }}
-            </button>
-            <!-- <button
-            class="py-1 px-3 rounded-xl bg-warmGray-300 text-sm text-warmGray-600"
-          >
-            {{ $t('message.cancel') }}{{ $t('message.follow') }}
-          </button> -->
+            <div v-if="storeUser?.email !== userInfo?.email">
+              <button
+                v-if="!userInfo?.isFollowing"
+                class="py-1 px-3 bg-red-200 rounded-xl text-sm text-red-600"
+                @click="follow()"
+              >
+                +{{ $t('message.follow') }}
+              </button>
+              <button
+                v-else-if="userInfo?.isFollowing"
+                class="py-1 px-3 rounded-xl bg-warmGray-300 text-sm text-warmGray-600"
+                @click="follow()"
+              >
+                {{ $t('message.cancel') }}{{ $t('message.follow') }}
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center text-[#999] mt-1 justify-between">
+            <span class="text-xs">{{
+              convertToCST(postInfo?.publishDate)
+            }}</span>
+            <div class="flex items-center justify-center gap-1">
+              <img
+                :src="require('./images/eye.svg')"
+                alt="eye"
+                class="w-4 h-4"
+              />
+              <span class="text-[14px]">{{ postInfo.lookNum }}</span>
+            </div>
           </div>
           <div class="mt-8">
             <p class="text-[#999] indent-8 break-all">
@@ -57,9 +78,14 @@
           </div>
         </div>
         <div
-          class="p-3 overflow-hidden w-full bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm min-h-64"
+          class="p-4 overflow-hidden w-full bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm min-h-64"
         >
-          评论区域
+          <div class="border border-[#EBECED] w-full h-full rounded-sm">
+            <div class="border-b border-[#EBECED] p-4">
+              <span class="text-lg">{{ postInfo.commentNum }}条评论</span>
+            </div>
+            <div class="p-2">评论内容</div>
+          </div>
         </div>
       </div>
       <div ref="rightColumn" class="w-[328px]">
@@ -88,10 +114,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
+import { useStore } from 'vuex'
+import { followUser } from '@/api/user'
 import { getPostInfo } from '@/api/post'
+import { useToast } from 'vue-toast-notification'
 
+const $toast = useToast()
+const store = useStore()
+const storeUser = computed(() => store.state.user.userInfo)
 const rightColumn = ref(null)
 const isFixed = ref(false)
 const postId = window.location.pathname.split('/')[2]
@@ -99,7 +131,7 @@ const postInfo = ref(null)
 const userInfo = ref(null)
 
 const getInfo = async () => {
-  const res = await getPostInfo(postId)
+  const res = await getPostInfo(postId, storeUser.value.email)
   if (res.data.code !== 200) return
   postInfo.value = res.data.data.post
   userInfo.value = res.data.data.user
@@ -116,6 +148,35 @@ const goTop = () => {
     top: 0,
     behavior: 'smooth'
   })
+}
+
+const convertToCST = isoString => {
+  const date = new Date(isoString)
+  const utcOffsetMilliseconds = -8 * 60 * 60 * 1000
+  const cstTime = new Date(date.getTime() + utcOffsetMilliseconds)
+  const formattedDate =
+    cstTime.toLocaleDateString().replace(/-/g, ' ') +
+    ' ' +
+    cstTime
+      .toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
+      .replace(/^\D*/, '')
+  return formattedDate
+}
+
+const follow = async () => {
+  try {
+    const res = await followUser(storeUser.value.email, userInfo.value.email)
+    if (res.data.code !== 200) return
+    userInfo.value.isFollowing = !userInfo.value.isFollowing
+    $toast.success('操作成功')
+  } catch (error) {
+    console.error(error)
+    $toast.error('操作失败')
+  }
 }
 
 onMounted(async () => {

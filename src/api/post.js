@@ -55,10 +55,18 @@ export const collectPost = (email, postId) => {
   )
 }
 
-export const getPostInfo = postId => {
+export const getPostInfo = (postId, email) => {
   return request.get(
-    `/post/getPostInfo?postId=${postId}`,
-    {},
+    '/post/getPostInfo',
+    { postId, email },
+    { requiresAuth: true }
+  )
+}
+
+export const getPublishedPosts = (email, page, limit) => {
+  return request.get(
+    '/post/getPublishedPosts',
+    { email, page, limit },
     { requiresAuth: true }
   )
 }

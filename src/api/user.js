@@ -86,3 +86,11 @@ export const uploadCircleBg = formData => {
     requiresAuth: true
   })
 }
+
+export const followUser = (fanEmail, followedEmail) => {
+  return request.post(
+    '/user/followUser',
+    { fanEmail, followedEmail },
+    { requiresAuth: true }
+  )
+}

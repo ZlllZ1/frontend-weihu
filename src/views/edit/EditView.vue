@@ -456,7 +456,7 @@
                     v-else
                     class="flex items-center justify-center text-xs mr-2 text-gray"
                     >{{
-                      ($t('message.afterSeconds'), { seconds: authCodeTimer })
+                      $t('message.afterSeconds', { seconds: authCodeTimer })
                     }}</span
                   >
                 </div>
