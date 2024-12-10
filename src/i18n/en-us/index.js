@@ -51,6 +51,7 @@ export default {
     articleIntroduction: 'article introduction',
     addCover: ' add cover',
     publish: 'publish',
+    tiaoComment: 'comments',
     like: 'like',
     readFull: 'read the full post',
     main: 'main body',

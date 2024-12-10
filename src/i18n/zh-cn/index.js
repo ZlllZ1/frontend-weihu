@@ -43,6 +43,7 @@ export default {
     modify: '修改',
     return: '返回我的主页',
     back: '返回',
+    tiaoComment: '条评论',
     emailLogin: '邮箱登录',
     passwordLogin: '密码登录',
     uploadCover: '上传封面',

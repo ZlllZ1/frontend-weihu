@@ -82,7 +82,9 @@
         >
           <div class="border border-[#EBECED] w-full h-full rounded-sm">
             <div class="border-b border-[#EBECED] p-4">
-              <span class="text-lg">{{ postInfo.commentNum }}条评论</span>
+              <span class="text-lg"
+                >{{ postInfo.commentNum }} {{ $t('message.tiaoComment') }}</span
+              >
             </div>
             <div class="p-2">评论内容</div>
           </div>
