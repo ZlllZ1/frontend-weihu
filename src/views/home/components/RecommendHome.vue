@@ -144,7 +144,9 @@ import { getPosts } from '@/api/post'
 import { useStore } from 'vuex'
 import { praisePost, collectPost } from '@/api/post'
 import { useToast } from 'vue-toast-notification'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const $toast = useToast()
 const store = useStore()
 const posts = ref([])
@@ -182,10 +184,10 @@ const handlePraise = async postId => {
       }
       return post
     })
-    $toast.success('操作成功')
+    $toast.success(t('message.operateSuccess'))
   } catch (error) {
     console.error(error)
-    $toast.error('操作失败')
+    $toast.error(t('message.operateFail'))
   }
 }
 
@@ -204,10 +206,10 @@ const handleCollect = async postId => {
       }
       return post
     })
-    $toast.success('操作成功')
+    $toast.success(t('message.operateSuccess'))
   } catch (error) {
     console.error(error)
-    $toast.error('操作失败')
+    $toast.error(t('message.operateFail'))
   }
 }
 

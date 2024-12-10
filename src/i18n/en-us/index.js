@@ -52,6 +52,8 @@ export default {
     addCover: ' add cover',
     publish: 'publish',
     tiaoComment: 'comments',
+    operateSuccess: 'operate successfully',
+    operateFail: 'operate fail',
     like: 'like',
     readFull: 'read the full post',
     main: 'main body',

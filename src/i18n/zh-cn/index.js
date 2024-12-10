@@ -139,6 +139,8 @@ export default {
     highest: '最高',
     lowest: '最低',
     year: '年',
+    operateSuccess: '操作成功',
+    operateFail: '操作失败',
     month: '月',
     day: '日',
     Monday: '星期一',

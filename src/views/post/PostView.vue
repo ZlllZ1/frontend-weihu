@@ -122,7 +122,9 @@ import { useStore } from 'vuex'
 import { followUser } from '@/api/user'
 import { getPostInfo } from '@/api/post'
 import { useToast } from 'vue-toast-notification'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const $toast = useToast()
 const store = useStore()
 const storeUser = computed(() => store.state.user.userInfo)
@@ -174,10 +176,10 @@ const follow = async () => {
     const res = await followUser(storeUser.value.email, userInfo.value.email)
     if (res.data.code !== 200) return
     userInfo.value.isFollowing = !userInfo.value.isFollowing
-    $toast.success('操作成功')
+    $toast.success(t('message.operateSuccess'))
   } catch (error) {
     console.error(error)
-    $toast.error('操作失败')
+    $toast.error(t('message.operateFail'))
   }
 }
 
