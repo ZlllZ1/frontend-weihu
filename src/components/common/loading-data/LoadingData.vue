@@ -1,6 +1,8 @@
 <template>
-  <div class="loading-wrapper" :class="{ 'bg-transparent': transparent }">
-    <div class="loading-spinner"></div>
+  <div class="loading-overlay" :class="{ 'bg-transparent': transparent }">
+    <div class="loading-wrapper">
+      <div class="loading-spinner"></div>
+    </div>
   </div>
 </template>
 
@@ -14,22 +16,42 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
 .loading-wrapper {
-  @apply absolute inset-0 flex items-center justify-center bg-transparent;
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 
 .loading-spinner {
-  @apply w-8 h-8 border-4 border-gray rounded-full;
+  width: 2rem;
+  height: 2rem;
+  border: 0.25rem solid #e5e7eb;
   border-top-color: #9ca3af;
-  animation: spin 1s linear infinite;
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.55, 0.25, 0.25, 0.7) infinite;
+  will-change: transform;
 }
 
 @keyframes spin {
-  0% {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
   }
+}
+
+.bg-transparent {
+  background-color: transparent;
 }
 </style>

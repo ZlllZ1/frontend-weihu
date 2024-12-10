@@ -5,6 +5,9 @@ class Request {
   constructor(config) {
     this.instance = axios.create(config)
     this.interceptors()
+    this.pendingRequests = 0
+    this.loadingTimer = null
+    this.loadingDelay = 200
   }
 
   setStore(store) {
@@ -20,9 +23,30 @@ class Request {
     localStorage.removeItem('userInfo')
   }
 
+  showLoading() {
+    if (this.loadingTimer) {
+      clearTimeout(this.loadingTimer)
+    }
+    this.loadingTimer = setTimeout(() => {
+      eventBus.emit('openLoading')
+    }, this.loadingDelay)
+  }
+
+  hideLoading() {
+    if (this.loadingTimer) {
+      clearTimeout(this.loadingTimer)
+      this.loadingTimer = null
+    }
+    eventBus.emit('closeLoading')
+  }
+
   interceptors() {
     this.instance.interceptors.request.use(
       config => {
+        this.pendingRequests++
+        if (this.pendingRequests === 1) {
+          this.showLoading()
+        }
         if (config.requiresAuth) {
           if (!this.store || !this.store.state.user.token) {
             eventBus.emit('openLogin')
@@ -33,13 +57,27 @@ class Request {
         return config
       },
       error => {
+        this.pendingRequests--
+        if (this.pendingRequests === 0) {
+          this.hideLoading()
+        }
         return Promise.reject(error)
       }
     )
 
     this.instance.interceptors.response.use(
-      response => response,
+      response => {
+        this.pendingRequests--
+        if (this.pendingRequests === 0) {
+          this.hideLoading()
+        }
+        return response
+      },
       error => {
+        this.pendingRequests--
+        if (this.pendingRequests === 0) {
+          this.hideLoading()
+        }
         if (error.requiresAuth) {
           eventBus.emit('openLogin')
           return Promise.reject({ requiresAuth: true })
