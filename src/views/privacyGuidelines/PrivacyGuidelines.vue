@@ -4,6 +4,7 @@
       <h1 class="text-2xl font-bold mb-6 flex items-center justify-center">
         {{ $t('message.privacyContent.title') }}
       </h1>
+      <!-- eslint-disable-next-line -->
       <div v-html="$t('message.privacyContent.content')"></div>
     </div>
   </main>

@@ -1,8 +1,8 @@
 <template>
   <div
-    class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
+    class="flex gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
   >
-    <div class="w-full flex gap-x-2">
+    <div class="flex gap-x-2 w-full">
       <div
         class="w-2/3 bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
       >
@@ -24,17 +24,20 @@
           <component :is="currentComponent" class="px-4 py-2" />
         </keep-alive>
       </div>
-      <div
-        class="w-1/3 bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg"
-      >
-        <WeatherView />
+      <div ref="rightColumn" class="w-[328px]">
+        <div
+          class="bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg top-14"
+          :class="{ fixed: isFixed }"
+        >
+          <WeatherView />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { markRaw, ref, computed } from 'vue'
+import { markRaw, ref, computed, onMounted, onUnmounted } from 'vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import RecommendHome from './components/RecommendHome.vue'
 import FollowHome from './components/FollowHome.vue'
@@ -42,6 +45,8 @@ import FriendHome from './components/FriendHome.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+const rightColumn = ref(null)
+const isFixed = ref(false)
 
 const homeNav = ref([
   {
@@ -73,4 +78,18 @@ const toggleHomeNav = value => {
     header.active = header.value === value
   })
 }
+
+const handleScroll = () => {
+  if (!rightColumn.value) return
+  const rect = rightColumn.value.getBoundingClientRect()
+  isFixed.value = rect.top <= 56
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>

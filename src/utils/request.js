@@ -25,6 +25,7 @@ class Request {
       config => {
         if (config.requiresAuth) {
           if (!this.store || !this.store.state.user.token) {
+            eventBus.emit('openLogin')
             return Promise.reject({ requiresAuth: true })
           }
           config.headers.Authorization = `Bearer ${this.store.state.user.token}`
@@ -37,34 +38,30 @@ class Request {
     )
 
     this.instance.interceptors.response.use(
-      response => {
-        return response
-      },
+      response => response,
       error => {
         if (error.requiresAuth) {
-          eventBus.emit('showLoginModal')
+          eventBus.emit('openLogin')
+          return Promise.reject({ requiresAuth: true })
         }
         if (error.response && error.response.status === 401) {
           this.clearUserInfo()
-          eventBus.emit('showLoginModal', '登录已过期，请重新登录')
+          eventBus.emit('openLogin')
+          return Promise.reject({ requiresAuth: true })
         }
         return Promise.reject(error)
       }
     )
   }
   get(url, params, config = {}) {
-    return this.instance.get(url, { params, ...config }).catch(error => {
-      return Promise.reject(error)
-    })
+    return this.instance.get(url, { params, ...config })
   }
   post(url, data, config = {}) {
-    return this.instance.post(url, data, { ...config }).catch(error => {
-      return Promise.reject(error)
-    })
+    return this.instance.post(url, data, config)
   }
 }
 
 export default new Request({
-  baseURL: 'http://127.0.0.1:3007',
+  baseURL: process.env.VUE_APP_API_BASE_URL || 'http://127.0.0.1:3007',
   timeout: 5000
 })

@@ -136,17 +136,20 @@
           <component :is="currentComponent" class="px-4 py-2" />
         </keep-alive>
       </div>
-      <div
-        class="w-1/3 bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg"
-      >
-        <WeatherView />
+      <div ref="rightColumn" class="w-[328px]">
+        <div
+          class="bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg top-14"
+          :class="{ fixed: isFixed }"
+        >
+          <WeatherView />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, markRaw, computed } from 'vue'
+import { ref, markRaw, computed, onMounted, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import PersonalPost from './components/PersonalPost.vue'
 import PersonalCircle from './components/PersonalCircle.vue'
@@ -162,6 +165,8 @@ import { useToast } from 'vue-toast-notification'
 
 const { t } = useI18n()
 const $toast = useToast()
+const rightColumn = ref(null)
+const isFixed = ref(false)
 const personalHeaders = ref([
   {
     label: t('message.post'),
@@ -270,6 +275,21 @@ const togglePersonalHeader = value => {
     header.active = header.value === value
   })
 }
+
+const handleScroll = () => {
+  if (!rightColumn.value) return
+  const rect = rightColumn.value.getBoundingClientRect()
+  console.log(rect.top)
+  isFixed.value = rect.top <= 56
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <style lang="scss" scoped>

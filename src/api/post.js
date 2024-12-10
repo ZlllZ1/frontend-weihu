@@ -31,6 +31,26 @@ export const publishSchedulePost = data => {
   })
 }
 
-export const getPosts = (page, limit) => {
-  return request.get('/post/getPosts', { page, limit }, { requiresAuth: true })
+export const getPosts = (email, page, limit) => {
+  return request.get(
+    '/post/getPosts',
+    { email, page, limit },
+    { requiresAuth: true }
+  )
+}
+
+export const praisePost = (email, postId) => {
+  return request.post(
+    '/post/praisePost',
+    { email, postId },
+    { requiresAuth: true }
+  )
+}
+
+export const collectPost = (email, postId) => {
+  return request.post(
+    '/post/collectPost',
+    { email, postId },
+    { requiresAuth: true }
+  )
 }

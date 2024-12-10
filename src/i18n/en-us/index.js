@@ -57,7 +57,7 @@ export default {
     selectSendTime: 'select send time',
     saveToDraft: 'save to draft box',
     live: 'place of abode',
-    enterArticleIntroduction: 'enter a article introduction (up to 200 words)',
+    enterArticleIntroduction: 'enter a article introduction (100 - 200 words)',
     individualResume: 'introduction',
     enterIndividualResume: 'enter a personal introduction of 200 words or less',
     email: 'email',

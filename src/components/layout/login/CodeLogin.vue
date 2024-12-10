@@ -169,6 +169,7 @@ const login = async () => {
     localStorage.setItem('userInfo', JSON.stringify(userRes.data.data))
     $toast.success(t('message.loginSuccess'))
     emits('closeLogin')
+    location.reload()
   } catch (error) {
     $toast.error(t('message.emailAuthCodeError'))
   }

@@ -48,7 +48,7 @@ export default {
     selectSendTime: '选择发送时间',
     imgFormat: '图片上传格式支持 JPEG、JPG、PNG',
     articleIntroduction: '文章简介',
-    enterArticleIntroduction: '输入文章简介(最多200字)',
+    enterArticleIntroduction: '输入文章简介(100-200字)',
     toTop: '回到顶部',
     publish: '发布',
     uploadCoverSuccess: '上传封面成功',

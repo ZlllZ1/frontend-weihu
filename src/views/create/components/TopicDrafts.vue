@@ -50,7 +50,8 @@
             :value="introduction"
             :placeholder="$t('message.enterArticleIntroduction')"
             class="w-full h-[80%] outline-none scroll-auto px-2 pt-2 resize-none text-sm"
-            maxlength="200"
+            :maxlength="200"
+            :minlength="100"
             @input="updateIntroduction($event.target.value)"
           ></textarea>
           <div class="flex justify-end items-center">
@@ -252,7 +253,7 @@ const publish = async () => {
     $toast.error(t('message.coverEmpty'))
     return
   }
-  if (!introduction.value) {
+  if (!introduction.value || introduction.value.length < 100) {
     $toast.error(t('message.introductionEmpty'))
     return
   }
@@ -268,8 +269,6 @@ const publish = async () => {
       type: 'draft'
     }
     let res
-    console.log(isScheduled.value)
-    console.log(scheduledDate.value)
     if (isScheduled.value && scheduledDate.value) {
       res = await publishSchedulePost(data)
     } else {
@@ -281,6 +280,7 @@ const publish = async () => {
     coverUrl.value = ''
     introduction.value = ''
     quill.value.setContents([])
+    location.reload()
   } catch (error) {
     $toast.error(t('message.publishError'))
   }
