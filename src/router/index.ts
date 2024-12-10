@@ -18,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/friend/FriendView.vue')
   },
   {
-    path: '/userInfo/:userId',
+    path: '/userInfo/:email',
     name: 'userInfo',
     component: () => import('@/views/userInfo/UserInfo.vue')
   },
@@ -48,7 +48,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/post/PostView.vue')
   },
   {
-    path: '/chat/:userId',
+    path: '/chat/:chatId',
     name: 'chat',
     component: () => import('@/views/chat/ChatView.vue')
   },

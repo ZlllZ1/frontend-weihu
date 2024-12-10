@@ -38,12 +38,32 @@
       </div>
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-x-3">
-          <img
-            :src="post.user.avatar || require('@/assets/avatar_default.png')"
-            alt="user avatar"
-            class="rounded-full w-8 h-8"
-          />
-          <div class="truncate w-16">{{ post.user.nickname }}</div>
+          <router-link
+            :to="{ name: 'userInfo', params: { email: post.user.email } }"
+            ><img
+              :src="post.user.avatar || require('@/assets/avatar_default.png')"
+              alt="user avatar"
+              class="rounded-full w-8 h-8"
+          /></router-link>
+          <div class="flex items-center">
+            <router-link
+              :to="{ name: 'userInfo', params: { email: post.user.email } }"
+              class="truncate w-16 text-[#8A8A8A] hover:text-black"
+              >{{ post.user.nickname }}</router-link
+            >
+            <img
+              v-if="post.user.isFollowing"
+              src="../images/follow.svg"
+              alt="follow"
+              class="rounded-full w-4 h-4"
+            />
+            <img
+              v-if="post.user.email === userInfo.email"
+              src="../images/self.svg"
+              alt="self"
+              class="rounded-full w-4 h-4"
+            />
+          </div>
         </div>
         <div class="flex items-center justify-end gap-12">
           <router-link
