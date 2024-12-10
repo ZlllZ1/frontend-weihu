@@ -176,6 +176,7 @@ const coverChange = async event => {
     const formData = new FormData()
     formData.append('cover', file)
     formData.append('type', 'cover')
+    formData.append('account', userInfo.value.email)
     try {
       const res = await uploadCover(formData)
       if (res.data.code !== 200) return

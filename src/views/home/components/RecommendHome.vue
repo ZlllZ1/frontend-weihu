@@ -39,7 +39,7 @@
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-x-3">
           <router-link
-            :to="{ name: 'userInfo', params: { email: post.user.email } }"
+            :to="{ name: 'userInfo', params: { email: post?.user?.email } }"
             ><img
               :src="post.user.avatar || require('@/assets/avatar_default.png')"
               alt="user avatar"
@@ -47,7 +47,7 @@
           /></router-link>
           <div class="flex items-center">
             <router-link
-              :to="{ name: 'userInfo', params: { email: post.user.email } }"
+              :to="{ name: 'userInfo', params: { email: post?.user?.email } }"
               class="truncate w-16 text-[#8A8A8A] hover:text-black"
               >{{ post.user.nickname }}</router-link
             >
@@ -159,7 +159,7 @@ const clipIntroduction = introduction => {
 
 const getHomePosts = async () => {
   const res = await getPosts(
-    userInfo.value.email,
+    userInfo.value?.email,
     currentPage.value,
     limit.value
   )

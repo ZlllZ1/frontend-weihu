@@ -74,7 +74,7 @@ const homeNav = ref([
 ])
 
 const getInfo = async () => {
-  const res = await getUserInfo(userInfo?.value.email)
+  const res = await getUserInfo(userInfo?.value?.email)
   if (res.data.code !== 200) return
   store.commit('user/setUserInfo', res.data.data)
   localStorage.setItem('userInfo', JSON.stringify(res.data.data))
