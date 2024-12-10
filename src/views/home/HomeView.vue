@@ -43,10 +43,14 @@ import RecommendHome from './components/RecommendHome.vue'
 import FollowHome from './components/FollowHome.vue'
 import FriendHome from './components/FriendHome.vue'
 import { useI18n } from 'vue-i18n'
+import { getUserInfo } from '@/api/user.js'
+import { useStore } from 'vuex'
 
 const { t } = useI18n()
 const rightColumn = ref(null)
 const isFixed = ref(false)
+const store = useStore()
+const userInfo = computed(() => store.state.user.userInfo)
 
 const homeNav = ref([
   {
@@ -69,6 +73,13 @@ const homeNav = ref([
   }
 ])
 
+const getInfo = async () => {
+  const res = await getUserInfo(userInfo?.value.email)
+  if (res.data.code !== 200) return
+  store.commit('user/setUserInfo', res.data.data)
+  localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+}
+
 const currentComponent = computed(() => {
   return homeNav.value.find(header => header.active)?.component
 })
@@ -85,7 +96,8 @@ const handleScroll = () => {
   isFixed.value = rect.top <= 56
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await getInfo()
   window.addEventListener('scroll', handleScroll)
 })
 

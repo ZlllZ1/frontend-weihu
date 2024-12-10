@@ -168,60 +168,60 @@ const { t } = useI18n()
 const $toast = useToast()
 const rightColumn = ref(null)
 const isFixed = ref(false)
+const store = useStore()
+const userInfo = computed(() => store.state.user.userInfo)
 const personalHeaders = ref([
   {
     label: t('message.post'),
     value: 'post',
-    num: 0,
+    num: userInfo.value.postNum,
     active: true,
     component: markRaw(PersonalPost)
   },
   {
     label: t('message.circleOfFriends'),
     value: 'circle',
-    num: 0,
+    num: userInfo.value.circleNum,
     active: false,
     component: markRaw(PersonalCircle)
   },
   {
     label: t('message.follow'),
     value: 'follow',
-    num: 0,
+    num: userInfo.value.followNum,
     active: false,
     component: markRaw(PersonalFollow)
   },
   {
     label: t('message.fans'),
     value: 'fan',
-    num: 0,
+    num: userInfo.value.fanNum,
     active: false,
     component: markRaw(PersonalFan)
   },
   {
     label: t('message.friend'),
     value: 'friend',
-    num: 0,
+    num: userInfo.value.friendNum,
     active: false,
     component: markRaw(PersonalFriend)
   },
   {
     label: t('message.praise'),
     value: 'praise',
-    num: 0,
+    num: userInfo.value.praiseNum,
     active: false,
     component: markRaw(PersonalPraise)
   },
   {
     label: t('message.collect'),
     value: 'collect',
-    num: 0,
+    num: userInfo.value.collectNum,
     active: false,
     component: markRaw(PersonalCollect)
   }
 ])
 
-const store = useStore()
-const userInfo = computed(() => store.state.user.userInfo)
 const bgFileInput = ref(null)
 const avatarFileInput = ref(null)
 const currentComponent = computed(() => {
@@ -280,11 +280,11 @@ const togglePersonalHeader = value => {
 const handleScroll = () => {
   if (!rightColumn.value) return
   const rect = rightColumn.value.getBoundingClientRect()
-  console.log(rect.top)
   isFixed.value = rect.top <= 56
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await getInfo()
   window.addEventListener('scroll', handleScroll)
 })
 
