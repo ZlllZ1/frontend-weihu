@@ -1,5 +1,5 @@
 <template>
-  <template v-for="post in posts" :key="post._id">
+  <template v-for="post in posts" :key="post.postId">
     <div
       class="p-4 border-t border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
     >
@@ -32,71 +32,86 @@
             :to="{ name: 'post', params: { postId: post.postId } }"
             class="absolute right-0 bottom-1 text-[#09408E] hover:text-blue"
           >
-            阅读全文 &gt;
+            {{ $t('message.readFull') }} &gt;
           </router-link>
         </div>
       </div>
-      <div class="flex items-center justify-end gap-12">
-        <router-link
-          :to="{ name: 'post', params: { postId: post.postId } }"
-          class="flex items-center gap-1 group"
-        >
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-x-3">
           <img
-            class="w-5 h-5 group-hover:text-black"
-            src="../images/comment.svg"
-            alt="comment"
+            :src="post.user.avatar || require('@/assets/avatar_default.png')"
+            alt="user avatar"
+            class="rounded-full w-8 h-8"
           />
-          <span class="text-[#8A8A8A] group-hover:text-blue"
-            >评论 {{ post.commentNum }}</span
-          ></router-link
-        >
-        <div
-          :to="{ name: 'post', params: { postId: post.postId } }"
-          class="flex items-center gap-1 group cursor-pointer"
-          @click="handlePraise(post.postId)"
-        >
-          <img
-            class="w-5 h-5 group-hover:text-black"
-            :src="
-              post.praise
-                ? require('../images/hasPraise.svg')
-                : require('../images/praise.svg')
-            "
-            alt="praise"
-          />
-          <span
-            class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-            :class="{ 'text-[#FE4144]': post.praise }"
-            >喜欢 {{ post.praiseNum }}</span
-          >
+          <div class="truncate w-16">{{ post.user.nickname }}</div>
         </div>
-        <div
-          :to="{ name: 'post', params: { postId: post.postId } }"
-          class="flex items-center gap-1 group cursor-pointer"
-          @click="handleCollect(post.postId)"
-        >
-          <img
-            class="w-5 h-5 group-hover:text-black"
-            :src="
-              post.collect
-                ? require('../images/hasCollect.svg')
-                : require('../images/collect.svg')
-            "
-            alt="collect"
-          />
-          <span
-            class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
-            :class="{ 'text-[#FF8C00]': post.collect }"
-            >收藏 {{ post.collectNum }}</span
+        <div class="flex items-center justify-end gap-12">
+          <router-link
+            :to="{ name: 'post', params: { postId: post.postId } }"
+            class="flex items-center gap-1 group"
           >
-        </div>
-        <div class="flex items-center gap-1 group cursor-pointer">
-          <img
-            class="w-5 h-5 group-hover:text-black"
-            src="../images/share.svg"
-            alt="share"
-          />
-          <span class="text-[#8A8A8A] group-hover:text-black">分享</span>
+            <img
+              class="w-5 h-5 group-hover:text-black"
+              src="../images/comment.svg"
+              alt="comment"
+            />
+            <span class="text-[#8A8A8A] group-hover:text-blue"
+              >{{ $t('message.comment') }}
+              {{ post.commentNum > 1000 ? '999+' : post.commentNum }}</span
+            ></router-link
+          >
+          <div
+            :to="{ name: 'post', params: { postId: post.postId } }"
+            class="flex items-center gap-1 group cursor-pointer"
+            @click="handlePraise(post.postId)"
+          >
+            <img
+              class="w-5 h-5 group-hover:text-black"
+              :src="
+                post.praise
+                  ? require('../images/hasPraise.svg')
+                  : require('../images/praise.svg')
+              "
+              alt="praise"
+            />
+            <span
+              class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+              :class="{ 'text-[#FE4144]': post.praise }"
+              >{{ $t('message.like') }}
+              {{ post.praiseNum > 1000 ? '999+' : post.praiseNum }}</span
+            >
+          </div>
+          <div
+            :to="{ name: 'post', params: { postId: post.postId } }"
+            class="flex items-center gap-1 group cursor-pointer"
+            @click="handleCollect(post.postId)"
+          >
+            <img
+              class="w-5 h-5 group-hover:text-black"
+              :src="
+                post.collect
+                  ? require('../images/hasCollect.svg')
+                  : require('../images/collect.svg')
+              "
+              alt="collect"
+            />
+            <span
+              class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
+              :class="{ 'text-[#FF8C00]': post.collect }"
+              >{{ $t('message.collect') }}
+              {{ post.collectNum > 1000 ? '999+' : post.collectNum }}</span
+            >
+          </div>
+          <div class="flex items-center gap-1 group cursor-pointer">
+            <img
+              class="w-5 h-5 group-hover:text-black"
+              src="../images/share.svg"
+              alt="share"
+            />
+            <span class="text-[#8A8A8A] group-hover:text-black">{{
+              $t('message.share')
+            }}</span>
+          </div>
         </div>
       </div>
     </div>

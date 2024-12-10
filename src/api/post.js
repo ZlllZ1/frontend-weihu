@@ -54,3 +54,11 @@ export const collectPost = (email, postId) => {
     { requiresAuth: true }
   )
 }
+
+export const getPostInfo = postId => {
+  return request.get(
+    `/post/getPostInfo?postId=${postId}`,
+    {},
+    { requiresAuth: true }
+  )
+}
