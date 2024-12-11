@@ -58,6 +58,7 @@ export default {
     noFollow: 'no follow',
     noFriend: 'no friend',
     online: 'online',
+    age: 'years old',
     know: 'to get to know',
     noPraise: 'no like',
     uploadCover: 'upload cover',

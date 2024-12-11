@@ -27,6 +27,7 @@ export default {
     go: '去',
     noFriend: '没有好友',
     online: '在线',
+    age: '岁',
     haveALook: '看看吧',
     viewAllNotifications: '查看所有通知',
     myPrivateMessage: '我的私信',

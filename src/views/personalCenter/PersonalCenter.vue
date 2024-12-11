@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="userInfo"
     class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
   >
     <div class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">

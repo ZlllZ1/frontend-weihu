@@ -102,3 +102,11 @@ export const getOnesInfo = (email, page = 1, limit = 10, type) => {
     { requiresAuth: true }
   )
 }
+
+export const getOtherUserInfo = (email, visitEmail) => {
+  return request.get(
+    '/user/getOtherUserInfo',
+    { email, visitEmail },
+    { requiresAuth: true }
+  )
+}
