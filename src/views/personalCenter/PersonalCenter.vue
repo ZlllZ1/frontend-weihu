@@ -135,9 +135,7 @@
             </div>
           </template>
         </div>
-        <keep-alive>
-          <component :is="currentComponent" />
-        </keep-alive>
+        <component :is="currentComponent" />
       </div>
       <div ref="rightColumn" class="w-[328px]">
         <div
@@ -176,49 +174,49 @@ const personalHeaders = ref([
   {
     label: t('message.post'),
     value: 'post',
-    num: userInfo.value.postNum,
+    num: userInfo.value.postNum > 1000 ? '999+' : userInfo.value.postNum,
     active: true,
     component: markRaw(PersonalPost)
   },
   {
     label: t('message.circleOfFriends'),
     value: 'circle',
-    num: userInfo.value.circleNum,
+    num: userInfo.value.circleNum > 1000 ? '999+' : userInfo.value.circleNum,
     active: false,
     component: markRaw(PersonalCircle)
   },
   {
     label: t('message.follow'),
     value: 'follow',
-    num: userInfo.value.followNum,
+    num: userInfo.value.followNum > 1000 ? '999+' : userInfo.value.followNum,
     active: false,
     component: markRaw(PersonalFollow)
   },
   {
     label: t('message.fans'),
     value: 'fan',
-    num: userInfo.value.fanNum,
+    num: userInfo.value.fanNum > 1000 ? '999+' : userInfo.value.fanNum,
     active: false,
     component: markRaw(PersonalFan)
   },
   {
     label: t('message.friend'),
     value: 'friend',
-    num: userInfo.value.friendNum,
+    num: userInfo.value.friendNum > 1000 ? '999+' : userInfo.value.friendNum,
     active: false,
     component: markRaw(PersonalFriend)
   },
   {
     label: t('message.praise'),
     value: 'praise',
-    num: userInfo.value.praiseNum,
+    num: userInfo.value.praiseNum > 1000 ? '999+' : userInfo.value.praiseNum,
     active: false,
     component: markRaw(PersonalPraise)
   },
   {
     label: t('message.collect'),
     value: 'collect',
-    num: userInfo.value.collectNum,
+    num: userInfo.value.collectNum > 1000 ? '999+' : userInfo.value.collectNum,
     active: false,
     component: markRaw(PersonalCollect)
   }

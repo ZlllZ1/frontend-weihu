@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <template v-if="posts.length">
     <template v-for="post in posts" :key="post.postId">
       <div
         class="p-4 border-t border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
@@ -124,6 +124,19 @@
         </div>
       </div>
     </template>
+  </template>
+  <div
+    v-else-if="posts.length === 0 && !loading"
+    class="flex items-center justify-center text-gray flex-col gap-3 text-xl w-full h-full"
+  >
+    <span>未发布过帖子</span>
+    <div>
+      <span>前往 </span>
+      <router-link :to="{ name: 'create' }" class="hover:text-blue">
+        创作中心
+      </router-link>
+      <span> 去发布</span>
+    </div>
   </div>
 </template>
 
@@ -140,6 +153,7 @@ const $toast = useToast()
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
 const posts = ref([])
+const loading = ref(false)
 
 const clipIntroduction = introduction => {
   if (introduction.length > 80) return introduction.slice(0, 80) + '...'
@@ -147,9 +161,17 @@ const clipIntroduction = introduction => {
 }
 
 const getPosts = async () => {
-  const res = await getMyPosts(userInfo.value.email)
-  if (res.data.code !== 200) return
-  posts.value = res.data.data.posts
+  try {
+    if (loading.value) return
+    loading.value = true
+    const res = await getMyPosts(userInfo.value.email)
+    if (res.data.code !== 200) return
+    posts.value = res.data.data.posts
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
 }
 
 const handlePraise = async postId => {

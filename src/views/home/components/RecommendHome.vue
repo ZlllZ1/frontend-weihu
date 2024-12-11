@@ -122,7 +122,6 @@
               {{ post.collectNum > 1000 ? '999+' : post.collectNum }}</span
             >
           </div>
-
           <div
             class="flex items-center gap-1 group cursor-pointer"
             @click="copyUrl(post)"
