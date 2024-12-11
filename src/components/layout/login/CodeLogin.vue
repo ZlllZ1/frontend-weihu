@@ -182,7 +182,6 @@ const commit = async () => {
   }
   try {
     const res = await commitError(commitErrorLog.value)
-    console.log(res)
     if (res.data.code !== 200) return
     $toast.success(t('message.commitErrorLogSuccess'))
     showErrorLog.value = false

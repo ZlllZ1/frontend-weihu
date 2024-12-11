@@ -129,13 +129,13 @@
     v-else-if="posts.length === 0 && !loading"
     class="flex items-center justify-center text-gray flex-col gap-3 text-xl w-full h-full"
   >
-    <span>未发布过帖子</span>
+    <span>{{ $t('message.noPublishPost') }}</span>
     <div>
-      <span>前往 </span>
+      <span>{{ $t('message.goto') }} </span>
       <router-link :to="{ name: 'create' }" class="hover:text-blue">
-        创作中心
+        {{ $t('message.creativeCenter') }}
       </router-link>
-      <span> 去发布</span>
+      <span> {{ $t('message.toPublish') }}</span>
     </div>
   </div>
 </template>

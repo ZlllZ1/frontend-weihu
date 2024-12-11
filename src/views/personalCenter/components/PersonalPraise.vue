@@ -129,13 +129,13 @@
     v-else-if="posts.length === 0 && !loading"
     class="flex items-center justify-center text-gray flex-col gap-3 text-xl w-full h-full"
   >
-    <span>未点赞过</span>
+    <span>{{ $t('message.noPraise') }}</span>
     <div>
-      <span>去 </span>
+      <span>{{ $t('message.go') }} </span>
       <router-link :to="{ name: 'home' }" class="hover:text-blue">
-        首页
+        {{ $t('message.home') }}
       </router-link>
-      <span> 看看吧</span>
+      <span> {{ $t('message.haveALook') }}</span>
     </div>
   </div>
 </template>

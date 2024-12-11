@@ -10,17 +10,24 @@
         >
           <div class="flex justify-between items-center">
             <div class="flex gap-x-4">
-              <img
-                :src="
-                  userInfo?.avatar || require('@/assets/avatar_default.png')
-                "
-                alt="user avatar"
-                class="rounded-full w-16 h-16"
-              />
-              <div
-                class="flex flex-col items-center justify-center mr-8 gap-y-1"
+              <router-link
+                :to="{ name: 'userInfo', params: { email: userInfo?.email } }"
               >
-                <span class="truncate w-[300px]">{{ userInfo?.nickname }}</span>
+                <img
+                  :src="
+                    userInfo?.avatar || require('@/assets/avatar_default.png')
+                  "
+                  alt="user avatar"
+                  class="rounded-full w-16 h-16"
+                />
+              </router-link>
+              <div class="flex flex-col justify-center mr-8 gap-y-1">
+                <router-link
+                  :to="{ name: 'userInfo', params: { email: userInfo?.email } }"
+                  ><span class="truncate w-[300px]">{{
+                    userInfo?.nickname
+                  }}</span></router-link
+                >
                 <span class="truncate w-[300px] text-xs text-[#999]">{{
                   userInfo?.introduction
                 }}</span>

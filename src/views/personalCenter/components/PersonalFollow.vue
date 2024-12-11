@@ -4,14 +4,19 @@
       <div class="border-b border-[#EBECED]">
         <div class="px-4 py-2 flex items-center justify-between">
           <div class="flex items-center">
-            <img
-              :src="user?.avatar"
-              alt="avatar"
-              class="rounded-full w-16 h-16 mr-2"
-            />
+            <router-link
+              :to="{ name: 'userInfo', params: { email: user?.email } }"
+              ><img
+                :src="user?.avatar"
+                alt="avatar"
+                class="rounded-full w-16 h-16 mr-2"
+            /></router-link>
             <div class="flex flex-col">
               <div class="flex items-center">
-                <span>{{ user?.nickname }}</span>
+                <router-link
+                  :to="{ name: 'userInfo', params: { email: user?.email } }"
+                  ><span>{{ user?.nickname }}</span></router-link
+                >
                 <img
                   v-if="user.sex === 0 || users.sex === 1"
                   :src="
@@ -31,7 +36,7 @@
           <div class="flex items-center gap-2">
             <div v-if="user?.token" class="flex items-center gap-1">
               <div class="w-0 h-0 border-4 border-[#4CAF50] rounded-full"></div>
-              <span>在线</span>
+              <span>{{ $t('message.online') }}</span>
             </div>
             <span v-else>{{ handleTime(user?.lastLoginDate) }}</span>
             <button
@@ -57,13 +62,13 @@
     v-else-if="users.length === 0 && !loading"
     class="flex items-center justify-center text-gray flex-col gap-3 text-xl w-full h-full"
   >
-    <span>未关注过</span>
+    <span>{{ $t('message.noFollow') }}</span>
     <div>
-      <span>前往 </span>
+      <span>{{ $t('message.goto') }} </span>
       <router-link :to="{ name: 'home' }" class="hover:text-blue">
-        首页
+        {{ $t('message.home') }}
       </router-link>
-      <span> 去看看</span>
+      <span> {{ $t('message.haveALook') }}</span>
     </div>
   </div>
 </template>
