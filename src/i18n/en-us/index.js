@@ -46,6 +46,8 @@ export default {
     dateOfBirth: 'date of birth',
     enterTitle: 'enter a title (up to 200 words)',
     articleSetting: 'article setting',
+    copySuccess: 'copy link successful',
+    copyFail: 'copy link fail',
     uploadCover: 'upload cover',
     imgFormat: 'images can be uploaded in JPEG, JPG, and PNG formats',
     articleIntroduction: 'article introduction',

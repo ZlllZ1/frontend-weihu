@@ -122,7 +122,11 @@
               {{ post.collectNum > 1000 ? '999+' : post.collectNum }}</span
             >
           </div>
-          <div class="flex items-center gap-1 group cursor-pointer">
+
+          <div
+            class="flex items-center gap-1 group cursor-pointer"
+            @click="copyUrl(post)"
+          >
             <img
               class="w-5 h-5 group-hover:text-black"
               src="../images/share.svg"
@@ -142,7 +146,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { getPosts } from '@/api/post'
 import { useStore } from 'vuex'
-import { praisePost, collectPost } from '@/api/post'
+import { praisePost, collectPost, updateShareNum } from '@/api/post'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 
@@ -169,17 +173,31 @@ const getHomePosts = async () => {
   posts.value = res.data.data.posts
 }
 
+const copyUrl = async post => {
+  try {
+    const url = window.location.origin + '/post/' + post.postId
+    navigator.clipboard.writeText(url)
+    if (post.email === userInfo.value.email) {
+      $toast.success(t('message.copySuccess'))
+      return
+    }
+    const res = await updateShareNum(post.postId)
+    if (res.data.code !== 200) return
+    $toast.success(t('message.copySuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.copySuccess'))
+  }
+}
+
 const handlePraise = async postId => {
   try {
     const res = await praisePost(userInfo.value.email, postId)
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {
-        if (post.praise) {
-          post.praiseNum--
-        } else {
-          post.praiseNum++
-        }
+        if (post.praise) post.praiseNum--
+        else post.praiseNum++
         return { ...post, praise: !post.praise }
       }
       return post
@@ -197,11 +215,8 @@ const handleCollect = async postId => {
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {
-        if (post.collect) {
-          post.collectNum--
-        } else {
-          post.collectNum++
-        }
+        if (post.collect) post.collectNum--
+        else post.collectNum++
         return { ...post, collect: !post.collect }
       }
       return post
@@ -231,7 +246,6 @@ onMounted(async () => {
     .title {
       @apply opacity-0;
     }
-
     .title-reminder {
       @apply opacity-100;
     }

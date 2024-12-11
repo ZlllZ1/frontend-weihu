@@ -141,6 +141,8 @@ export default {
     year: '年',
     operateSuccess: '操作成功',
     operateFail: '操作失败',
+    copySuccess: '复制链接成功',
+    copyFail: '复制链接失败',
     month: '月',
     day: '日',
     Monday: '星期一',

@@ -70,3 +70,19 @@ export const getPublishedPosts = (email, page, limit) => {
     { requiresAuth: true }
   )
 }
+
+export const getMyPosts = (email, page, limit) => {
+  return request.get(
+    '/post/getOnesPosts',
+    { email, page, limit },
+    { requiresAuth: true }
+  )
+}
+
+export const updateShareNum = postId => {
+  return request.post(
+    '/post/updateShareNum',
+    { postId },
+    { requiresAuth: true }
+  )
+}
