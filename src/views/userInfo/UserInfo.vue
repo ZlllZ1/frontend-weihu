@@ -125,7 +125,7 @@ const follow = async () => {
   try {
     const res = await followUser(userInfo.value.email, user.value.email)
     if (res.data.code !== 200) return
-    userInfo.value.isFollowing = !userInfo.value.isFollowing
+    user.value.isFollowing = !user.value.isFollowing
     $toast.success(t('message.operateSuccess'))
   } catch (error) {
     console.error(error)

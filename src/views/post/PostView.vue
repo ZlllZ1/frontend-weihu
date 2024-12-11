@@ -162,13 +162,13 @@ const goTop = () => {
 }
 
 const convertToCST = isoString => {
-  const date = new Date(isoString)
-  const utcOffsetMilliseconds = -8 * 60 * 60 * 1000
-  const cstTime = new Date(date.getTime() + utcOffsetMilliseconds)
+  const date = new Date(isoString.replace('Z', '+00:00'))
+  const utcTimestamp = date.getTime()
+  const cstDate = new Date(utcTimestamp)
   const formattedDate =
-    cstTime.toLocaleDateString().replace(/-/g, ' ') +
+    cstDate.toLocaleDateString().replace(/-/g, ' ') +
     ' ' +
-    cstTime
+    cstDate
       .toLocaleTimeString('zh-CN', {
         hour: '2-digit',
         minute: '2-digit',
