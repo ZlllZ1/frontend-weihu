@@ -31,10 +31,10 @@ export const publishSchedulePost = data => {
   })
 }
 
-export const getPosts = (email, page, limit) => {
+export const getPosts = (email, page, limit, type) => {
   return request.get(
     '/post/getPosts',
-    { email, page, limit },
+    { email, page, limit, type },
     { requiresAuth: true }
   )
 }

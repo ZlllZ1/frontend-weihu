@@ -166,7 +166,8 @@ const getHomePosts = async () => {
   const res = await getPosts(
     userInfo.value?.email,
     currentPage.value,
-    limit.value
+    limit.value,
+    'recommend'
   )
   if (res.data.code !== 200) return
   posts.value = res.data.data.posts
