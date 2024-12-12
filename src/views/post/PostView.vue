@@ -36,21 +36,36 @@
                 }}</span>
               </div>
             </div>
-            <div v-if="storeUser?.email !== userInfo?.email">
-              <button
-                v-if="!userInfo?.isFollowing"
-                class="py-1 px-3 bg-red-200 rounded-xl text-sm text-red-600"
-                @click="follow()"
+            <div class="flex flex-col items-center gap-2 w-20">
+              <div
+                class="flex items-center gap-1 group cursor-pointer"
+                @click="copyUrl()"
               >
-                +{{ $t('message.follow') }}
-              </button>
-              <button
-                v-else-if="userInfo?.isFollowing"
-                class="py-1 px-3 rounded-xl bg-warmGray-300 text-sm text-warmGray-600"
-                @click="follow()"
-              >
-                {{ $t('message.cancel') }}{{ $t('message.follow') }}
-              </button>
+                <img
+                  class="w-5 h-5 group-hover:text-black"
+                  src="../home/images/share.svg"
+                  alt="share"
+                />
+                <span class="text-[#8A8A8A] group-hover:text-black">{{
+                  $t('message.share')
+                }}</span>
+              </div>
+              <div v-if="storeUser?.email !== userInfo?.email">
+                <button
+                  v-if="!userInfo?.isFollowing"
+                  class="py-1 px-3 bg-red-200 rounded-xl text-sm text-red-600"
+                  @click="follow()"
+                >
+                  +{{ $t('message.follow') }}
+                </button>
+                <button
+                  v-else-if="userInfo?.isFollowing"
+                  class="py-1 px-3 rounded-xl bg-warmGray-300 text-sm text-warmGray-600"
+                  @click="follow()"
+                >
+                  {{ $t('message.cancel') }}{{ $t('message.follow') }}
+                </button>
+              </div>
             </div>
           </div>
           <div class="flex items-center text-[#999] mt-1 justify-between">
@@ -192,7 +207,12 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useStore } from 'vuex'
 import { followUser } from '@/api/user'
-import { getPostInfo, praisePost, collectPost } from '@/api/post'
+import {
+  getPostInfo,
+  praisePost,
+  collectPost,
+  updateShareNum
+} from '@/api/post'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 
@@ -206,6 +226,23 @@ const postId = window.location.pathname.split('/')[2]
 const postInfo = ref(null)
 const userInfo = ref(null)
 const commentText = ref('')
+
+const copyUrl = async () => {
+  try {
+    const url = window.location.origin + '/post/' + postInfo.value.postId
+    navigator.clipboard.writeText(url)
+    if (postInfo.value.email === userInfo.value.email) {
+      $toast.success(t('message.copySuccess'))
+      return
+    }
+    const res = await updateShareNum(postInfo.value.postId)
+    if (res.data.code !== 200) return
+    $toast.success(t('message.copySuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.copySuccess'))
+  }
+}
 
 const getInfo = async () => {
   const res = await getPostInfo(postId, storeUser.value.email)
