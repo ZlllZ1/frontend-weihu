@@ -63,7 +63,7 @@
         <div v-else class="relative clickOut ml-2">
           <img
             :src="userInfo.avatar || require('@/assets/avatar_default.png')"
-            alt="用户头像"
+            alt="user avatar"
             class="rounded-full w-8 h-8 cursor-pointer"
             @click.stop="toggleDropdown"
           />

@@ -84,7 +84,6 @@
               ></router-link
             >
             <div
-              :to="{ name: 'post', params: { postId: post.postId } }"
               class="flex items-center gap-1 group cursor-pointer"
               @click="handlePraise(post.postId)"
             >
@@ -105,7 +104,6 @@
               >
             </div>
             <div
-              :to="{ name: 'post', params: { postId: post.postId } }"
               class="flex items-center gap-1 group cursor-pointer"
               @click="handleCollect(post.postId)"
             >

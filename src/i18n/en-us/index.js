@@ -59,6 +59,7 @@ export default {
     noFriend: 'no friend',
     online: 'online',
     age: 'years old',
+    commentText: 'enter comments',
     know: 'to get to know',
     noPraise: 'no like',
     uploadCover: 'upload cover',

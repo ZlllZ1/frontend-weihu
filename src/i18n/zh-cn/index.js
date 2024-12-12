@@ -28,6 +28,7 @@ export default {
     noFriend: '没有好友',
     online: '在线',
     age: '岁',
+    commentText: '输入评论',
     haveALook: '看看吧',
     viewAllNotifications: '查看所有通知',
     myPrivateMessage: '我的私信',

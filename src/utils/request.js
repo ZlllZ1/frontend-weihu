@@ -107,10 +107,8 @@ class Request {
         ) {
           originalRequest._retry = true
           const newToken = await this.refreshToken()
-          console.log(newToken)
           if (newToken) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`
-            console.log(originalRequest)
             return this.instance(originalRequest)
           } else {
             eventBus.emit('openLogin')

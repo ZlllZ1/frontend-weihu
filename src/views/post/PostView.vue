@@ -22,12 +22,15 @@
                 />
               </router-link>
               <div class="flex flex-col justify-center mr-8 gap-y-1">
-                <router-link
-                  :to="{ name: 'userInfo', params: { email: userInfo?.email } }"
-                  ><span class="truncate w-[300px]">{{
-                    userInfo?.nickname
-                  }}</span></router-link
-                >
+                <div class="truncate w-[300px]">
+                  <router-link
+                    :to="{
+                      name: 'userInfo',
+                      params: { email: userInfo?.email }
+                    }"
+                    >{{ userInfo?.nickname }}</router-link
+                  >
+                </div>
                 <span class="truncate w-[300px] text-xs text-[#999]">{{
                   userInfo?.introduction
                 }}</span>
@@ -97,9 +100,66 @@
           </div>
         </div>
         <div
-          class="fixed bottom-0 h-16 bg-white w-[672px] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm"
+          class="fixed flex items-center justify-between py-1 px-2 bottom-0 h-16 bg-white w-[672px] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm"
         >
-          操作区域
+          <div class="nav-item inline-flex items-center justify-between gap-4">
+            <textarea
+              v-model="commentText"
+              type="text"
+              :placeholder="$t('message.commentText')"
+              class="w-[360px] outline-none rounded-xl overflow-hidden scroll-auto px-2 pt-2 resize-none text-sm"
+            ></textarea>
+            <button
+              class="h-8 w-20 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
+              @click="comment"
+            >
+              {{ $t('message.comment') }}
+            </button>
+            <div
+              class="flex items-center gap-1 group cursor-pointer"
+              @click="handlePraise(postInfo?.postId)"
+            >
+              <img
+                class="w-5 h-5 group-hover:text-black"
+                :src="
+                  postInfo.isPraise
+                    ? require('../home/images/hasPraise.svg')
+                    : require('../home/images/praise.svg')
+                "
+                alt="praise"
+              />
+              <span
+                class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                :class="{ 'text-[#FE4144]': postInfo?.isPraise }"
+                >{{ $t('message.like') }}
+                {{
+                  postInfo?.praiseNum > 1000 ? '999+' : postInfo?.praiseNum
+                }}</span
+              >
+            </div>
+            <div
+              class="flex items-center gap-1 group cursor-pointer"
+              @click="handleCollect(postInfo?.postId)"
+            >
+              <img
+                class="w-5 h-5 group-hover:text-black"
+                :src="
+                  postInfo.isCollect
+                    ? require('../home/images/hasCollect.svg')
+                    : require('../home/images/collect.svg')
+                "
+                alt="collect"
+              />
+              <span
+                class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
+                :class="{ 'text-[#FF8C00]': postInfo?.isCollect }"
+                >{{ $t('message.collect') }}
+                {{
+                  postInfo?.collectNum > 1000 ? '999+' : postInfo?.collectNum
+                }}</span
+              >
+            </div>
+          </div>
         </div>
       </div>
       <div ref="rightColumn" class="w-[328px]">
@@ -132,7 +192,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useStore } from 'vuex'
 import { followUser } from '@/api/user'
-import { getPostInfo } from '@/api/post'
+import { getPostInfo, praisePost, collectPost } from '@/api/post'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 
@@ -145,6 +205,7 @@ const isFixed = ref(false)
 const postId = window.location.pathname.split('/')[2]
 const postInfo = ref(null)
 const userInfo = ref(null)
+const commentText = ref('')
 
 const getInfo = async () => {
   const res = await getPostInfo(postId, storeUser.value.email)
@@ -164,6 +225,34 @@ const goTop = () => {
     top: 0,
     behavior: 'smooth'
   })
+}
+
+const handlePraise = async postId => {
+  try {
+    const res = await praisePost(userInfo.value.email, postId)
+    if (res.data.code !== 200) return
+    if (postInfo.value.isPraise) postInfo.value.praiseNum--
+    else postInfo.value.praiseNum++
+    postInfo.value.isPraise = !postInfo.value.isPraise
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
+}
+
+const handleCollect = async postId => {
+  try {
+    const res = await collectPost(userInfo.value.email, postId)
+    if (res.data.code !== 200) return
+    if (postInfo.value.isCollect) postInfo.value.collectNum--
+    else postInfo.value.collectNum++
+    postInfo.value.isCollect = !postInfo.value.isCollect
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
 }
 
 const convertToCST = isoString => {
@@ -195,6 +284,10 @@ const follow = async () => {
   }
 }
 
+const comment = async () => {
+  console.log('评论')
+}
+
 onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
   await getInfo()
@@ -204,3 +297,14 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 </script>
+
+<style lang="scss" scoped>
+.nav-item {
+  textarea {
+    @apply bg-[#F8F8FA] border border-[#F8F8FA] transition-all duration-300 ease-in-out;
+    &:focus {
+      @apply border-[#8A96A9] bg-white outline-transparent outline-0;
+    }
+  }
+}
+</style>
