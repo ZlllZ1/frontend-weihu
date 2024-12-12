@@ -44,8 +44,10 @@ const userLogout = async () => {
     if (res.data.code !== 200) return
     store.commit('user/setUserInfo', null)
     store.commit('user/setToken', null)
+    store.commit('user/setRefreshToken', null)
     localStorage.removeItem('userInfo')
     localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
     $toast.success(t('message.logoutSuccess'))
     location.reload()
   } catch (err) {

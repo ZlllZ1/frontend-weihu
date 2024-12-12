@@ -4,9 +4,9 @@
     class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
   >
     <div class="w-full flex gap-x-2">
-      <div class="w-2/3 min-h-[100vh] flex flex-col gap-y-4">
+      <div class="w-2/3 min-h-[100vh] flex flex-col gap-y-4 mb-16">
         <div
-          class="p-3 overflow-hidden w-full bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm"
+          class="p-3 overflow-hidden bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm"
         >
           <div class="flex justify-between items-center">
             <div class="flex gap-x-4">
@@ -95,6 +95,11 @@
             </div>
             <div class="p-2">评论内容</div>
           </div>
+        </div>
+        <div
+          class="fixed bottom-0 h-16 bg-white w-[672px] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm"
+        >
+          操作区域
         </div>
       </div>
       <div ref="rightColumn" class="w-[328px]">

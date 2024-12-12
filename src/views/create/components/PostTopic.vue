@@ -249,11 +249,8 @@ const publish = async () => {
       delta
     }
     let res
-    if (isScheduled.value) {
-      res = await publishSchedulePost(data)
-    } else {
-      res = await publishPost(data)
-    }
+    if (isScheduled.value) res = await publishSchedulePost(data)
+    else res = await publishPost(data)
     if (res.data.code !== 200) return
     $toast.success(t('message.publishSuccess'))
     title.value = ''

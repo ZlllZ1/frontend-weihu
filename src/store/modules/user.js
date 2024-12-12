@@ -2,7 +2,8 @@ const userModule = {
   namespaced: true,
   state: () => ({
     userInfo: JSON.parse(localStorage.getItem('userInfo')) || null,
-    token: localStorage.getItem('token') || null
+    token: localStorage.getItem('token') || null,
+    refreshToken: localStorage.getItem('refreshToken') || null
   }),
   getters: {},
   mutations: {
@@ -11,6 +12,9 @@ const userModule = {
     },
     setToken(state, token) {
       state.token = token
+    },
+    setRefreshToken(state, refreshToken) {
+      state.refreshToken = refreshToken
     },
     updateSetting(state, setting) {
       state.userInfo.setting = { ...state.userInfo.setting, ...setting }

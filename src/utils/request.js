@@ -17,9 +17,11 @@ class Request {
   clearUserInfo() {
     if (this.store) {
       this.store.commit('user/setToken', '')
+      this.store.commit('user/setRefreshToken', '')
       this.store.commit('user/setUserInfo', null)
     }
     localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
     localStorage.removeItem('userInfo')
   }
 
@@ -40,13 +42,31 @@ class Request {
     eventBus.emit('closeLoading')
   }
 
+  async refreshToken() {
+    try {
+      const response = await axios.post('/refreshToken', {
+        refreshToken: localStorage.getItem('refreshToken')
+      })
+      const { token, refreshToken } = response.data
+      this.store.commit('user/setToken', token)
+      this.store.commit('user/setRefreshToken', refreshToken)
+      localStorage.setItem('token', token)
+      localStorage.setItem('refreshToken', refreshToken)
+      return token
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        this.clearUserInfo()
+        eventBus.emit('openLogin')
+      }
+      return null
+    }
+  }
+
   interceptors() {
     this.instance.interceptors.request.use(
       config => {
         this.pendingRequests++
-        if (this.pendingRequests === 1) {
-          this.showLoading()
-        }
+        if (this.pendingRequests === 1) this.showLoading()
         if (config.requiresAuth) {
           if (!this.store || !this.store.state.user.token) {
             eventBus.emit('openLogin')
@@ -58,9 +78,7 @@ class Request {
       },
       error => {
         this.pendingRequests--
-        if (this.pendingRequests === 0) {
-          this.hideLoading()
-        }
+        if (this.pendingRequests === 0) this.hideLoading()
         return Promise.reject(error)
       }
     )
@@ -68,29 +86,37 @@ class Request {
     this.instance.interceptors.response.use(
       response => {
         this.pendingRequests--
-        if (this.pendingRequests === 0) {
-          this.hideLoading()
-        }
+        if (this.pendingRequests === 0) this.hideLoading()
         return response
       },
-      error => {
+      async error => {
         this.pendingRequests--
-        if (this.pendingRequests === 0) {
-          this.hideLoading()
-        }
+        if (this.pendingRequests === 0) this.hideLoading()
         if (error.requiresAuth) {
           eventBus.emit('openLogin')
           return Promise.reject({ requiresAuth: true })
         }
-        if (error.response && error.response.status === 401) {
-          this.clearUserInfo()
-          eventBus.emit('openLogin')
-          return Promise.reject({ requiresAuth: true })
+        const originalRequest = error.config
+        if (
+          error.response &&
+          error.response.status === 401 &&
+          !originalRequest._retry
+        ) {
+          originalRequest._retry = true
+          const newToken = await this.refreshToken()
+          if (newToken) {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`
+            return this.instance(originalRequest)
+          } else {
+            eventBus.emit('openLogin')
+            return Promise.reject({ requiresAuth: true })
+          }
         }
         return Promise.reject(error)
       }
     )
   }
+
   get(url, params, config = {}) {
     return this.instance.get(url, { params, ...config })
   }
