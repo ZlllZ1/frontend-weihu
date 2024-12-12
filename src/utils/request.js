@@ -44,10 +44,13 @@ class Request {
 
   async refreshToken() {
     try {
-      const response = await axios.post('/refreshToken', {
-        refreshToken: localStorage.getItem('refreshToken')
-      })
-      const { token, refreshToken } = response.data
+      const response = await axios.post(
+        'http://127.0.0.1:3007/login/refreshToken',
+        {
+          refreshToken: localStorage.getItem('refreshToken')
+        }
+      )
+      const { token, refreshToken } = response.data.data
       this.store.commit('user/setToken', token)
       this.store.commit('user/setRefreshToken', refreshToken)
       localStorage.setItem('token', token)
@@ -104,8 +107,10 @@ class Request {
         ) {
           originalRequest._retry = true
           const newToken = await this.refreshToken()
+          console.log(newToken)
           if (newToken) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`
+            console.log(originalRequest)
             return this.instance(originalRequest)
           } else {
             eventBus.emit('openLogin')

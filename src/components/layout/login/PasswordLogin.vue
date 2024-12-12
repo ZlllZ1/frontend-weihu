@@ -193,7 +193,7 @@ const login = async () => {
     store.commit('user/setToken', res.data.data.token)
     store.commit('user/setRefreshToken', res.data.data.refreshToken)
     localStorage.setItem('token', res.data.data.token)
-    localStorage.setItem('token', res.data.data.refreshToken)
+    localStorage.setItem('refreshToken', res.data.data.refreshToken)
     const { data } = await getUserInfo(account.value)
     if (data.code !== 200) return
     store.commit('user/setUserInfo', data.data)
