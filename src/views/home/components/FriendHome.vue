@@ -1,8 +1,11 @@
 <template>
-  <template v-if="posts.length">
+  <div v-if="loading" class="flex items-center justify-center py-4 h-full">
+    {{ $t('message.loading') }}
+  </div>
+  <template v-else-if="posts.length">
     <template v-for="post in posts" :key="post.postId">
       <div
-        class="p-4 border-t border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
+        class="p-4 border-b border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
       >
         <div class="title-container">
           <div class="title">
@@ -143,14 +146,20 @@
   </template>
   <div
     v-else
-    class="flex w-full h-full items-center justify-center text-gray text-xl"
+    class="flex items-center justify-center text-gray py-4 text-lg h-full"
   >
-    暂无数据
+    {{ $t('message.noPosts') }}
+  </div>
+  <div
+    v-if="noMore && posts.length"
+    class="flex items-center justify-center text-gray py-4 text-lg"
+  >
+    {{ $t('message.noMore') }}
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, onUnmounted } from 'vue'
 import { getPosts } from '@/api/post'
 import { useStore } from 'vuex'
 import { praisePost, collectPost, updateShareNum } from '@/api/post'
@@ -162,8 +171,11 @@ const $toast = useToast()
 const store = useStore()
 const posts = ref([])
 const currentPage = ref(1)
-const limit = computed(() => currentPage.value * 10)
+const limit = ref(10)
 const userInfo = computed(() => store.state.user.userInfo)
+const noMore = ref(false)
+const isInitialLoad = ref(true)
+const loading = ref(false)
 
 const clipIntroduction = introduction => {
   if (introduction.length > 80) return introduction.slice(0, 80) + '...'
@@ -171,14 +183,22 @@ const clipIntroduction = introduction => {
 }
 
 const getHomePosts = async () => {
-  const res = await getPosts(
-    userInfo.value?.email,
-    currentPage.value,
-    limit.value,
-    'friend'
-  )
-  if (res.data.code !== 200) return
-  posts.value = res.data.data.posts
+  try {
+    loading.value = true
+    const res = await getPosts(
+      userInfo.value?.email,
+      currentPage.value,
+      limit.value,
+      'friend'
+    )
+    if (res.data.code !== 200) return
+    posts.value = [...posts.value, ...res.data.data.posts]
+    if (res.data.data.posts.length < limit.value) noMore.value = true
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
 }
 
 const copyUrl = async post => {
@@ -236,8 +256,47 @@ const handleCollect = async postId => {
   }
 }
 
-onMounted(async () => {
+const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+const loadMore = async () => {
+  if (noMore.value || isInitialLoad.value) return
+  currentPage.value++
   await getHomePosts()
+}
+
+const handleScroll = debounce(async () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  if (
+    documentHeight - windowHeight - scrollTop < 50 &&
+    !noMore.value &&
+    !isInitialLoad.value
+  ) {
+    await loadMore()
+  }
+}, 200)
+
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+  if (isInitialLoad.value) {
+    await getHomePosts()
+    isInitialLoad.value = false
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 

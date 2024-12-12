@@ -8,6 +8,10 @@ class Request {
     this.pendingRequests = 0
     this.loadingTimer = null
     this.loadingDelay = 200
+    this.isRefreshing = false
+    this.refreshSubscribers = []
+    this.lastRefreshTime = 0
+    this.refreshCooldown = 5000
   }
 
   setStore(store) {
@@ -43,6 +47,14 @@ class Request {
   }
 
   async refreshToken() {
+    if (this.isRefreshing)
+      return new Promise(resolve => {
+        this.refreshSubscribers.push(resolve)
+      })
+    const now = Date.now()
+    if (now - this.lastRefreshTime < this.refreshCooldown) return null
+    this.isRefreshing = true
+    this.lastRefreshTime = now
     try {
       const response = await axios.post(
         'http://127.0.0.1:3007/login/refreshToken',
@@ -55,13 +67,19 @@ class Request {
       this.store.commit('user/setRefreshToken', refreshToken)
       localStorage.setItem('token', token)
       localStorage.setItem('refreshToken', refreshToken)
+      this.refreshSubscribers.forEach(callback => callback(token))
+      this.refreshSubscribers = []
       return token
     } catch (error) {
       if (error.response && error.response.status === 401) {
         this.clearUserInfo()
         eventBus.emit('openLogin')
       }
+      this.refreshSubscribers.forEach(callback => callback(null))
+      this.refreshSubscribers = []
       return null
+    } finally {
+      this.isRefreshing = false
     }
   }
 

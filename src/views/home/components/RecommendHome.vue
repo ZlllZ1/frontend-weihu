@@ -1,149 +1,168 @@
 <template>
-  <template v-for="post in posts" :key="post.postId">
-    <div
-      class="p-4 border-t border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
-    >
-      <div class="title-container">
-        <div class="title">
-          {{ post.title }}
+  <div v-if="loading" class="flex items-center justify-center py-4 h-full">
+    {{ $t('message.loading') }}
+  </div>
+  <template v-else-if="posts.length">
+    <template v-for="post in posts" :key="post.postId">
+      <div
+        id="post-container"
+        class="p-4 border-b border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
+      >
+        <div class="title-container">
+          <div class="title">
+            {{ post.title }}
+          </div>
+          <span class="title-reminder">
+            {{ post.title }}
+          </span>
         </div>
-        <span class="title-reminder">
-          {{ post.title }}
-        </span>
-      </div>
-      <div class="py-2 flex">
-        <router-link :to="{ name: 'post', params: { postId: post.postId } }">
-          <img
-            :src="post.coverUrl"
-            alt="post cover"
-            class="w-[190px] h-[105px]"
-          />
-        </router-link>
-        <div class="py-1 px-2 flex-1 relative">
-          <router-link
-            :to="{ name: 'post', params: { postId: post.postId } }"
-            class="inline-flex"
-          >
-            <span class="text-[#8A8A8A] hover:text-black break-all">
-              {{ clipIntroduction(post.introduction) }}
-            </span>
+        <div class="py-2 flex">
+          <router-link :to="{ name: 'post', params: { postId: post.postId } }">
+            <img
+              :src="post.coverUrl"
+              alt="post cover"
+              class="w-[190px] h-[105px]"
+            />
           </router-link>
-          <router-link
-            :to="{ name: 'post', params: { postId: post.postId } }"
-            class="absolute right-0 bottom-1 text-[#09408E] hover:text-blue"
-          >
-            {{ $t('message.readFull') }} &gt;
-          </router-link>
+          <div class="py-1 px-2 flex-1 relative">
+            <router-link
+              :to="{ name: 'post', params: { postId: post.postId } }"
+              class="inline-flex"
+            >
+              <span class="text-[#8A8A8A] hover:text-black break-all">
+                {{ clipIntroduction(post.introduction) }}
+              </span>
+            </router-link>
+            <router-link
+              :to="{ name: 'post', params: { postId: post.postId } }"
+              class="absolute right-0 bottom-1 text-[#09408E] hover:text-blue"
+            >
+              {{ $t('message.readFull') }} &gt;
+            </router-link>
+          </div>
         </div>
-      </div>
-      <div class="flex justify-between items-center">
-        <div class="flex items-center gap-x-3">
-          <router-link
-            :to="{ name: 'userInfo', params: { email: post?.user?.email } }"
-            ><img
-              :src="post.user.avatar || require('@/assets/avatar_default.png')"
-              alt="user avatar"
-              class="rounded-full w-8 h-8"
-          /></router-link>
-          <div class="flex items-center">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-x-3">
             <router-link
               :to="{ name: 'userInfo', params: { email: post?.user?.email } }"
-              class="truncate w-16 text-[#8A8A8A] hover:text-black"
-              >{{ post.user.nickname }}</router-link
-            >
-            <img
-              v-if="post.user.isFollowing"
-              src="../images/follow.svg"
-              alt="follow"
-              class="rounded-full w-4 h-4"
-            />
-            <img
-              v-if="post.user.email === userInfo.email"
-              src="../images/self.svg"
-              alt="self"
-              class="rounded-full w-4 h-4"
-            />
+              ><img
+                :src="
+                  post.user.avatar || require('@/assets/avatar_default.png')
+                "
+                alt="user avatar"
+                class="rounded-full w-8 h-8"
+            /></router-link>
+            <div class="flex items-center">
+              <router-link
+                :to="{ name: 'userInfo', params: { email: post?.user?.email } }"
+                class="truncate w-16 text-[#8A8A8A] hover:text-black"
+                >{{ post.user.nickname }}</router-link
+              >
+              <img
+                v-if="post.user.isFollowing"
+                src="../images/follow.svg"
+                alt="follow"
+                class="rounded-full w-4 h-4"
+              />
+              <img
+                v-if="post.user.email === userInfo?.email"
+                src="../images/self.svg"
+                alt="self"
+                class="rounded-full w-4 h-4"
+              />
+            </div>
           </div>
-        </div>
-        <div class="flex items-center justify-end gap-12">
-          <router-link
-            :to="{ name: 'post', params: { postId: post.postId } }"
-            class="flex items-center gap-1 group"
-          >
-            <img
-              class="w-5 h-5 group-hover:text-black"
-              src="../images/comment.svg"
-              alt="comment"
-            />
-            <span class="text-[#8A8A8A] group-hover:text-blue"
-              >{{ $t('message.comment') }}
-              {{ post.commentNum > 1000 ? '999+' : post.commentNum }}</span
-            ></router-link
-          >
-          <div
-            class="flex items-center gap-1 group cursor-pointer"
-            @click="handlePraise(post.postId)"
-          >
-            <img
-              class="w-5 h-5 group-hover:text-black"
-              :src="
-                post.praise
-                  ? require('../images/hasPraise.svg')
-                  : require('../images/praise.svg')
-              "
-              alt="praise"
-            />
-            <span
-              class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-              :class="{ 'text-[#FE4144]': post.praise }"
-              >{{ $t('message.like') }}
-              {{ post.praiseNum > 1000 ? '999+' : post.praiseNum }}</span
+          <div class="flex items-center justify-end gap-12">
+            <router-link
+              :to="{ name: 'post', params: { postId: post.postId } }"
+              class="flex items-center gap-1 group"
             >
-          </div>
-          <div
-            class="flex items-center gap-1 group cursor-pointer"
-            @click="handleCollect(post.postId)"
-          >
-            <img
-              class="w-5 h-5 group-hover:text-black"
-              :src="
-                post.collect
-                  ? require('../images/hasCollect.svg')
-                  : require('../images/collect.svg')
-              "
-              alt="collect"
-            />
-            <span
-              class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
-              :class="{ 'text-[#FF8C00]': post.collect }"
-              >{{ $t('message.collect') }}
-              {{ post.collectNum > 1000 ? '999+' : post.collectNum }}</span
+              <img
+                class="w-5 h-5 group-hover:text-black"
+                src="../images/comment.svg"
+                alt="comment"
+              />
+              <span class="text-[#8A8A8A] group-hover:text-blue"
+                >{{ $t('message.comment') }}
+                {{ post.commentNum > 1000 ? '999+' : post.commentNum }}</span
+              ></router-link
             >
-          </div>
-          <div
-            class="flex items-center gap-1 group cursor-pointer"
-            @click="copyUrl(post)"
-          >
-            <img
-              class="w-5 h-5 group-hover:text-black"
-              src="../images/share.svg"
-              alt="share"
-            />
-            <span class="text-[#8A8A8A] group-hover:text-black">{{
-              $t('message.share')
-            }}</span>
+            <div
+              class="flex items-center gap-1 group cursor-pointer"
+              @click="handlePraise(post.postId)"
+            >
+              <img
+                class="w-5 h-5 group-hover:text-black"
+                :src="
+                  post.praise
+                    ? require('../images/hasPraise.svg')
+                    : require('../images/praise.svg')
+                "
+                alt="praise"
+              />
+              <span
+                class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                :class="{ 'text-[#FE4144]': post.praise }"
+                >{{ $t('message.like') }}
+                {{ post.praiseNum > 1000 ? '999+' : post.praiseNum }}</span
+              >
+            </div>
+            <div
+              class="flex items-center gap-1 group cursor-pointer"
+              @click="handleCollect(post.postId)"
+            >
+              <img
+                class="w-5 h-5 group-hover:text-black"
+                :src="
+                  post.collect
+                    ? require('../images/hasCollect.svg')
+                    : require('../images/collect.svg')
+                "
+                alt="collect"
+              />
+              <span
+                class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
+                :class="{ 'text-[#FF8C00]': post.collect }"
+                >{{ $t('message.collect') }}
+                {{ post.collectNum > 1000 ? '999+' : post.collectNum }}</span
+              >
+            </div>
+            <div
+              class="flex items-center gap-1 group cursor-pointer"
+              @click="copyUrl(post)"
+            >
+              <img
+                class="w-5 h-5 group-hover:text-black"
+                src="../images/share.svg"
+                alt="share"
+              />
+              <span class="text-[#8A8A8A] group-hover:text-black">{{
+                $t('message.share')
+              }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </template>
+  <div
+    v-else
+    class="flex items-center justify-center text-gray py-4 text-lg h-full"
+  >
+    {{ $t('message.noPosts') }}
+  </div>
+  <div
+    v-if="noMore && posts.length"
+    class="flex items-center justify-center text-gray py-4 text-lg"
+  >
+    {{ $t('message.noMore') }}
+  </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { getPosts } from '@/api/post'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from 'vuex'
-import { praisePost, collectPost, updateShareNum } from '@/api/post'
+import { getPosts, praisePost, collectPost, updateShareNum } from '@/api/post'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 
@@ -152,8 +171,11 @@ const $toast = useToast()
 const store = useStore()
 const posts = ref([])
 const currentPage = ref(1)
-const limit = computed(() => currentPage.value * 10)
+const limit = ref(10)
 const userInfo = computed(() => store.state.user.userInfo)
+const noMore = ref(false)
+const isInitialLoad = ref(true)
+const loading = ref(false)
 
 const clipIntroduction = introduction => {
   if (introduction.length > 80) return introduction.slice(0, 80) + '...'
@@ -161,14 +183,22 @@ const clipIntroduction = introduction => {
 }
 
 const getHomePosts = async () => {
-  const res = await getPosts(
-    userInfo.value?.email,
-    currentPage.value,
-    limit.value,
-    'recommend'
-  )
-  if (res.data.code !== 200) return
-  posts.value = res.data.data.posts
+  try {
+    loading.value = true
+    const res = await getPosts(
+      userInfo.value?.email,
+      currentPage.value,
+      limit.value,
+      'recommend'
+    )
+    if (res.data.code !== 200) return
+    posts.value = [...posts.value, ...res.data.data.posts]
+    if (res.data.data.posts.length < limit.value) noMore.value = true
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
 }
 
 const copyUrl = async post => {
@@ -226,8 +256,47 @@ const handleCollect = async postId => {
   }
 }
 
-onMounted(async () => {
+const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+const loadMore = async () => {
+  if (noMore.value || isInitialLoad.value) return
+  currentPage.value++
   await getHomePosts()
+}
+
+const handleScroll = debounce(async () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  if (
+    documentHeight - windowHeight - scrollTop < 50 &&
+    !noMore.value &&
+    !isInitialLoad.value
+  ) {
+    await loadMore()
+  }
+}, 200)
+
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+  if (isInitialLoad.value) {
+    await getHomePosts()
+    isInitialLoad.value = false
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 

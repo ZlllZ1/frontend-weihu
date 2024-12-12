@@ -326,6 +326,9 @@ const comment = async () => {
 }
 
 onMounted(async () => {
+  window.scrollTo({
+    top: 0
+  })
   window.addEventListener('scroll', handleScroll)
   await getInfo()
 })
