@@ -1,5 +1,8 @@
 <template>
-  <template v-if="users.length">
+  <div v-if="loading" class="flex items-center justify-center py-4 h-full">
+    {{ $t('message.loading') }}
+  </div>
+  <template v-else-if="users.length">
     <div v-for="user in users" :key="user?.email">
       <div class="border-b border-[#EBECED]">
         <div class="px-4 py-2 flex items-center justify-between">
@@ -71,10 +74,16 @@
       <span> {{ $t('message.haveALook') }}</span>
     </div>
   </div>
+  <div
+    v-if="noMore && users.length"
+    class="flex items-center justify-center text-gray py-4 text-lg"
+  >
+    {{ $t('message.noMore') }}
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { getOnesInfo } from '@/api/user'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
@@ -87,6 +96,10 @@ const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
 const users = ref([])
 const loading = ref(false)
+const noMore = ref(false)
+const isInitialLoad = ref(true)
+const currentPage = ref(1)
+const limit = ref(10)
 
 const handleTime = time => {
   const givenTime = new Date(time)
@@ -130,9 +143,15 @@ const getInfo = async () => {
   try {
     if (loading.value) return
     loading.value = true
-    const res = await getOnesInfo(userInfo?.value.email, 1, 10, 'follow')
+    const res = await getOnesInfo(
+      userInfo?.value.email,
+      currentPage.value,
+      limit.value,
+      'follow'
+    )
     if (res.data.code !== 200) return
-    users.value = res.data.data.users
+    users.value = [...users.value, ...res.data.data.users]
+    if (res.data.data.users.length < limit.value) noMore.value = true
   } catch (error) {
     console.error(error)
   } finally {
@@ -140,7 +159,46 @@ const getInfo = async () => {
   }
 }
 
-onMounted(async () => {
+const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+const loadMore = async () => {
+  if (noMore.value || isInitialLoad.value) return
+  currentPage.value++
   await getInfo()
+}
+
+const handleScroll = debounce(async () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  if (
+    documentHeight - windowHeight - scrollTop < 50 &&
+    !noMore.value &&
+    !isInitialLoad.value
+  ) {
+    await loadMore()
+  }
+}, 200)
+
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+  if (isInitialLoad.value) {
+    await getInfo()
+    isInitialLoad.value = false
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
