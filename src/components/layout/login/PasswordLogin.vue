@@ -198,7 +198,6 @@ const login = async () => {
     if (data.code !== 200) return
     store.commit('user/setUserInfo', data.data)
     localStorage.setItem('userInfo', JSON.stringify(data.data))
-    $toast.success(t('message.loginSuccess'))
     emits('closeLogin')
     location.reload()
   } catch (error) {
