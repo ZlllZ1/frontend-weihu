@@ -78,7 +78,7 @@
                 alt="eye"
                 class="w-4 h-4"
               />
-              <span class="text-[14px]">{{ postInfo.lookNum }}</span>
+              <span class="text-[14px]">{{ postInfo?.lookNum }}</span>
             </div>
           </div>
           <div class="mt-8">
@@ -98,8 +98,8 @@
             <span class="px-3">{{ $t('message.main') }}</span>
             <div class="flex-1 h-px bg-[#EBECED] ml-2"></div>
           </div>
-          <div class="mt-6 pb-[180px]">
-            <span v-html="postInfo.content"></span>
+          <div class="mt-6 pb-[80px]">
+            <span v-html="postInfo?.content"></span>
           </div>
         </div>
         <div
@@ -108,28 +108,231 @@
           <div class="border border-[#EBECED] w-full h-full rounded-sm">
             <div class="border-b border-[#EBECED] p-4">
               <span class="text-lg"
-                >{{ postInfo.commentNum }} {{ $t('message.tiaoComment') }}</span
+                >{{ postInfo?.commentNum }}
+                {{ $t('message.tiaoComment') }}</span
               >
             </div>
-            <div class="p-2">评论内容</div>
+            <template v-if="commentList?.length">
+              <template v-for="comment in commentList" :key="comment?._id">
+                <div
+                  class="flex flex-col gap-2 items-center border-b border-[#EBECED] px-3 py-2"
+                >
+                  <div class="flex items-center gap-2 w-full">
+                    <a
+                      :href="`/userInfo/${comment?.user?.email}`"
+                      target="_blank"
+                      ><img
+                        :src="comment?.user?.avatar"
+                        alt="avatar"
+                        class="rounded-full w-10 h-10"
+                    /></a>
+                    <div class="flex flex-col gap-y-1 w-full">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <div class="truncate max-w-64">
+                            <a
+                              :href="`/userInfo/${comment?.user?.email}`"
+                              target="_blank"
+                            >
+                              {{ comment?.user?.nickname }}</a
+                            >
+                          </div>
+                          <span
+                            v-if="comment?.user?.own"
+                            class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-lg"
+                            >{{ $t('message.owner') }}</span
+                          >
+                        </div>
+                        <div
+                          class="flex items-center gap-1 group cursor-pointer"
+                          @click="
+                            praiseComment(comment?._id, comment?.isPraise)
+                          "
+                        >
+                          <img
+                            class="w-5 h-5 group-hover:text-black"
+                            :src="
+                              comment?.isPraise
+                                ? require('../home/images/hasPraise.svg')
+                                : require('../home/images/praise.svg')
+                            "
+                            alt="praise"
+                          />
+                          <span
+                            class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                            :class="{ 'text-[#FE4144]': comment?.isPraise }"
+                            >{{ $t('message.like') }}
+                            {{
+                              comment?.praiseNum > 1000
+                                ? '999+'
+                                : comment?.praiseNum
+                            }}</span
+                          >
+                        </div>
+                      </div>
+                      <div>
+                        <span>{{ comment?.content }}</span>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <span class="text-gray text-xs">{{
+                          convertToCST(comment?.commentDate)
+                        }}</span>
+                        <button
+                          class="text-gray hover:text-blue"
+                          @click="
+                            replyComment(
+                              comment?._id,
+                              comment?.user.email,
+                              comment?.user.nickname
+                            )
+                          "
+                        >
+                          {{ $t('message.reply') }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    v-if="comment?.replies.length"
+                    class="bg-warmGray-100 w-full rounded-lg py-1 px-2 text-sm"
+                  >
+                    <template
+                      v-for="reply in comment.replies.slice(0, 3)"
+                      :key="reply?._id"
+                    >
+                      <div
+                        class="flex items-center border-b border-warmGray-400 flex-col gap-1 py-1"
+                      >
+                        <div class="flex items-center gap-2 w-full">
+                          <div class="flex items-center">
+                            <a
+                              :href="`/userInfo/${reply?.email}`"
+                              target="_blank"
+                              ><img
+                                :src="reply?.user?.avatar"
+                                alt="avatar"
+                                class="rounded-full w-8 h-8"
+                            /></a>
+                          </div>
+                          <div class="flex flex-col gap-1 w-full">
+                            <div class="flex items-center justify-between">
+                              <div class="flex items-center gap-2">
+                                <div class="truncate max-w-64">
+                                  <a
+                                    :href="`/userInfo/${reply?.email}`"
+                                    target="_blank"
+                                  >
+                                    {{ reply?.user?.nickname }}</a
+                                  >
+                                </div>
+                                <span
+                                  v-if="reply?.user?.own"
+                                  class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-lg"
+                                  >{{ $t('message.owner') }}</span
+                                >
+                              </div>
+                              <div
+                                class="flex items-center gap-1 group cursor-pointer"
+                                @click="
+                                  praiseComment(
+                                    reply?._id,
+                                    reply?.isPraise,
+                                    comment?._id
+                                  )
+                                "
+                              >
+                                <img
+                                  class="w-5 h-5 group-hover:text-black"
+                                  :src="
+                                    reply?.user?.isPraise
+                                      ? require('../home/images/hasPraise.svg')
+                                      : require('../home/images/praise.svg')
+                                  "
+                                  alt="praise"
+                                />
+                                <span
+                                  class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                                  :class="{ 'text-[#FE4144]': reply?.isPraise }"
+                                  >{{ $t('message.like') }}
+                                  {{
+                                    reply?.praiseNum > 1000
+                                      ? '999+'
+                                      : reply?.praiseNum
+                                  }}</span
+                                >
+                              </div>
+                            </div>
+                            <span>{{ reply.content }}</span>
+                            <div
+                              class="flex items-center justify-between"
+                            ></div>
+                          </div>
+                        </div>
+                        <div
+                          class="flex items-center justify-between w-full pl-8 pr-4"
+                        >
+                          <span class="text-gray text-xs">{{
+                            convertToCST(reply?.commentDate)
+                          }}</span>
+                          <button
+                            class="text-gray hover:text-blue"
+                            @click="
+                              replyComment(
+                                reply?._id,
+                                reply?.user.email,
+                                reply?.user.nickname
+                              )
+                            "
+                          >
+                            {{ $t('message.reply') }}
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+                    <div
+                      class="flex items-center justify-end w-full pt-2 pb-1 text-sm text-gray hover:text-black"
+                    >
+                      <button v-if="comment?.replies.length > 3">
+                        {{ $t('message.viewMore') }} &gt;&gt;
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </template>
+            <div
+              v-else
+              class="flex items-center justify-center text-gray text-xl h-[65%]"
+            >
+              {{ $t('message.noComments') }}
+            </div>
           </div>
         </div>
         <div
           class="fixed flex items-center justify-between py-1 px-2 bottom-0 h-16 bg-white w-[672px] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm"
         >
           <div class="nav-item inline-flex items-center justify-between gap-4">
-            <textarea
-              v-model="commentText"
-              type="text"
-              :placeholder="$t('message.commentText')"
-              class="w-[360px] outline-none rounded-xl overflow-hidden scroll-auto px-2 pt-2 resize-none text-sm"
-            ></textarea>
-            <button
-              class="h-8 w-20 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
-              @click="comment"
-            >
-              {{ $t('message.comment') }}
-            </button>
+            <div class="flex items-center">
+              <img
+                :src="storeUser?.avatar"
+                alt="avatar"
+                class="w-8 h-8 rounded-full mr-1"
+              />
+              <textarea
+                ref="commentRef"
+                v-model="commentText"
+                type="text"
+                :placeholder="commentPlaceHolder"
+                class="w-[360px] outline-none rounded-xl overflow-hidden scroll-auto px-2 pt-2 resize-none text-sm"
+                maxlength="100"
+              ></textarea>
+              <button
+                class="h-8 w-20 p-1 ml-1 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
+                @click="handleComment"
+              >
+                {{ $t('message.comment') }}
+              </button>
+            </div>
             <div
               class="flex items-center gap-1 group cursor-pointer"
               @click="handlePraise(postInfo?.postId)"
@@ -137,7 +340,7 @@
               <img
                 class="w-5 h-5 group-hover:text-black"
                 :src="
-                  postInfo.isPraise
+                  postInfo?.isPraise
                     ? require('../home/images/hasPraise.svg')
                     : require('../home/images/praise.svg')
                 "
@@ -159,7 +362,7 @@
               <img
                 class="w-5 h-5 group-hover:text-black"
                 :src="
-                  postInfo.isCollect
+                  postInfo?.isCollect
                     ? require('../home/images/hasCollect.svg')
                     : require('../home/images/collect.svg')
                 "
@@ -184,16 +387,22 @@
           </div>
           <div class="flex items-center justify-between mt-4 px-8">
             <button
-              class="flex items-center justify-center w-fit h-8 py-2 px-2 text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+              class="flex items-center justify-center h-8 py-2 px-2 w-[72px] text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
               @click="$router.back()"
             >
               {{ $t('message.back') }}
             </button>
             <button
-              class="flex items-center justify-center w-fit h-8 py-1 px-2 text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+              class="flex items-center justify-center w-[72px] h-8 py-1 px-2 text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
               @click="goTop"
             >
               {{ $t('message.toTop') }}
+            </button>
+            <button
+              class="flex items-center justify-center w-[88px] h-8 py-1 px-2 text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+              @click="toCommentPost"
+            >
+              {{ $t('message.toCommentPost') }}
             </button>
           </div>
         </div>
@@ -211,7 +420,10 @@ import {
   getPostInfo,
   praisePost,
   collectPost,
-  updateShareNum
+  updateShareNum,
+  commentPost,
+  getComments,
+  praiseComments
 } from '@/api/post'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
@@ -226,6 +438,23 @@ const postId = window.location.pathname.split('/')[2]
 const postInfo = ref(null)
 const userInfo = ref(null)
 const commentText = ref('')
+const parentId = ref(null)
+const parentEmail = ref(null)
+const limit = ref(10)
+const currentPage = ref(1)
+const noMore = ref(false)
+const isInitialLoad = ref(false)
+const commentList = ref([])
+const commentRef = ref(null)
+const commentPlaceHolder = ref(t('message.commentText'))
+
+const toCommentPost = () => {
+  commentPlaceHolder.value = t('message.commentText')
+  commentText.value = ''
+  parentId.value = null
+  parentEmail.value = null
+  commentRef.value.focus()
+}
 
 const copyUrl = async () => {
   try {
@@ -251,17 +480,74 @@ const getInfo = async () => {
   userInfo.value = res.data.data.user
 }
 
-const handleScroll = () => {
-  if (!rightColumn.value) return
-  const rect = rightColumn.value.getBoundingClientRect()
-  isFixed.value = rect.top <= 56
-}
-
-const goTop = () => {
+const goTop = () =>
   window.scrollTo({
     top: 0,
     behavior: 'smooth'
   })
+
+const replyComment = async (commentId, email, nickname) => {
+  parentId.value = commentId
+  parentEmail.value = email
+  commentText.value = ''
+  commentPlaceHolder.value = `${t('message.reply')} ${nickname} :`
+  commentRef.value.focus()
+}
+
+const handleComment = async () => {
+  try {
+    const res = await commentPost(
+      storeUser.value.email,
+      postInfo.value.postId,
+      commentText.value,
+      parentId.value,
+      parentEmail.value,
+      userInfo.value.email
+    )
+    if (res.data.code !== 200) return
+    commentText.value = ''
+    postInfo.value.commentNum++
+    // commentList.value.unshift(res.data.data)
+    parentId.value = null
+    parentEmail.value = null
+    $toast.success(t('message.commentSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.commentFail'))
+  }
+}
+
+const praiseComment = async (commentId, isPraise, parentId) => {
+  try {
+    const res = await praiseComments(storeUser.value.email, commentId)
+    if (res.data.code !== 200) return
+    const updateComment = comment => {
+      if (comment._id === commentId) {
+        comment.isPraise = !isPraise
+        comment.praiseNum += isPraise ? -1 : 1
+      }
+      return comment
+    }
+    const updateReply = reply => {
+      if (reply._id === commentId) {
+        reply.isPraise = !isPraise
+        reply.praiseNum += isPraise ? -1 : 1
+      }
+      return reply
+    }
+    if (parentId) {
+      commentList.value = commentList.value.map(comment => {
+        if (comment._id === parentId) {
+          comment.replies = comment.replies.map(updateReply)
+        }
+        return comment
+      })
+    } else {
+      commentList.value = commentList.value.map(updateComment)
+    }
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 const handlePraise = async postId => {
@@ -321,20 +607,72 @@ const follow = async () => {
   }
 }
 
-const comment = async () => {
-  console.log('评论')
+const getComment = async () => {
+  try {
+    const res = await getComments(
+      postId,
+      userInfo.value.email,
+      currentPage.value,
+      limit.value
+    )
+    if (res.data.code !== 200) return
+    commentList.value = [...commentList.value, ...res.data.data.comments]
+    if (res.data.data.comments.length < limit.value) noMore.value = true
+  } catch (error) {
+    console.error(error)
+  }
 }
+
+const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+const loadMore = async () => {
+  if (noMore.value || isInitialLoad.value) return
+  currentPage.value++
+  await getComment()
+}
+
+const handleScroll = () => {
+  if (!rightColumn.value) return
+  const rect = rightColumn.value.getBoundingClientRect()
+  isFixed.value = rect.top <= 56
+}
+
+const handleLoadMore = debounce(async () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  if (
+    documentHeight - windowHeight - scrollTop < 100 &&
+    !noMore.value &&
+    !isInitialLoad.value
+  ) {
+    await loadMore()
+  }
+}, 200)
 
 onMounted(async () => {
   window.scrollTo({
     top: 0
   })
   window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', handleLoadMore)
   await getInfo()
+  await getComment()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', handleLoadMore)
 })
 </script>
 

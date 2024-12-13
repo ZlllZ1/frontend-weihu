@@ -86,3 +86,34 @@ export const updateShareNum = postId => {
     { requiresAuth: true }
   )
 }
+
+export const commentPost = (
+  email,
+  postId,
+  content,
+  parentId = null,
+  parentEmail = null,
+  postEmail
+) => {
+  return request.post(
+    '/post/comment',
+    { email, postId, content, parentId, parentEmail, postEmail },
+    { requiresAuth: true }
+  )
+}
+
+export const getComments = (postId, email, page, limit) => {
+  return request.get(
+    '/post/getComments',
+    { postId, email, page, limit },
+    { requiresAuth: true }
+  )
+}
+
+export const praiseComments = (email, commentId) => {
+  return request.post(
+    '/post/praiseComment',
+    { email, commentId },
+    { requiresAuth: true }
+  )
+}
