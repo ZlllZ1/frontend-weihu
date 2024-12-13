@@ -26,6 +26,7 @@ export default {
     reply: 'reply',
     viewMore: 'view more',
     toCommentPost: 'comment on the post',
+    commentReply: 'comment reply',
     owner: 'owner',
     noComments: 'no comments yet. Go ahead and comment',
     recommend: 'recommend',
