@@ -845,15 +845,13 @@ onUnmounted(() => {
 input {
   @apply outline-none h-8;
 }
-textarea {
-}
 .password-container {
   @apply relative inline-block max-w-96;
   .pass-word {
     @apply inline-block truncate max-w-full;
   }
   .toolTip {
-    @apply text-wrap absolute top-6 w-full left-1/2 -translate-x-1/2 max-w-[200px] break-all h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible;
+    @apply text-wrap absolute top-6 w-full left-1/2 -translate-x-1/2 max-w-[280px] break-all h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible;
   }
   &:hover .toolTip {
     @apply opacity-100 visible;

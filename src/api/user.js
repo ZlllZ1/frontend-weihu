@@ -95,10 +95,16 @@ export const followUser = (fanEmail, followedEmail) => {
   )
 }
 
-export const getOnesInfo = (email, page = 1, limit = 10, type) => {
+export const getOnesInfo = (
+  email,
+  page = 1,
+  limit = 10,
+  type,
+  userEmail = ''
+) => {
   return request.get(
     '/user/getOnesInfo',
-    { email, page, limit, type },
+    { email, page, limit, type, userEmail },
     { requiresAuth: true }
   )
 }

@@ -94,15 +94,15 @@
                 >
               </div>
               <span>{{ $t('message.live') }}: {{ userInfo?.live }}</span>
-              <div class="introduction-container">
-                <div class="self-introduction">
-                  <span>{{ $t('message.individualResume') }} :</span>
-                  <div class="flex items-center">
-                    <span class="truncate max-w-64">{{
-                      userInfo?.introduction || ''
-                    }}</span>
-                    <span class="toolTip">{{ userInfo?.introduction }}</span>
-                  </div>
+              <div>
+                <div class="introduction-container">
+                  <span class="whitespace-nowrap mr-1">
+                    {{ $t('message.individualResume') }}:
+                  </span>
+                  <span class="introduction-box">{{
+                    userInfo?.introduction || ''
+                  }}</span>
+                  <div class="toolTip">{{ userInfo?.introduction }}</div>
                 </div>
               </div>
             </div>
@@ -296,15 +296,15 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .introduction-container {
-  @apply relative inline-block max-w-96;
-  .self-introduction {
-    @apply flex items-center truncate max-w-full;
-    &:hover .toolTip {
-      @apply opacity-100 visible;
-    }
+  @apply relative flex max-w-[500px];
+  .introduction-box {
+    @apply inline-block truncate max-w-full;
   }
   .toolTip {
-    @apply text-wrap absolute top-6 w-full left-1/2 -translate-x-1/2 max-w-[200px] break-all h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible z-10;
+    @apply text-wrap absolute top-6 w-full left-1/2 -translate-x-1/2 max-w-[280px] break-all h-fit py-1 px-2 bg-black bg-opacity-80 text-white text-xs rounded-sm opacity-0 invisible;
+  }
+  &:hover .toolTip {
+    @apply opacity-100 visible;
   }
 }
 </style>

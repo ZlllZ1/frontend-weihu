@@ -71,10 +71,10 @@ export const getPublishedPosts = (email, page, limit) => {
   )
 }
 
-export const getMyPosts = (email, page, limit, type = '') => {
+export const getMyPosts = (email, page, limit, type = '', userEmail = '') => {
   return request.get(
     '/post/getOnesPosts',
-    { email, page, limit, type },
+    { email, page, limit, type, userEmail },
     { requiresAuth: true }
   )
 }

@@ -84,7 +84,7 @@
               />
               <span
                 class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                :class="{ 'text-[#FE4144]': post.praise }"
+                :class="{ 'text-[#FE4144]': post.isPraise }"
                 >{{ $t('message.like') }}
                 {{ post.praiseNum > 1000 ? '999+' : post.praiseNum }}</span
               >
@@ -105,7 +105,7 @@
               />
               <span
                 class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
-                :class="{ 'text-[#FF8C00]': post.collect }"
+                :class="{ 'text-[#FF8C00]': post.isCollect }"
                 >{{ $t('message.collect') }}
                 {{ post.collectNum > 1000 ? '999+' : post.collectNum }}</span
               >
@@ -157,6 +157,13 @@ import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 import { praisePost, collectPost, updateShareNum } from '@/api/post'
 
+const props = defineProps({
+  email: {
+    type: String,
+    default: ''
+  }
+})
+
 const { t } = useI18n()
 const $toast = useToast()
 const store = useStore()
@@ -177,11 +184,14 @@ const getPosts = async () => {
   try {
     if (loading.value) return
     loading.value = true
+    const emailToUse = props.email || userInfo.value?.email
+    const userEmail = props.email ? userInfo.value?.email : ''
     const res = await getMyPosts(
-      userInfo.value.email,
+      emailToUse,
       currentPage.value,
       limit.value,
-      'collect'
+      'collect',
+      userEmail
     )
     if (res.data.code !== 200) return
     posts.value = [...posts.value, ...res.data.data.posts]
@@ -195,7 +205,7 @@ const getPosts = async () => {
 
 const handlePraise = async postId => {
   try {
-    const res = await praisePost(userInfo.value.email, postId)
+    const res = await praisePost(userInfo.value?.email, postId)
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {
@@ -215,7 +225,7 @@ const handlePraise = async postId => {
 
 const handleCollect = async postId => {
   try {
-    const res = await collectPost(userInfo.value.email, postId)
+    const res = await collectPost(userInfo.value?.email, postId)
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {

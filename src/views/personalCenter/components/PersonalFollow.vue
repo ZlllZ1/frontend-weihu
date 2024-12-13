@@ -37,25 +37,31 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <div v-if="user?.token" class="flex items-center gap-1">
-              <div class="w-0 h-0 border-4 border-[#4CAF50] rounded-full"></div>
-              <span>{{ $t('message.online') }}</span>
+            <template v-if="!email">
+              <div v-if="user?.token" class="flex items-center gap-1">
+                <div
+                  class="w-0 h-0 border-4 border-[#4CAF50] rounded-full"
+                ></div>
+                <span>{{ $t('message.online') }}</span>
+              </div>
+              <span v-else>{{ handleTime(user?.lastLoginDate) }}</span>
+            </template>
+            <div v-if="user.email !== userInfo.email">
+              <button
+                v-if="!user?.isFollowing"
+                class="py-1 px-3 bg-red-200 rounded-xl text-sm text-red-600"
+                @click="follow(user?.email)"
+              >
+                +{{ $t('message.follow') }}
+              </button>
+              <button
+                v-else-if="user?.isFollowing"
+                class="py-1 px-3 rounded-xl bg-warmGray-300 text-sm text-warmGray-600"
+                @click="follow(user?.email)"
+              >
+                {{ $t('message.cancel') }}{{ $t('message.follow') }}
+              </button>
             </div>
-            <span v-else>{{ handleTime(user?.lastLoginDate) }}</span>
-            <button
-              v-if="!user?.isFollowing"
-              class="py-1 px-3 bg-red-200 rounded-xl text-sm text-red-600"
-              @click="follow(user?.email)"
-            >
-              +{{ $t('message.follow') }}
-            </button>
-            <button
-              v-else-if="user?.isFollowing"
-              class="py-1 px-3 rounded-xl bg-warmGray-300 text-sm text-warmGray-600"
-              @click="follow(user?.email)"
-            >
-              {{ $t('message.cancel') }}{{ $t('message.follow') }}
-            </button>
           </div>
         </div>
       </div>
@@ -90,6 +96,13 @@ import { useI18n } from 'vue-i18n'
 import { followUser } from '@/api/user'
 import { useToast } from 'vue-toast-notification'
 
+const props = defineProps({
+  email: {
+    type: String,
+    default: ''
+  }
+})
+
 const $toast = useToast()
 const { t } = useI18n()
 const store = useStore()
@@ -122,7 +135,7 @@ const handleTime = time => {
 
 const follow = async email => {
   try {
-    const res = await followUser(userInfo.value.email, email)
+    const res = await followUser(userInfo.value?.email, email)
     if (res.data.code !== 200) return
     users.value = users.value.map(user => {
       if (user?.email === email) {
@@ -143,11 +156,14 @@ const getInfo = async () => {
   try {
     if (loading.value) return
     loading.value = true
+    const emailToUse = props.email || userInfo.value?.email
+    const userEmail = props.email ? userInfo.value?.email : ''
     const res = await getOnesInfo(
-      userInfo?.value.email,
+      emailToUse,
       currentPage.value,
       limit.value,
-      'follow'
+      'follow',
+      userEmail
     )
     if (res.data.code !== 200) return
     users.value = [...users.value, ...res.data.data.users]

@@ -76,7 +76,7 @@
               <img
                 class="w-5 h-5 group-hover:text-black"
                 :src="
-                  post.praise
+                  post.isPraise
                     ? require('../../home/images/hasPraise.svg')
                     : require('../../home/images/praise.svg')
                 "
@@ -97,7 +97,7 @@
               <img
                 class="w-5 h-5 group-hover:text-black"
                 :src="
-                  post.collect
+                  post.isCollect
                     ? require('../../home/images/hasCollect.svg')
                     : require('../../home/images/collect.svg')
                 "
@@ -157,6 +157,13 @@ import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 import { praisePost, collectPost, updateShareNum } from '@/api/post'
 
+const props = defineProps({
+  email: {
+    type: String,
+    default: ''
+  }
+})
+
 const { t } = useI18n()
 const $toast = useToast()
 const store = useStore()
@@ -177,10 +184,14 @@ const getPosts = async () => {
   try {
     if (loading.value) return
     loading.value = true
+    const emailToUse = props.email || userInfo.value?.email
+    const userEmail = props.email ? userInfo.value?.email : ''
     const res = await getMyPosts(
-      userInfo.value?.email,
+      emailToUse,
       currentPage.value,
-      limit.value
+      limit.value,
+      '',
+      userEmail
     )
     if (res.data.code !== 200) return
     posts.value = [...posts.value, ...res.data.data.posts]
@@ -194,7 +205,7 @@ const getPosts = async () => {
 
 const handlePraise = async postId => {
   try {
-    const res = await praisePost(userInfo.value.email, postId)
+    const res = await praisePost(userInfo.value?.email, postId)
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {
@@ -214,7 +225,7 @@ const handlePraise = async postId => {
 
 const handleCollect = async postId => {
   try {
-    const res = await collectPost(userInfo.value.email, postId)
+    const res = await collectPost(userInfo.value?.email, postId)
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {
