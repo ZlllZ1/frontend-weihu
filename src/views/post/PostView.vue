@@ -161,7 +161,7 @@
                           <span
                             class="text-[#8A8A8A] group-hover:text-[#FE4144]"
                             :class="{ 'text-[#FE4144]': comment?.isPraise }"
-                            >{{ $t('message.like') }}
+                          >
                             {{
                               comment?.praiseNum > 1000
                                 ? '999+'
@@ -193,11 +193,11 @@
                     </div>
                   </div>
                   <div
-                    v-if="comment?.replies.length"
+                    v-if="comment?.replies?.length"
                     class="bg-warmGray-100 w-full rounded-lg py-1 px-2 text-sm"
                   >
                     <template
-                      v-for="reply in comment.replies.slice(0, 3)"
+                      v-for="reply in comment?.replies.slice(0, 3)"
                       :key="reply?._id"
                     >
                       <div
@@ -219,15 +219,24 @@
                               <div class="flex items-center gap-2">
                                 <div class="truncate max-w-64">
                                   <a
-                                    :href="`/userInfo/${reply?.email}`"
+                                    :href="`/userInfo/${reply?.user?.email}`"
                                     target="_blank"
                                   >
                                     {{ reply?.user?.nickname }}</a
                                   >
                                 </div>
+                                &gt;
+                                <div class="truncate max-w-64">
+                                  <a
+                                    :href="`/userInfo/${reply?.parentUser?.email}`"
+                                    target="_blank"
+                                  >
+                                    {{ reply?.parentUser?.nickname }}</a
+                                  >
+                                </div>
                                 <span
                                   v-if="reply?.user?.own"
-                                  class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-lg"
+                                  class="bg-red-100 text-red-600 text-xs px-1 rounded-lg"
                                   >{{ $t('message.owner') }}</span
                                 >
                               </div>
@@ -244,7 +253,7 @@
                                 <img
                                   class="w-5 h-5 group-hover:text-black"
                                   :src="
-                                    reply?.user?.isPraise
+                                    reply?.isPraise
                                       ? require('../home/images/hasPraise.svg')
                                       : require('../home/images/praise.svg')
                                   "
@@ -253,7 +262,7 @@
                                 <span
                                   class="text-[#8A8A8A] group-hover:text-[#FE4144]"
                                   :class="{ 'text-[#FE4144]': reply?.isPraise }"
-                                  >{{ $t('message.like') }}
+                                >
                                   {{
                                     reply?.praiseNum > 1000
                                       ? '999+'
@@ -505,9 +514,20 @@ const handleComment = async () => {
       userInfo.value.email
     )
     if (res.data.code !== 200) return
+    const newComment = res.data.data.comment
+    if (!newComment.parentEmail && !newComment.parentId) {
+      commentList.value.unshift(newComment)
+    } else {
+      commentList.value = commentList.value.map(comment => {
+        if (comment._id === parentId.value) {
+          comment.replies = comment.replies || []
+          comment.replies.unshift(newComment)
+        }
+        return comment
+      })
+    }
     commentText.value = ''
     postInfo.value.commentNum++
-    // commentList.value.unshift(res.data.data)
     parentId.value = null
     parentEmail.value = null
     $toast.success(t('message.commentSuccess'))
