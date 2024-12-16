@@ -101,6 +101,12 @@
         </div>
         <button
           class="w-fit h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+          @click="clearDrafts"
+        >
+          {{ $t('message.clearDraft') }}
+        </button>
+        <button
+          class="w-fit h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
           @click="saveToDraft"
         >
           {{ $t('message.saveToDraft') }}
@@ -129,7 +135,8 @@ import {
   publishPost,
   getDraft,
   saveDraft,
-  publishSchedulePost
+  publishSchedulePost,
+  clearDraft
 } from '@/api/post'
 import { useStore } from 'vuex'
 
@@ -187,6 +194,21 @@ const getDraftData = async () => {
     }
   } catch (error) {
     console.error(error)
+  }
+}
+
+const clearDrafts = async () => {
+  try {
+    const res = await clearDraft(userInfo.value.email)
+    if (res.data.code !== 200) return
+    introduction.value = ''
+    coverUrl.value = ''
+    quill.value.setContents([])
+    title.value = ''
+    $toast.success(t('message.clearDraftSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
   }
 }
 

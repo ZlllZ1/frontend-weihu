@@ -117,3 +117,7 @@ export const praiseComments = (email, commentId) => {
     { requiresAuth: true }
   )
 }
+
+export const clearDraft = email => {
+  return request.post('/post/clearDraft', { email }, { requiresAuth: true })
+}
