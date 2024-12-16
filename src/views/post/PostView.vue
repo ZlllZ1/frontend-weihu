@@ -321,7 +321,7 @@
           </div>
         </div>
         <div
-          class="fixed flex items-center justify-between py-1 px-2 bottom-0 h-16 bg-white w-[672px] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm"
+          class="fixed flex items-center justify-between py-1 px-2 bottom-0 h-16 bg-white w-[672px] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm z-10"
         >
           <div class="nav-item inline-flex items-center justify-between gap-4">
             <div class="flex items-center">
@@ -427,7 +427,7 @@
       @mousedown.self="closeMoreComment"
     >
       <div
-        class="overflow-hidden w-[60%] h-[80%] mt-[60px] bg-warmGray-200 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-md overflow-y-auto"
+        class="overflow-hidden w-[60%] h-[78%] bg-warmGray-200 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-md overflow-y-auto"
       >
         <div class="flex items-center flex-col p-4 gap-4 bg-white">
           <div class="w-full pb-2 flex items-center justify-between">
@@ -715,14 +715,11 @@ const handleComment = async () => {
       userInfo.value.email
     )
     if (res.data.code !== 200) return
-    const newComment = res.data.data.comment
-    if (!newComment.parentEmail && !newComment.parentId) {
-      commentList.value.unshift(newComment)
-    } else {
+    commentList.value = res.data.data.comments
+    if (moreOriginComment.value) {
       commentList.value = commentList.value.map(comment => {
-        if (comment._id === parentId.value) {
-          comment.replies = comment.replies || []
-          comment.replies.unshift(newComment)
+        if (comment._id === moreOriginComment.value._id) {
+          moreComments.value = comment.replies
         }
         return comment
       })
