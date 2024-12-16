@@ -8,7 +8,7 @@
       >
         <div class="px-4 py-3">
           <div class="border-b border-gray py-2">筛选区域</div>
-          <div class="flex items-center flex-wrap gap-2 py-3">
+          <div class="flex items-center flex-wrap gap-y-2 gap-x-5 py-3">
             <template v-for="circle in circleLists" :key="circle?.circleId">
               <div
                 class="w-[48%] h-48 border border-warmGray-300 rounded-md overflow-hidden p-2 flex justify-between flex-col"
