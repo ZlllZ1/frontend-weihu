@@ -252,13 +252,14 @@ const publish = async () => {
     if (isScheduled.value) res = await publishSchedulePost(data)
     else res = await publishPost(data)
     if (res.data.code !== 200) return
-    $toast.success(t('message.publishSuccess'))
     title.value = ''
     coverUrl.value = ''
     introduction.value = ''
     isScheduled.value = false
-    quill.value.setContents([])
-    location.reload()
+    $toast.success(t('message.publishSuccess'))
+    setTimeout(() => {
+      location.reload()
+    }, 500)
   } catch (error) {
     $toast.error(t('message.publishError'))
   }

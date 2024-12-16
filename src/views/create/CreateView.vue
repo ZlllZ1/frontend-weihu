@@ -17,7 +17,9 @@
         </template>
       </div>
     </div>
-    <div class="w-[85%] shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded">
+    <div
+      class="w-[85%] shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded h-fit"
+    >
       <component :is="currentComponent"></component>
     </div>
   </div>
