@@ -142,6 +142,12 @@
                             class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-lg"
                             >{{ $t('message.owner') }}</span
                           >
+                          <img
+                            v-if="comment?.user?.email === storeUser?.email"
+                            src="../home/images/self.svg"
+                            alt="self"
+                            class="rounded-full w-4 h-4"
+                          />
                         </div>
                         <div
                           class="flex items-center gap-1 group cursor-pointer"
@@ -236,9 +242,15 @@
                                 </div>
                                 <span
                                   v-if="reply?.user?.own"
-                                  class="bg-red-100 text-red-600 text-xs px-1 rounded-lg"
+                                  class="bg-red-100 text-red-600 text-xs px-1 py-[2px] rounded-lg"
                                   >{{ $t('message.owner') }}</span
                                 >
+                                <img
+                                  v-if="reply?.user?.email === storeUser?.email"
+                                  src="../home/images/self.svg"
+                                  alt="self"
+                                  class="rounded-full w-3 h-3"
+                                />
                               </div>
                               <div
                                 class="flex items-center gap-1 group cursor-pointer"
@@ -466,6 +478,12 @@
                     class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-lg"
                     >{{ $t('message.owner') }}</span
                   >
+                  <img
+                    v-if="moreOriginComment?.user?.email === storeUser?.email"
+                    src="../home/images/self.svg"
+                    alt="self"
+                    class="rounded-full w-4 h-4"
+                  />
                 </div>
                 <div
                   class="flex items-center gap-1 group cursor-pointer"
@@ -559,6 +577,12 @@
                         class="bg-red-100 text-red-600 text-xs px-1 rounded-lg"
                         >{{ $t('message.owner') }}</span
                       >
+                      <img
+                        v-if="reply?.user?.email === storeUser?.email"
+                        src="../home/images/self.svg"
+                        alt="self"
+                        class="rounded-full w-4 h-4"
+                      />
                     </div>
                     <div
                       class="flex items-center gap-1 group cursor-pointer"
