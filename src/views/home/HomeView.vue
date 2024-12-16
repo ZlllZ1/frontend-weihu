@@ -21,7 +21,7 @@
           </template>
         </div>
         <keep-alive>
-          <component :is="currentComponent" class="px-4 py-2" />
+          <component :is="currentComponent" />
         </keep-alive>
       </div>
       <div ref="rightColumn" class="w-[328px]">

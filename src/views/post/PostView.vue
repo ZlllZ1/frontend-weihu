@@ -333,7 +333,7 @@
           </div>
         </div>
         <div
-          class="fixed flex items-center justify-between py-1 px-2 bottom-0 h-16 bg-white w-[672px] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm z-10"
+          class="fixed flex items-center justify-between py-1 px-2 bottom-0 h-16 bg-white w-[53.2%] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm z-10"
         >
           <div class="nav-item inline-flex items-center justify-between gap-4">
             <div class="flex items-center">
