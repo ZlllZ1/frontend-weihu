@@ -347,7 +347,7 @@
                 v-model="commentText"
                 type="text"
                 :placeholder="commentPlaceHolder"
-                class="w-[360px] outline-none rounded-xl overflow-hidden scroll-auto px-2 pt-2 resize-none text-sm"
+                class="w-[300px] outline-none rounded-xl overflow-hidden scroll-auto px-2 pt-2 resize-none text-sm"
                 maxlength="100"
               ></textarea>
               <button
