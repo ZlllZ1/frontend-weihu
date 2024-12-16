@@ -639,7 +639,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useStore } from 'vuex'
 import { followUser } from '@/api/user'
@@ -684,6 +684,11 @@ const toCommentPost = () => {
   parentEmail.value = null
   commentRef.value.focus()
 }
+
+watch(moreOriginComment, newValue => {
+  if (newValue) document.body.style.overflow = 'hidden'
+  else document.body.style.overflow = 'auto'
+})
 
 const copyUrl = async () => {
   try {
