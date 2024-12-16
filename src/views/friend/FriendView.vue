@@ -24,7 +24,7 @@
                         alt="user avatar"
                         class="rounded-full w-8 h-8"
                     /></a>
-                    <div class="truncate w-32 ml-3">
+                    <div class="truncate w-32 ml-3 flex items-center">
                       <a
                         :href="`/userInfo/${circle.user.email}`"
                         target="_blank"
@@ -32,6 +32,12 @@
                       >
                         {{ circle?.user?.nickname }}
                       </a>
+                      <img
+                        v-if="circle.email === userInfo.email"
+                        src="../home/images/self.svg"
+                        alt="self"
+                        class="rounded-full w-4 h-4 ml-1"
+                      />
                     </div>
                   </div>
                   <div class="flex items-center justify-end gap-2 text-sm">
@@ -55,7 +61,7 @@
                       <img
                         class="w-5 h-5 group-hover:text-black"
                         :src="
-                          circle.praise
+                          circle.isPraise
                             ? require('../home/images/hasPraise.svg')
                             : require('../home/images/praise.svg')
                         "
@@ -63,7 +69,7 @@
                       />
                       <span
                         class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                        :class="{ 'text-[#FE4144]': circle.praise }"
+                        :class="{ 'text-[#FE4144]': circle.isPraise }"
                         >{{ $t('message.like') }}
                         {{
                           circle.praiseNum > 1000 ? '999+' : circle.praiseNum
@@ -93,8 +99,12 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useStore } from 'vuex'
-import { getCircles } from '@/api/circle'
+import { getCircles, praiseCircle } from '@/api/circle'
+import { useI18n } from 'vue-i18n'
+import { useToast } from 'vue-toast-notification'
 
+const $toast = useToast()
+const { t } = useI18n()
 const store = useStore()
 const rightColumn = ref(null)
 const isFixed = ref(false)
@@ -120,7 +130,22 @@ const getCircle = async () => {
 }
 
 const handlePraise = async circleId => {
-  console.log(111)
+  try {
+    const res = await praiseCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.map(circle => {
+      if (circle.circleId === circleId) {
+        if (circle.isPraise) circle.praiseNum--
+        else circle.praiseNum++
+        circle.isPraise = !circle.isPraise
+      }
+      return circle
+    })
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
 }
 
 onMounted(() => {
