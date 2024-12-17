@@ -22,6 +22,9 @@ import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 import { useStore } from 'vuex'
 import { publishCircle, uploadCircleImg } from '@/api/circle'
+import ImageResize from 'quill-image-resize-module'
+
+Quill.register('modules/imageResize', ImageResize)
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const store = useStore()
@@ -123,6 +126,10 @@ const initEditor = () => {
           image: imageHandler
         }
       },
+      imageResize: {
+        displaySize: true,
+        modules: ['Resize', 'DisplaySize', 'Toolbar']
+      },
       history: {
         delay: 1000,
         maxStack: 100,
@@ -149,9 +156,6 @@ onUnmounted(() => {
 @import '../styles/editor.scss';
 
 #editor {
-  @apply h-[300px] mb-4;
-}
-.ql-editor {
-  @apply min-h-[200px];
+  @apply mb-4;
 }
 </style>

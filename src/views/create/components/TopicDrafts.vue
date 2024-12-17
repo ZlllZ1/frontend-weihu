@@ -139,6 +139,9 @@ import {
   clearDraft
 } from '@/api/post'
 import { useStore } from 'vuex'
+import ImageResize from 'quill-image-resize-module'
+
+Quill.register('modules/imageResize', ImageResize)
 
 const store = useStore()
 const { t } = useI18n()
@@ -319,6 +322,10 @@ const initEditor = () => {
           delay: 1000,
           maxStack: 100,
           userOnly: false
+        },
+        imageResize: {
+          displaySize: true,
+          modules: ['Resize', 'DisplaySize', 'Toolbar']
         },
         clipboard: {
           matchVisual: true
