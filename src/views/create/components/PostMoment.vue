@@ -15,19 +15,20 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, computed, onUnmounted } from 'vue'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 import { useStore } from 'vuex'
-import { publishCircle } from '@/api/circle'
+import { publishCircle, uploadCircleImg } from '@/api/circle'
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
-const quill = ref(null)
+let quill = null
 const userInfo = computed(() => store.state.user.userInfo)
 
 const toolbarOptions = [
@@ -47,9 +48,47 @@ const toolbarOptions = [
 ]
 
 const getContent = () => {
-  const delta = quill.value.getContents()
-  const html = quill.value.root.innerHTML
+  const delta = quill.getContents()
+  const html = quill.root.innerHTML
   return { delta, html }
+}
+
+const imageHandler = () => {
+  const input = document.createElement('input')
+  input.setAttribute('type', 'file')
+  input.setAttribute('accept', 'image/*')
+  input.click()
+  input.onchange = async () => {
+    const file = input.files[0]
+    if (file.size > MAX_FILE_SIZE) {
+      $toast.error(t('message.imageTooLarge'))
+      return
+    }
+    const formData = new FormData()
+    formData.append('circleImg', file)
+    formData.append('type', 'circleImg')
+    formData.append('email', userInfo.value.email)
+    try {
+      const res = await uploadCircleImg(formData)
+      if (res.data.code !== 200) return
+      if (res.data.data.circleImgUrl) {
+        if (!quill) console.log('quill is null')
+        const length = quill.getLength()
+        quill.setSelection(length, 0)
+        quill.insertEmbed(
+          length,
+          'image',
+          res.data.data.circleImgUrl,
+          'user',
+          range => {
+            quill.setSelection(range.index + 1)
+          }
+        )
+      }
+    } catch (error) {
+      console.error('Image upload error:', error)
+    }
+  }
 }
 
 const publish = async () => {
@@ -66,10 +105,8 @@ const publish = async () => {
     }
     const res = await publishCircle(data)
     if (res.data.code !== 200) return
+    quill.setContents([])
     $toast.success(t('message.publishSuccess'))
-    setTimeout(() => {
-      location.reload()
-    }, 500)
   } catch (error) {
     $toast.error(t('message.publishError'))
   }
@@ -77,10 +114,15 @@ const publish = async () => {
 
 const initEditor = () => {
   const container = document.getElementById('editor')
-  quill.value = new Quill(container, {
+  quill = new Quill(container, {
     theme: 'snow',
     modules: {
-      toolbar: toolbarOptions,
+      toolbar: {
+        container: toolbarOptions,
+        handlers: {
+          image: imageHandler
+        }
+      },
       history: {
         delay: 1000,
         maxStack: 100,
@@ -96,6 +138,10 @@ const initEditor = () => {
 
 onMounted(() => {
   initEditor()
+})
+
+onUnmounted(() => {
+  quill = null
 })
 </script>
 

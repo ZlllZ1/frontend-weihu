@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, onUnmounted } from 'vue'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import VueDatePicker from '@vuepic/vue-datepicker'
@@ -136,7 +136,7 @@ const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
-const quill = ref(null)
+let quill = null
 const title = ref('')
 const coverRef = ref(null)
 const isScheduled = ref(false)
@@ -189,8 +189,8 @@ const coverChange = async event => {
 }
 
 const getContent = () => {
-  const delta = quill.value.getContents()
-  const html = quill.value.root.innerHTML
+  const delta = quill.getContents()
+  const html = quill.root.innerHTML
   return { delta, html }
 }
 
@@ -252,14 +252,12 @@ const publish = async () => {
     if (isScheduled.value) res = await publishSchedulePost(data)
     else res = await publishPost(data)
     if (res.data.code !== 200) return
+    quill.setContents([])
     title.value = ''
     coverUrl.value = ''
     introduction.value = ''
     isScheduled.value = false
     $toast.success(t('message.publishSuccess'))
-    setTimeout(() => {
-      location.reload()
-    }, 500)
   } catch (error) {
     $toast.error(t('message.publishError'))
   }
@@ -267,7 +265,7 @@ const publish = async () => {
 
 const initEditor = () => {
   const container = document.getElementById('editor')
-  quill.value = new Quill(container, {
+  quill = new Quill(container, {
     theme: 'snow',
     modules: {
       toolbar: toolbarOptions,
@@ -293,6 +291,10 @@ const goTop = () => {
 
 onMounted(() => {
   initEditor()
+})
+
+onUnmounted(() => {
+  quill = null
 })
 </script>
 

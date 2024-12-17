@@ -123,7 +123,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, nextTick } from 'vue'
+import { onMounted, ref, computed, nextTick, onUnmounted } from 'vue'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import VueDatePicker from '@vuepic/vue-datepicker'
@@ -144,7 +144,7 @@ const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
-const quill = ref(null)
+let quill = null
 const title = ref('')
 const coverRef = ref(null)
 const isScheduled = ref(false)
@@ -188,9 +188,9 @@ const getDraftData = async () => {
     title.value = draft?.title || ''
     coverUrl.value = draft?.coverUrl || ''
     introduction.value = draft?.introduction || ''
-    if (quill.value && draft?.delta) {
+    if (quill && draft?.delta) {
       await nextTick()
-      quill.value.setContents(draft.delta, 'silent')
+      quill.setContents(draft.delta, 'silent')
     }
   } catch (error) {
     console.error(error)
@@ -203,7 +203,7 @@ const clearDrafts = async () => {
     if (res.data.code !== 200) return
     introduction.value = ''
     coverUrl.value = ''
-    quill.value.setContents([])
+    quill.setContents([])
     title.value = ''
     $toast.success(t('message.clearDraftSuccess'))
   } catch (error) {
@@ -218,6 +218,7 @@ const coverChange = async event => {
     const formData = new FormData()
     formData.append('cover', file)
     formData.append('type', 'cover')
+    formData.append('account', userInfo.value.email)
     try {
       const res = await uploadCover(formData)
       if (res.data.code !== 200) return
@@ -230,8 +231,8 @@ const coverChange = async event => {
 }
 
 const getContent = () => {
-  const delta = quill.value.getContents()
-  const html = quill.value.root.innerHTML
+  const delta = quill.getContents()
+  const html = quill.root.innerHTML
   return { delta, html }
 }
 
@@ -297,13 +298,11 @@ const publish = async () => {
       res = await publishPost(data)
     }
     if (res.data.code !== 200) return
+    quill.setContents([])
     title.value = ''
     coverUrl.value = ''
     introduction.value = ''
     $toast.success(t('message.publishSuccess'))
-    setTimeout(() => {
-      location.reload()
-    }, 500)
   } catch (error) {
     $toast.error(t('message.publishError'))
   }
@@ -312,7 +311,7 @@ const publish = async () => {
 const initEditor = () => {
   return new Promise(resolve => {
     const container = document.getElementById('editor')
-    quill.value = new Quill(container, {
+    quill = new Quill(container, {
       theme: 'snow',
       modules: {
         toolbar: toolbarOptions,
@@ -342,6 +341,10 @@ onMounted(async () => {
   await initEditor()
   await nextTick()
   await getDraftData()
+})
+
+onUnmounted(() => {
+  quill = null
 })
 </script>
 

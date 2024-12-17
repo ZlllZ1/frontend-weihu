@@ -21,3 +21,12 @@ export const praiseCircle = (email, circleId) => {
     { requiresAuth: true }
   )
 }
+
+export const uploadCircleImg = formData => {
+  return request.post('/circle/uploadCircleImg', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    requiresAuth: true
+  })
+}
