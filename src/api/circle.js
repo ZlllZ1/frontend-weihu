@@ -30,3 +30,34 @@ export const uploadCircleImg = formData => {
     requiresAuth: true
   })
 }
+
+export const handleComment = (
+  email,
+  circleId,
+  content,
+  parentId = null,
+  parentEmail = null,
+  circleEmail
+) => {
+  return request.post(
+    '/circle/commentCircle',
+    { email, circleId, content, parentId, parentEmail, circleEmail },
+    { requiresAuth: true }
+  )
+}
+
+export const getCircleComments = (email, circleEmail, circleId) => {
+  return request.get(
+    '/circle/getCircleComments',
+    { email, circleEmail, circleId },
+    { requiresAuth: true }
+  )
+}
+
+export const getPraiseUsers = (email, circleEmail, circleId) => {
+  return request.get(
+    '/circle/getPraiseUsers',
+    { email, circleEmail, circleId },
+    { requiresAuth: true }
+  )
+}

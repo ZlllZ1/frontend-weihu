@@ -31,7 +31,7 @@
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2">
                         <a
-                          :href="`/userInfo/${circle.user.email}`"
+                          :href="`/userInfo/${circle?.user?.email}`"
                           target="_blank"
                           ><img
                             :src="circle?.user?.avatar"
@@ -40,14 +40,14 @@
                         /></a>
                         <div class="flex items-center">
                           <a
-                            :href="`/userInfo/${circle.user.email}`"
+                            :href="`/userInfo/${circle?.user?.email}`"
                             target="_blank"
                             class="text-gray hover:text-black truncate w-20"
                           >
                             {{ circle?.user?.nickname }}
                           </a>
                           <img
-                            v-if="circle.email === userInfo.email"
+                            v-if="circle?.email === userInfo?.email"
                             src="../home/images/self.svg"
                             alt="self"
                             class="rounded-full w-4 h-4 ml-1"
@@ -55,7 +55,7 @@
                         </div>
                       </div>
                       <span class="text-xs text-gray">{{
-                        convertToCST(circle.publishDate)
+                        convertToCST(circle?.publishDate)
                       }}</span>
                     </div>
                     <div class="flex items-center justify-end gap-2 text-sm">
@@ -71,20 +71,20 @@
                         <span class="text-[#8A8A8A] group-hover:text-blue"
                           >{{ $t('message.comment') }}
                           {{
-                            circle.commentNum > 1000
+                            circle?.commentNum > 1000
                               ? '999+'
-                              : circle.commentNum
+                              : circle?.commentNum
                           }}</span
                         >
                       </div>
                       <div
                         class="flex items-center gap-1 group cursor-pointer"
-                        @click="handlePraise(circle.circleId)"
+                        @click="handlePraise(circle?.circleId)"
                       >
                         <img
                           class="w-5 h-5 group-hover:text-black"
                           :src="
-                            circle.isPraise
+                            circle?.isPraise
                               ? require('../home/images/hasPraise.svg')
                               : require('../home/images/praise.svg')
                           "
@@ -92,10 +92,12 @@
                         />
                         <span
                           class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                          :class="{ 'text-[#FE4144]': circle.isPraise }"
+                          :class="{ 'text-[#FE4144]': circle?.isPraise }"
                           >{{ $t('message.like') }}
                           {{
-                            circle.praiseNum > 1000 ? '999+' : circle.praiseNum
+                            circle?.praiseNum > 1000
+                              ? '999+'
+                              : circle?.praiseNum
                           }}</span
                         >
                       </div>
@@ -112,7 +114,7 @@
             {{ $t('message.noPosts') }}
           </div>
           <div
-            v-if="noMore && circleLists.length"
+            v-if="noMore && circleLists?.length"
             class="flex items-center justify-center text-gray py-4 text-lg"
           >
             {{ $t('message.noMore') }}
@@ -131,12 +133,23 @@
           >
             <div class="flex items-center justify-between py-2">
               <div class="flex items-center gap-1">
-                <img
-                  :src="circleInfo?.user?.avatar"
-                  alt="user avatar"
-                  class="rounded-full w-8 h-8"
-                />
-                <span>{{ circleInfo?.user?.nickname }}</span>
+                <a
+                  :href="`/userInfo/${circleInfo?.user?.email}`"
+                  target="_blank"
+                >
+                  <img
+                    :src="circleInfo?.user?.avatar"
+                    alt="user avatar"
+                    class="rounded-full w-8 h-8"
+                  />
+                </a>
+                <a
+                  :href="`/userInfo/${circleInfo?.user?.email}`"
+                  target="_blank"
+                  class="text-gray hover:text-black truncate w-32"
+                >
+                  {{ circleInfo?.user?.nickname }}
+                </a>
               </div>
               <span class="text-xs text-gray">{{
                 convertToCST(circleInfo?.publishDate)
@@ -145,15 +158,15 @@
             <div class="py-2 border-t border-b border-[#EBECED]">
               <span v-html="circleInfo?.content"></span>
             </div>
-            <div class="flex items-center justify-end pt-2 pb-10">
+            <div class="flex items-center justify-end pt-2 pb-6">
               <div
                 class="flex items-center justify-end gap-1 group cursor-pointer"
-                @click="handlePraise(circleInfo.circleId)"
+                @click="handlePraise(circleInfo?.circleId)"
               >
                 <img
                   class="w-5 h-5 group-hover:text-black"
                   :src="
-                    circleInfo.isPraise
+                    circleInfo?.isPraise
                       ? require('../home/images/hasPraise.svg')
                       : require('../home/images/praise.svg')
                   "
@@ -161,16 +174,95 @@
                 />
                 <span
                   class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                  :class="{ 'text-[#FE4144]': circleInfo.isPraise }"
+                  :class="{ 'text-[#FE4144]': circleInfo?.isPraise }"
                   >{{ $t('message.like') }}
                   {{
-                    circleInfo.praiseNum > 1000 ? '999+' : circleInfo.praiseNum
+                    circleInfo?.praiseNum > 1000
+                      ? '999+'
+                      : circleInfo?.praiseNum
                   }}</span
                 >
               </div>
             </div>
+            <div
+              v-if="praiseUsers?.length"
+              class="px-5 pb-6 flex flex-wrap items-center justify-center w-[304px] gap-1"
+            >
+              <template v-for="user in praiseUsers" :key="user?.email">
+                <a :href="`/userInfo/${user?.email}`" target="_blank">
+                  <img
+                    :src="user?.avatar"
+                    alt="user avatar"
+                    class="w-8 h-8 rounded-full"
+                  />
+                </a>
+              </template>
+            </div>
             <div>
-              <span class="text-lg">{{ $t('message.comment') }}</span>
+              <template v-if="commentLists?.length">
+                <div class="border border-[#EBECED] rounded-xs px-2 py-1">
+                  <template v-for="comment in commentLists" :key="comment?._id">
+                    <div
+                      class="flex items-center p-[2px] justify-between"
+                      :class="{
+                        'border-b border-[#EBECED]':
+                          comment !== commentLists[commentLists?.length - 1]
+                      }"
+                    >
+                      <div class="flex flex-col gap-[2px] ml-2 flex-1">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center">
+                            <a
+                              :href="`/userInfo/${comment?.user?.email}`"
+                              target="_blank"
+                              class="text-gray hover:text-black truncate w-12 text-sm"
+                            >
+                              {{ comment?.user?.nickname }}
+                            </a>
+                            <template v-if="comment?.parentEmail">
+                              <span class="mx-1"> &gt; </span>
+                              <a
+                                :href="`/userInfo/${comment?.parentEmail}`"
+                                target="_blank"
+                                class="text-gray hover:text-black truncate w-12 text-sm"
+                              >
+                                {{ comment?.parentUser?.nickname }}
+                              </a>
+                            </template>
+                          </div>
+                          <span class="text-xs text-gray">{{
+                            convertToCST(comment?.publishDate)
+                          }}</span>
+                        </div>
+                        <div
+                          class="w-[242px] flex flex-wrap break-all"
+                          v-html="comment?.content"
+                        ></div>
+                        <div class="flex items-center justify-end">
+                          <button
+                            class="text-gray hover:text-blue"
+                            @click="
+                              replyComment(
+                                comment?._id,
+                                comment?.user.email,
+                                comment?.user.nickname
+                              )
+                            "
+                          >
+                            {{ $t('message.reply') }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </template>
+              <div
+                v-else
+                class="border-t border-[#EBECED] min-h-24 flex items-center justify-center"
+              >
+                {{ $t('message.noComments') }}
+              </div>
             </div>
           </div>
           <div
@@ -179,6 +271,30 @@
           >
             {{ $t('message.viewCircleDetail') }}
           </div>
+          <div
+            v-if="circleInfo"
+            class="fixed flex items-center bottom-0 rounded-sm bg-white h-12 w-[320px] px-2 py-1 border border-warmGray-200"
+          >
+            <img
+              :src="userInfo?.avatar"
+              alt="user avatar"
+              class="rounded-full w-8 h-8 mr-2"
+            />
+            <textarea
+              ref="commentRef"
+              v-model="commentText"
+              type="text"
+              :placeholder="commentPlaceHolder"
+              class="w-[200px] outline-none h-8 rounded-xl overflow-hidden scroll-auto px-2 pt-1 resize-none text-sm"
+              maxlength="100"
+            ></textarea>
+            <button
+              class="h-6 w-16 ml-1 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
+              @click="commentCircle"
+            >
+              {{ $t('message.comment') }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -186,10 +302,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useStore } from 'vuex'
-import { getCircles, praiseCircle } from '@/api/circle'
+import {
+  getCircles,
+  praiseCircle,
+  handleComment,
+  getCircleComments,
+  getPraiseUsers
+} from '@/api/circle'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 
@@ -206,6 +328,59 @@ const circleInfo = ref(null)
 const noMore = ref(false)
 const isInitialLoad = ref(true)
 const loading = ref(false)
+const commentText = ref('')
+const commentPlaceHolder = ref(t('message.commentText'))
+const parentId = ref(null)
+const parentEmail = ref(null)
+const commentRef = ref(null)
+const commentLists = ref([])
+const parentNickname = ref('')
+const praiseUsers = ref([])
+
+const getCommentLists = async () => {
+  try {
+    if (loading.value) return
+    loading.value = true
+    const res = await getCircleComments(
+      userInfo.value.email,
+      circleInfo.value.user.email,
+      circleInfo.value.circleId
+    )
+    if (res.data.code !== 200) return
+    commentLists.value = res.data.data.comments
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+watch(circleInfo, newValue => {
+  if (newValue) getCommentLists()
+})
+
+const getPraiseUser = async circle => {
+  try {
+    const res = await getPraiseUsers(
+      userInfo.value.email,
+      circle.user.email,
+      circle.circleId
+    )
+    if (res.data.code !== 200) return
+    praiseUsers.value = res.data.data.praiseUsers
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const replyComment = (commentId, email, nickname) => {
+  parentId.value = commentId
+  parentEmail.value = email
+  parentNickname.value = nickname
+  commentText.value = ''
+  commentPlaceHolder.value = `${t('message.reply')} ${nickname} :`
+  commentRef.value.focus()
+}
 
 const getCircle = async () => {
   try {
@@ -226,14 +401,77 @@ const getCircle = async () => {
   }
 }
 
+const commentCircle = async () => {
+  if (!commentText.value) return
+  try {
+    const res = await handleComment(
+      userInfo.value.email,
+      circleInfo.value.circleId,
+      commentText.value,
+      parentId.value,
+      parentEmail.value,
+      circleInfo.value.user.email
+    )
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.map(circle => {
+      if (circle.circleId === circleInfo.value.circleId) circle.commentNum += 1
+      return circle
+    })
+    const newComment = {
+      _id: res.data.data.commentId,
+      circleId: circleInfo.value.circleId,
+      content: commentText.value,
+      parentId: parentId.value,
+      parentEmail: parentEmail.value,
+      publishDate: new Date().toISOString(),
+      user: {
+        email: userInfo.value.email,
+        nickname: userInfo.value.nickname,
+        own: userInfo.value.email === circleInfo.value.user.email
+      },
+      parentUser: {
+        email: parentEmail.value,
+        nickname: parentNickname.value,
+        own: parentEmail.value === circleInfo.value.user.email
+      }
+    }
+    if (!parentId.value) commentLists.value.push(newComment)
+    else {
+      const parentIndex = commentLists.value.findIndex(
+        c => c._id === parentId.value
+      )
+      if (parentIndex !== -1)
+        commentLists.value.splice(parentIndex + 1, 0, newComment)
+    }
+    commentText.value = ''
+    parentId.value = null
+    parentEmail.value = null
+    commentPlaceHolder.value = t('message.commentText')
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
+}
+
 const handlePraise = async circleId => {
   try {
     const res = await praiseCircle(userInfo.value.email, circleId)
     if (res.data.code !== 200) return
     circleLists.value = circleLists.value.map(circle => {
       if (circle.circleId === circleId) {
-        if (circle.isPraise) circle.praiseNum--
-        else circle.praiseNum++
+        if (circle.isPraise) {
+          circle.praiseNum--
+          praiseUsers.value = praiseUsers.value.filter(
+            i => i.email !== userInfo.value.email
+          )
+        } else {
+          circle.praiseNum++
+          praiseUsers.value.unshift({
+            email: userInfo.value.email,
+            avatar: userInfo.value.avatar
+          })
+        }
         circle.isPraise = !circle.isPraise
       }
       return circle
@@ -245,7 +483,10 @@ const handlePraise = async circleId => {
   }
 }
 
-const viewDetail = circle => (circleInfo.value = circle)
+const viewDetail = circle => {
+  circleInfo.value = circle
+  getPraiseUser(circle)
+}
 
 const debounce = (func, wait) => {
   let timeout
@@ -278,6 +519,12 @@ const handleScroll = debounce(async () => {
   }
 }, 200)
 
+const handleFixed = () => {
+  if (!rightColumn.value) return
+  const rect = rightColumn.value.getBoundingClientRect()
+  isFixed.value = rect.top <= 56
+}
+
 onMounted(async () => {
   getCircle()
   if (isInitialLoad.value) {
@@ -285,10 +532,12 @@ onMounted(async () => {
     isInitialLoad.value = false
   }
   window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', handleFixed)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('scroll', handleFixed)
 })
 
 const convertToCST = isoString => {
@@ -321,5 +570,11 @@ const convertToCST = isoString => {
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: #ddd;
+}
+textarea {
+  @apply bg-[#F8F8FA] border border-[#F8F8FA] transition-all duration-300 ease-in-out;
+  &:focus {
+    @apply border-[#8A96A9] bg-white outline-transparent outline-0;
+  }
 }
 </style>

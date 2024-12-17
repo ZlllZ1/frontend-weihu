@@ -71,6 +71,7 @@ export default {
     online: 'online',
     noPosts: 'no post',
     noCircle: 'no circle',
+    author: 'author',
     noMore: 'no more',
     imageTooLarge: 'the pictures is too large, over 5MB',
     loading: 'loading',

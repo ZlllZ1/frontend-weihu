@@ -31,6 +31,7 @@ export default {
     viewCircleDetail: '点击朋友圈即可阅读朋友圈详情',
     noComments: '暂无评论,快去评论吧',
     reply: '回复',
+    author: '作者',
     toCommentPost: '评论该帖子',
     loading: '加载中',
     commentSuccess: '评论成功',

@@ -75,7 +75,6 @@ const imageHandler = () => {
       const res = await uploadCircleImg(formData)
       if (res.data.code !== 200) return
       if (res.data.data.circleImgUrl) {
-        if (!quill) console.log('quill is null')
         const length = quill.getLength()
         quill.setSelection(length, 0)
         quill.insertEmbed(

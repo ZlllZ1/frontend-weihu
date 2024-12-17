@@ -735,6 +735,7 @@ const replyComment = async (commentId, email, nickname) => {
 
 const handleComment = async () => {
   try {
+    if (!commentText.value) return
     const res = await commentPost(
       storeUser.value.email,
       postInfo.value.postId,
