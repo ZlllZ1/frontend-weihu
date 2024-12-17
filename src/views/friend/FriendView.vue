@@ -24,7 +24,7 @@
                         alt="user avatar"
                         class="rounded-full w-8 h-8"
                     /></a>
-                    <div class="truncate w-32 ml-3 flex items-center">
+                    <div class="truncate w-24 ml-3 flex items-center">
                       <a
                         :href="`/userInfo/${circle.user.email}`"
                         target="_blank"
@@ -39,6 +39,9 @@
                         class="rounded-full w-4 h-4 ml-1"
                       />
                     </div>
+                    <span class="text-xs text-gray">{{
+                      convertToCST(circle.publishDate)
+                    }}</span>
                   </div>
                   <div class="flex items-center justify-end gap-2 text-sm">
                     <div class="flex items-center gap-1 group cursor-pointer">
@@ -156,4 +159,21 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
+
+const convertToCST = isoString => {
+  const date = new Date(isoString.replace('Z', '+00:00'))
+  const utcTimestamp = date.getTime()
+  const cstDate = new Date(utcTimestamp)
+  const formattedDate =
+    cstDate.toLocaleDateString().replace(/-/g, ' ') +
+    ' ' +
+    cstDate
+      .toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
+      .replace(/^\D*/, '')
+  return formattedDate
+}
 </script>

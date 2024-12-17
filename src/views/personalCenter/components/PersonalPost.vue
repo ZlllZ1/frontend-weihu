@@ -84,7 +84,7 @@
               />
               <span
                 class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                :class="{ 'text-[#FE4144]': post.praise }"
+                :class="{ 'text-[#FE4144]': post.isPraise }"
                 >{{ $t('message.like') }}
                 {{ post.praiseNum > 1000 ? '999+' : post.praiseNum }}</span
               >
@@ -105,7 +105,7 @@
               />
               <span
                 class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
-                :class="{ 'text-[#FF8C00]': post.collect }"
+                :class="{ 'text-[#FF8C00]': post.isCollect }"
                 >{{ $t('message.collect') }}
                 {{ post.collectNum > 1000 ? '999+' : post.collectNum }}</span
               >
@@ -157,6 +157,7 @@ import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 import { praisePost, collectPost, updateShareNum } from '@/api/post'
 
+const emit = defineEmits(['handleChange'])
 const props = defineProps({
   email: {
     type: String,
@@ -209,10 +210,14 @@ const handlePraise = async postId => {
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {
-        if (post.praise) post.praiseNum--
-        else post.praiseNum++
-
-        return { ...post, praise: !post.praise }
+        if (post.isPraise) {
+          post.praiseNum--
+          emit('handleChange', { type: 'praise', num: -1 })
+        } else {
+          post.praiseNum++
+          emit('handleChange', { type: 'praise', num: 1 })
+        }
+        return { ...post, isPraise: !post.isPraise }
       }
       return post
     })
@@ -229,9 +234,14 @@ const handleCollect = async postId => {
     if (res.data.code !== 200) return
     posts.value = posts.value.map(post => {
       if (post.postId === postId) {
-        if (post.collect) post.collectNum--
-        else post.collectNum++
-        return { ...post, collect: !post.collect }
+        if (post.isCollect) {
+          post.collectNum--
+          emit('handleChange', { type: 'collect', num: -1 })
+        } else {
+          post.collectNum++
+          emit('handleChange', { type: 'collect', num: 1 })
+        }
+        return { ...post, isCollect: !post.isCollect }
       }
       return post
     })

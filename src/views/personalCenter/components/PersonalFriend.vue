@@ -96,6 +96,7 @@ import { useI18n } from 'vue-i18n'
 import { followUser } from '@/api/user'
 import { useToast } from 'vue-toast-notification'
 
+const emit = defineEmits(['handleChange'])
 const props = defineProps({
   email: {
     type: String,
@@ -139,11 +140,12 @@ const follow = async email => {
     if (res.data.code !== 200) return
     users.value = users.value.map(user => {
       if (user?.email === email) {
-        if (user?.email === email) {
-          return { ...user, isFollowing: !user.isFollowing }
-        }
-        return user
+        if (user?.isFollowing)
+          emit('handleChange', { type: 'unFollow', num: -1 })
+        else emit('handleChange', { type: 'follow', num: 1 })
+        return { ...user, isFollowing: !user.isFollowing }
       }
+      return user
     })
     $toast.success(t('message.operateSuccess'))
   } catch (error) {

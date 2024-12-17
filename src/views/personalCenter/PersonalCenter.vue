@@ -136,7 +136,7 @@
             </div>
           </template>
         </div>
-        <component :is="currentComponent" />
+        <component :is="currentComponent" @handleChange="handleChange" />
       </div>
       <div ref="rightColumn" class="w-[328px]">
         <div
@@ -171,54 +171,55 @@ const rightColumn = ref(null)
 const isFixed = ref(false)
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
-const personalHeaders = ref([
+const activeHeaderValue = ref('post')
+const personalHeaders = computed(() => [
   {
     label: t('message.post'),
     value: 'post',
     num: userInfo.value.postNum > 1000 ? '999+' : userInfo.value.postNum,
-    active: true,
+    active: activeHeaderValue.value === 'post',
     component: markRaw(PersonalPost)
   },
   {
     label: t('message.circleOfFriends'),
     value: 'circle',
     num: userInfo.value.circleNum > 1000 ? '999+' : userInfo.value.circleNum,
-    active: false,
+    active: activeHeaderValue.value === 'circle',
     component: markRaw(PersonalCircle)
   },
   {
     label: t('message.follow'),
     value: 'follow',
     num: userInfo.value.followNum > 1000 ? '999+' : userInfo.value.followNum,
-    active: false,
+    active: activeHeaderValue.value === 'follow',
     component: markRaw(PersonalFollow)
   },
   {
     label: t('message.fans'),
     value: 'fan',
     num: userInfo.value.fanNum > 1000 ? '999+' : userInfo.value.fanNum,
-    active: false,
+    active: activeHeaderValue.value === 'fan',
     component: markRaw(PersonalFan)
   },
   {
     label: t('message.friend'),
     value: 'friend',
     num: userInfo.value.friendNum > 1000 ? '999+' : userInfo.value.friendNum,
-    active: false,
+    active: activeHeaderValue.value === 'friend',
     component: markRaw(PersonalFriend)
   },
   {
     label: t('message.praise'),
     value: 'praise',
     num: userInfo.value.praiseNum > 1000 ? '999+' : userInfo.value.praiseNum,
-    active: false,
+    active: activeHeaderValue.value === 'praise',
     component: markRaw(PersonalPraise)
   },
   {
     label: t('message.collect'),
     value: 'collect',
     num: userInfo.value.collectNum > 1000 ? '999+' : userInfo.value.collectNum,
-    active: false,
+    active: activeHeaderValue.value === 'collect',
     component: markRaw(PersonalCollect)
   }
 ])
@@ -234,6 +235,27 @@ const getInfo = async () => {
   if (res.data.code !== 200) return
   store.commit('user/setUserInfo', res.data.data)
   localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+}
+
+const handleChange = data => {
+  const { type, num } = data
+  const user = { ...userInfo.value }
+  switch (type) {
+    case 'praise':
+      user.praiseNum += num
+      break
+    case 'collect':
+      user.collectNum += num
+      break
+    case 'follow':
+      user.followNum += num
+      break
+    case 'unFollow':
+      user.followNum += num
+      break
+  }
+  store.commit('user/setUserInfo', user)
+  localStorage.setItem('userInfo', JSON.stringify(user))
 }
 
 const handleBgChange = async event => {
@@ -272,11 +294,7 @@ const handleAvatarChange = async event => {
   }
 }
 
-const togglePersonalHeader = value => {
-  personalHeaders.value.forEach(header => {
-    header.active = header.value === value
-  })
-}
+const togglePersonalHeader = value => (activeHeaderValue.value = value)
 
 const handleScroll = () => {
   if (!rightColumn.value) return

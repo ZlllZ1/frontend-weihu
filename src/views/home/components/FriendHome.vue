@@ -184,6 +184,7 @@ const clipIntroduction = introduction => {
 
 const getHomePosts = async () => {
   try {
+    if (loading.value) return
     loading.value = true
     const res = await getPosts(
       userInfo.value?.email,
