@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap p-8 gap-x-7 gap-y-4">
+  <div class="flex flex-wrap p-8 gap-x-6 gap-y-4">
     <div
       v-if="loading && isInitialLoad"
       class="flex items-center justify-center h-[72vh] w-full"
@@ -286,6 +286,10 @@ const props = defineProps({
   type: {
     type: String,
     default: 'after'
+  },
+  email: {
+    type: String,
+    default: ''
   }
 })
 
@@ -416,7 +420,9 @@ const getCircles = async () => {
   try {
     if (loading.value) return
     loading.value = true
+    const email = props.email || userInfo.value?.email
     const res = await getMyCircles(
+      email,
       userInfo.value?.email,
       props.type,
       currentPage.value,
