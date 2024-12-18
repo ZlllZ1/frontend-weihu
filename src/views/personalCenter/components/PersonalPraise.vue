@@ -294,7 +294,9 @@ const handleScroll = debounce(async () => {
   if (
     documentHeight - windowHeight - scrollTop < 50 &&
     !noMore.value &&
-    !isInitialLoad.value
+    !isInitialLoad.value &&
+    !loading.value &&
+    posts.value.length > 0
   ) {
     await loadMore()
   }

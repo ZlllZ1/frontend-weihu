@@ -61,3 +61,11 @@ export const getPraiseUsers = (email, circleEmail, circleId) => {
     { requiresAuth: true }
   )
 }
+
+export const getMyCircles = (email, type, page, limit) => {
+  return request.get(
+    '/circle/getMyCircles',
+    { email, type, page, limit },
+    { requiresAuth: true }
+  )
+}

@@ -12,7 +12,7 @@
               ><img
                 :src="user?.avatar"
                 alt="avatar"
-                class="rounded-full w-16 h-16 mr-2"
+                class="rounded-full w-14 h-14 mr-2"
             /></router-link>
             <div class="flex flex-col">
               <div class="flex items-center">
@@ -202,7 +202,9 @@ const handleScroll = debounce(async () => {
   if (
     documentHeight - windowHeight - scrollTop < 50 &&
     !noMore.value &&
-    !isInitialLoad.value
+    !isInitialLoad.value &&
+    !loading.value &&
+    users.value.length > 0
   ) {
     await loadMore()
   }

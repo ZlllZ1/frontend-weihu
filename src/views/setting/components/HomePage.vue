@@ -66,21 +66,6 @@ const options = ref([
     label: t('message.showCollect'),
     value: 'showCollect',
     selected: setting.value.showCollect
-  },
-  {
-    label: t('message.showShare'),
-    value: 'showShare',
-    selected: setting.value.showShare
-  },
-  {
-    label: t('message.showFriend'),
-    value: 'showFriend',
-    selected: setting.value.showFriend
-  },
-  {
-    label: t('message.showLive'),
-    value: 'showLive',
-    selected: setting.value.showLive
   }
 ])
 

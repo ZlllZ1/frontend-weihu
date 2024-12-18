@@ -4,10 +4,9 @@
   >
     <div class="w-full flex gap-x-2">
       <div
-        class="w-[600px] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
+        class="w-[650px] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
       >
         <div class="px-4 py-3">
-          <div class="border-b border-gray py-2">筛选区域</div>
           <div
             v-if="loading"
             class="flex items-center justify-center py-4 h-full"
@@ -123,10 +122,9 @@
       </div>
       <div ref="rightColumn">
         <div
-          class="bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] p-1 rounded-lg top-14 max-h-[80vh] overflow-y-auto overflow-x-hidden"
+          class="bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] w-[336px] p-1 rounded-lg top-14 max-h-[80vh] overflow-y-auto overflow-x-hidden"
           :class="{ fixed: isFixed }"
         >
-          <WeatherView />
           <div
             v-if="circleInfo"
             class="min-h-[280px] p-2 shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
@@ -267,7 +265,7 @@
           </div>
           <div
             v-else
-            class="min-h-[200px] p-1 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] flex items-center justify-center"
+            class="w-[336px] min-h-[78vh] p-1 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] flex items-center justify-center"
           >
             {{ $t('message.viewCircleDetail') }}
           </div>
@@ -303,7 +301,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
-import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useStore } from 'vuex'
 import {
   getCircles,
