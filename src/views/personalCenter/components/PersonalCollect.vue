@@ -5,7 +5,7 @@
   <template v-else-if="posts.length">
     <template v-for="post in posts" :key="post.postId">
       <div
-        class="p-4 border-b border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
+        class="p-4 border-b border-[rgb(235,236,237)] h-[230px] overflow-hidden w-full flex justify-between flex-col"
       >
         <div class="title-container">
           <div class="title">
@@ -52,6 +52,12 @@
                 post.user.nickname
               }}</span>
             </div>
+            <img
+              v-if="!post?.show && post.email === userInfo?.email"
+              src="@/assets/lock.svg"
+              alt="lock"
+              class="w-5 h-5"
+            />
           </div>
           <div class="flex items-center justify-end gap-12">
             <router-link
@@ -125,6 +131,37 @@
             </div>
           </div>
         </div>
+        <div
+          v-if="post.email === userInfo.email"
+          class="flex items-center justify-end pb-2 relative"
+        >
+          <button @click="() => (post.active = !post.active)">...</button>
+          <div
+            v-if="post.active"
+            class="overflow-hidden text-xs absolute w-16 flex flex-col items-center h-12 rounded-lg bg-white bottom-[20px] border border-gray p-1"
+          >
+            <button
+              class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+              @click="handleDelete(post.postId)"
+            >
+              删除
+            </button>
+            <button
+              v-if="post.show"
+              class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+              @click="handleHide(post.postId)"
+            >
+              隐藏
+            </button>
+            <button
+              v-else
+              class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+              @click="handleShow(post.postId)"
+            >
+              展示
+            </button>
+          </div>
+        </div>
       </div>
     </template>
   </template>
@@ -155,7 +192,14 @@ import { getMyPosts } from '@/api/post'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
-import { praisePost, collectPost, updateShareNum } from '@/api/post'
+import {
+  praisePost,
+  collectPost,
+  updateShareNum,
+  deletePost,
+  hidePost,
+  showPost
+} from '@/api/post'
 
 const emit = defineEmits(['handleChange'])
 const props = defineProps({
@@ -181,6 +225,65 @@ const clipIntroduction = introduction => {
   return introduction
 }
 
+const handleDelete = async postId => {
+  try {
+    const res = await deletePost(postId, userInfo.value.email)
+    if (res.data.code !== 200) return
+    posts.value = posts.value.filter(post => post.postId !== postId)
+    emit('handleChange', { type: 'delete', num: -1 })
+    emit('handleChange', { type: 'deleteCollect', num: -1 })
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    posts.value = posts.value.map(p => {
+      if (p.postId === postId) return { ...p, active: false }
+      return p
+    })
+  }
+}
+
+const handleHide = async postId => {
+  try {
+    const res = await hidePost(postId, userInfo.value.email)
+    if (res.data.code !== 200) return
+    posts.value = posts.value.map(p => {
+      if (p.postId === postId) return { ...p, show: false }
+      return p
+    })
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    posts.value = posts.value.map(p => {
+      if (p.postId === postId) return { ...p, active: false }
+      return p
+    })
+  }
+}
+
+const handleShow = async postId => {
+  try {
+    const res = await showPost(postId, userInfo.value.email)
+    if (res.data.code !== 200) return
+    posts.value = posts.value.map(p => {
+      if (p.postId === postId) return { ...p, show: true }
+      return p
+    })
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    posts.value = posts.value.map(p => {
+      if (p.postId === postId) return { ...p, active: false }
+      return p
+    })
+  }
+}
+
 const getPosts = async () => {
   try {
     if (loading.value) return
@@ -195,6 +298,12 @@ const getPosts = async () => {
       userEmail
     )
     if (res.data.code !== 200) return
+    res.data.data.posts = res.data.data.posts.map(post => {
+      return {
+        ...post,
+        active: false
+      }
+    })
     posts.value = [...posts.value, ...res.data.data.posts]
     if (res.data.data.posts.length < limit.value) noMore.value = true
   } catch (error) {

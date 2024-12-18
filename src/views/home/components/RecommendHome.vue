@@ -6,7 +6,7 @@
     <template v-for="post in posts" :key="post.postId">
       <div
         id="post-container"
-        class="p-4 border-b border-[rgb(235,236,237)] h-[220px] overflow-hidden w-full flex justify-between flex-col"
+        class="p-4 border-b border-[rgb(235,236,237)] h-[230px] overflow-hidden w-full flex justify-between flex-col"
       >
         <div class="title-container">
           <div class="title">
@@ -69,6 +69,12 @@
                 src="../images/self.svg"
                 alt="self"
                 class="rounded-full w-4 h-4"
+              />
+              <img
+                v-if="!post?.show && post.email === userInfo?.email"
+                src="@/assets/lock.svg"
+                alt="lock"
+                class="w-5 h-5"
               />
             </div>
           </div>
@@ -142,6 +148,30 @@
             </div>
           </div>
         </div>
+        <div
+          v-if="post.email === userInfo.email"
+          class="flex items-center justify-end pb-2 relative"
+        >
+          <button @click="() => (post.active = !post.active)">...</button>
+          <div
+            v-if="post.active"
+            class="overflow-hidden text-xs absolute w-16 flex flex-col items-center h-12 rounded-lg bg-white bottom-[20px] border border-gray p-1"
+          >
+            <button
+              class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+              @click="handleDelete(post.postId)"
+            >
+              删除
+            </button>
+            <button
+              v-if="post.show"
+              class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+              @click="handleHide(post.postId)"
+            >
+              隐藏
+            </button>
+          </div>
+        </div>
       </div>
     </template>
   </template>
@@ -162,7 +192,14 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useStore } from 'vuex'
-import { getPosts, praisePost, collectPost, updateShareNum } from '@/api/post'
+import {
+  getPosts,
+  praisePost,
+  collectPost,
+  updateShareNum,
+  deletePost,
+  hidePost
+} from '@/api/post'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
 
@@ -182,6 +219,30 @@ const clipIntroduction = introduction => {
   return introduction
 }
 
+const handleDelete = async postId => {
+  try {
+    const res = await deletePost(postId, userInfo.value.email)
+    if (res.data.code !== 200) return
+    posts.value = posts.value.filter(post => post.postId !== postId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
+}
+
+const handleHide = async postId => {
+  try {
+    const res = await hidePost(postId, userInfo.value.email)
+    if (res.data.code !== 200) return
+    posts.value = posts.value.filter(post => post.postId !== postId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
+}
+
 const getHomePosts = async () => {
   try {
     if (loading.value) return
@@ -193,6 +254,12 @@ const getHomePosts = async () => {
       'recommend'
     )
     if (res.data.code !== 200) return
+    res.data.data.posts = res.data.data.posts.map(post => {
+      return {
+        ...post,
+        active: false
+      }
+    })
     posts.value = [...posts.value, ...res.data.data.posts]
     if (res.data.data.posts.length < limit.value) noMore.value = true
   } catch (error) {

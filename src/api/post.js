@@ -121,3 +121,27 @@ export const praiseComments = (email, commentId) => {
 export const clearDraft = email => {
   return request.post('/post/clearDraft', { email }, { requiresAuth: true })
 }
+
+export const deletePost = (postId, email) => {
+  return request.post(
+    '/post/deletePost',
+    { postId, email },
+    { requiresAuth: true }
+  )
+}
+
+export const hidePost = (postId, email) => {
+  return request.post(
+    '/post/hidePost',
+    { postId, email },
+    { requiresAuth: true }
+  )
+}
+
+export const showPost = (postId, email) => {
+  return request.post(
+    '/post/showPost',
+    { postId, email },
+    { requiresAuth: true }
+  )
+}

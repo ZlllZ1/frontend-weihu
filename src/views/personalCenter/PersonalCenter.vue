@@ -253,6 +253,15 @@ const handleChange = data => {
     case 'unFollow':
       user.followNum += num
       break
+    case 'delete':
+      user.postNum += num
+      break
+    case 'deletePraise':
+      user.praiseNum += num
+      break
+    case 'deleteCollect':
+      user.collectNum += num
+      break
   }
   store.commit('user/setUserInfo', user)
   localStorage.setItem('userInfo', JSON.stringify(user))
