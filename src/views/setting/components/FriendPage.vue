@@ -57,7 +57,7 @@ const range = ref([
   },
   {
     label: t('message.visibleYear'),
-    value: 360
+    value: 365
   }
 ])
 
