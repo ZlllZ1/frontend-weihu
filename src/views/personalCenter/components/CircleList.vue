@@ -3,13 +3,13 @@
     <div class="flex flex-wrap p-8 gap-x-6 gap-y-4">
       <div
         v-if="loading && isInitialLoad"
-        class="flex items-center justify-center h-[72vh] w-full"
+        class="flex items-center justify-center h-[72vh] w-full text-gray"
       >
         {{ $t('message.loading') }}
       </div>
       <div
         v-else-if="circleLists.length === 0"
-        class="flex items-center justify-center h-[72vh] w-full"
+        class="flex items-center justify-center h-[72vh] w-full text-gray"
       >
         {{ $t('message.noData') }}
       </div>
@@ -255,7 +255,7 @@
                         class="w-[242px] flex flex-wrap break-all"
                         v-html="comment?.content"
                       ></div>
-                      <div class="flex items-center justify-end">
+                      <div class="flex items-center justify-end gap-2">
                         <button
                           class="text-gray hover:text-blue"
                           @click="
@@ -268,6 +268,14 @@
                         >
                           {{ $t('message.reply') }}
                         </button>
+                        <div
+                          v-if="comment?.user?.email === userInfo.email"
+                          class="hover:text-[#FE4144]"
+                        >
+                          <button @click="deleteComment(comment?._id)">
+                            {{ $t('message.delete') }}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -320,6 +328,7 @@ import {
   handleComment,
   deleteCircle,
   hideCircle,
+  deleteComments,
   showCircle
 } from '@/api/circle'
 import { useStore } from 'vuex'
@@ -396,6 +405,25 @@ const handleDelete = async circleId => {
       if (c.circleId === circleId) return { ...c, active: false }
       return c
     })
+  }
+}
+
+const deleteComment = async commentId => {
+  try {
+    const res = await deleteComments(
+      circleInfo.value.circleId,
+      userInfo.value.email,
+      commentId
+    )
+    if (res.data.code !== 200) return
+    commentLists.value = commentLists.value.filter(
+      c => c._id !== commentId && c.parentId !== commentId
+    )
+    circleInfo.value.commentNum -= res.data.data.deleteNum
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
   }
 }
 

@@ -9,7 +9,7 @@
         <div class="px-4 py-3">
           <div
             v-if="loading"
-            class="flex items-center justify-center py-4 h-full"
+            class="flex items-center justify-center py-4 h-full text-gray"
           >
             {{ $t('message.loading') }}
           </div>
@@ -100,31 +100,31 @@
                           }}</span
                         >
                       </div>
-                    </div>
-                    <div
-                      v-if="circle.email === userInfo.email"
-                      class="flex items-center justify-end relative"
-                    >
-                      <button @click="() => (circle.active = !circle.active)">
-                        ...
-                      </button>
                       <div
-                        v-if="circle.active"
-                        class="overflow-hidden text-xs absolute w-16 flex flex-col items-center h-12 rounded-lg bg-white bottom-[10px] border border-gray p-1"
+                        v-if="circle.email === userInfo.email"
+                        class="flex items-center justify-end relative"
                       >
-                        <button
-                          class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
-                          @click="handleDelete(circle.circleId)"
-                        >
-                          {{ $t('message.delete') }}
+                        <button @click="() => (circle.active = !circle.active)">
+                          ...
                         </button>
-                        <button
-                          v-if="circle.show && type === 'after'"
-                          class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
-                          @click="handleHide(circle.circleId)"
+                        <div
+                          v-if="circle.active"
+                          class="overflow-hidden text-xs absolute w-16 flex flex-col items-center h-12 rounded-lg bg-white bottom-[10px] border border-gray p-1"
                         >
-                          {{ $t('message.hide') }}
-                        </button>
+                          <button
+                            class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+                            @click="handleDelete(circle.circleId)"
+                          >
+                            {{ $t('message.delete') }}
+                          </button>
+                          <button
+                            v-if="circle.show"
+                            class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+                            @click="handleHide(circle.circleId)"
+                          >
+                            {{ $t('message.hide') }}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -262,7 +262,7 @@
                           class="w-[242px] flex flex-wrap break-all"
                           v-html="comment?.content"
                         ></div>
-                        <div class="flex items-center justify-end">
+                        <div class="flex items-center justify-end gap-3">
                           <button
                             class="text-gray hover:text-blue"
                             @click="
@@ -275,6 +275,14 @@
                           >
                             {{ $t('message.reply') }}
                           </button>
+                          <div
+                            v-if="comment?.user?.email === userInfo.email"
+                            class="hover:text-[#FE4144]"
+                          >
+                            <button @click="deleteComment(comment?._id)">
+                              {{ $t('message.delete') }}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -291,7 +299,7 @@
           </div>
           <div
             v-else
-            class="w-[336px] min-h-[78vh] p-1 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] flex items-center justify-center"
+            class="text-gray w-[336px] min-h-[78vh] p-1 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] flex items-center justify-center"
           >
             {{ $t('message.viewCircleDetail') }}
           </div>
@@ -335,7 +343,8 @@ import {
   getCircleComments,
   getPraiseUsers,
   deleteCircle,
-  hideCircle
+  hideCircle,
+  deleteComments
 } from '@/api/circle'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
@@ -377,6 +386,24 @@ const getCommentLists = async () => {
     console.error(error)
   } finally {
     loading.value = false
+  }
+}
+
+const deleteComment = async commentId => {
+  try {
+    const res = await deleteComments(
+      circleInfo.value.circleId,
+      userInfo.value.email,
+      commentId
+    )
+    if (res.data.code !== 200) return
+    commentLists.value = commentLists.value.filter(
+      c => c._id !== commentId && c.parentId !== commentId
+    )
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
   }
 }
 

@@ -145,3 +145,11 @@ export const showPost = (postId, email) => {
     { requiresAuth: true }
   )
 }
+
+export const deleteComments = (postId, email, commentId) => {
+  return request.post(
+    '/post/deleteComment',
+    { postId, email, commentId },
+    { requiresAuth: true }
+  )
+}

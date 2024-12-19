@@ -183,18 +183,31 @@
                         <span class="text-gray text-xs">{{
                           convertToCST(comment?.commentDate)
                         }}</span>
-                        <button
-                          class="text-gray hover:text-blue"
-                          @click="
-                            replyComment(
-                              comment?._id,
-                              comment?.user.email,
-                              comment?.user.nickname
-                            )
-                          "
+                        <div
+                          class="flex items-center text-gray justify-center gap-3"
                         >
-                          {{ $t('message.reply') }}
-                        </button>
+                          <button
+                            class="hover:text-blue"
+                            @click="
+                              replyComment(
+                                comment?._id,
+                                comment?.user.email,
+                                comment?.user.nickname
+                              )
+                            "
+                          >
+                            {{ $t('message.reply') }}
+                          </button>
+                          <button
+                            v-if="comment?.user?.email === storeUser?.email"
+                            class="hover:text-[#FE4144]"
+                            @click="
+                              deleteComment(comment?._id, comment?.parentId)
+                            "
+                          >
+                            {{ $t('message.delete') }}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -295,18 +308,31 @@
                           <span class="text-gray text-xs">{{
                             convertToCST(reply?.commentDate)
                           }}</span>
-                          <button
-                            class="text-gray hover:text-blue"
-                            @click="
-                              replyComment(
-                                reply?._id,
-                                reply?.user.email,
-                                reply?.user.nickname
-                              )
-                            "
+                          <div
+                            class="flex items-center justify-center gap-3 text-gray"
                           >
-                            {{ $t('message.reply') }}
-                          </button>
+                            <button
+                              class="hover:text-blue"
+                              @click="
+                                replyComment(
+                                  reply?._id,
+                                  reply?.user.email,
+                                  reply?.user.nickname
+                                )
+                              "
+                            >
+                              {{ $t('message.reply') }}
+                            </button>
+                            <button
+                              v-if="reply?.user?.email === storeUser?.email"
+                              class="hover:text-[#FE4144]"
+                              @click="
+                                deleteComment(reply?._id, reply?.parentId)
+                              "
+                            >
+                              {{ $t('message.delete') }}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </template>
@@ -335,71 +361,75 @@
         <div
           class="fixed flex items-center justify-between py-1 px-2 bottom-0 h-16 bg-white w-[53.2%] shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-sm z-10"
         >
-          <div class="nav-item inline-flex items-center justify-between gap-4">
+          <div
+            class="nav-item inline-flex items-center justify-between gap-4 w-full"
+          >
             <div class="flex items-center">
               <img
                 :src="storeUser?.avatar"
                 alt="avatar"
-                class="w-8 h-8 rounded-full mr-1"
+                class="w-8 h-8 rounded-full mr-3"
               />
               <textarea
                 ref="commentRef"
                 v-model="commentText"
                 type="text"
                 :placeholder="commentPlaceHolder"
-                class="w-[300px] outline-none rounded-xl overflow-hidden scroll-auto px-2 pt-2 resize-none text-sm"
+                class="w-[340px] outline-none rounded-xl overflow-hidden scroll-auto px-2 pt-2 resize-none text-sm"
                 maxlength="100"
               ></textarea>
               <button
-                class="h-8 w-20 p-1 ml-1 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
+                class="h-8 w-20 p-1 ml-2 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
                 @click="handleComment"
               >
                 {{ $t('message.comment') }}
               </button>
             </div>
-            <div
-              class="flex items-center gap-1 group cursor-pointer"
-              @click="handlePraise(postInfo?.postId)"
-            >
-              <img
-                class="w-5 h-5 group-hover:text-black"
-                :src="
-                  postInfo?.isPraise
-                    ? require('../home/images/hasPraise.svg')
-                    : require('../home/images/praise.svg')
-                "
-                alt="praise"
-              />
-              <span
-                class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                :class="{ 'text-[#FE4144]': postInfo?.isPraise }"
-                >{{ $t('message.like') }}
-                {{
-                  postInfo?.praiseNum > 1000 ? '999+' : postInfo?.praiseNum
-                }}</span
+            <div class="flex items-center justify-center gap-2">
+              <div
+                class="flex items-center gap-1 group cursor-pointer"
+                @click="handlePraise(postInfo?.postId)"
               >
-            </div>
-            <div
-              class="flex items-center gap-1 group cursor-pointer"
-              @click="handleCollect(postInfo?.postId)"
-            >
-              <img
-                class="w-5 h-5 group-hover:text-black"
-                :src="
-                  postInfo?.isCollect
-                    ? require('../home/images/hasCollect.svg')
-                    : require('../home/images/collect.svg')
-                "
-                alt="collect"
-              />
-              <span
-                class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
-                :class="{ 'text-[#FF8C00]': postInfo?.isCollect }"
-                >{{ $t('message.collect') }}
-                {{
-                  postInfo?.collectNum > 1000 ? '999+' : postInfo?.collectNum
-                }}</span
+                <img
+                  class="w-5 h-5 group-hover:text-black"
+                  :src="
+                    postInfo?.isPraise
+                      ? require('../home/images/hasPraise.svg')
+                      : require('../home/images/praise.svg')
+                  "
+                  alt="praise"
+                />
+                <span
+                  class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                  :class="{ 'text-[#FE4144]': postInfo?.isPraise }"
+                  >{{ $t('message.like') }}
+                  {{
+                    postInfo?.praiseNum > 1000 ? '999+' : postInfo?.praiseNum
+                  }}</span
+                >
+              </div>
+              <div
+                class="flex items-center gap-1 group cursor-pointer"
+                @click="handleCollect(postInfo?.postId)"
               >
+                <img
+                  class="w-5 h-5 group-hover:text-black"
+                  :src="
+                    postInfo?.isCollect
+                      ? require('../home/images/hasCollect.svg')
+                      : require('../home/images/collect.svg')
+                  "
+                  alt="collect"
+                />
+                <span
+                  class="text-[#8A8A8A] group-hover:text-[#FF8C00]"
+                  :class="{ 'text-[#FF8C00]': postInfo?.isCollect }"
+                  >{{ $t('message.collect') }}
+                  {{
+                    postInfo?.collectNum > 1000 ? '999+' : postInfo?.collectNum
+                  }}</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -433,7 +463,7 @@
       </div>
     </div>
   </div>
-  <template v-if="moreOriginComment && moreComments.length">
+  <template v-if="moreOriginComment">
     <div
       class="fixed flex items-center justify-center bg-black bg-opacity-30 z-1 inset-0"
       @mousedown.self="closeMoreComment"
@@ -617,18 +647,27 @@
                 <span class="text-gray text-xs">{{
                   convertToCST(reply?.commentDate)
                 }}</span>
-                <button
-                  class="text-gray hover:text-blue"
-                  @click="
-                    replyComment(
-                      reply?._id,
-                      reply?.user.email,
-                      reply?.user.nickname
-                    )
-                  "
-                >
-                  {{ $t('message.reply') }}
-                </button>
+                <div class="flex items-center justify-center text-gray gap-3">
+                  <button
+                    class="hover:text-blue"
+                    @click="
+                      replyComment(
+                        reply?._id,
+                        reply?.user.email,
+                        reply?.user.nickname
+                      )
+                    "
+                  >
+                    {{ $t('message.reply') }}
+                  </button>
+                  <button
+                    v-if="reply?.user?.email === storeUser?.email"
+                    class="hover:text-[#FE4144]"
+                    @click="deleteComment(reply?._id, reply?.parentId)"
+                  >
+                    {{ $t('message.delete') }}
+                  </button>
+                </div>
               </div>
             </div>
           </template>
@@ -650,7 +689,8 @@ import {
   updateShareNum,
   commentPost,
   getComments,
-  praiseComments
+  praiseComments,
+  deleteComments
 } from '@/api/post'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
@@ -731,6 +771,35 @@ const replyComment = async (commentId, email, nickname) => {
   commentText.value = ''
   commentPlaceHolder.value = `${t('message.reply')} ${nickname} :`
   commentRef.value.focus()
+}
+
+const deleteComment = async (commentId, parentId) => {
+  try {
+    const res = await deleteComments(postId, storeUser.value.email, commentId)
+    if (res.data.code !== 200) return
+    if (!parentId)
+      commentList.value = commentList.value.filter(c => c._id !== commentId)
+    else {
+      const idSet = new Set([commentId])
+      commentList.value.forEach(c => {
+        if (c.replies && c.replies.length) {
+          c.replies.forEach(reply => {
+            if (idSet.has(reply.parentId)) idSet.add(reply._id)
+          })
+          c.replies = c.replies.filter(r => !idSet.has(r._id))
+        }
+      })
+      moreComments.value.forEach(c => {
+        if (idSet.has(c.parentId)) idSet.add(c._id)
+      })
+      moreComments.value = moreComments.value.filter(c => !idSet.has(c._id))
+    }
+    postInfo.value.commentNum -= res.data.data.deleteNum
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
 }
 
 const handleComment = async () => {
@@ -914,6 +983,7 @@ const handleLoadMore = debounce(async () => {
 }, 200)
 
 onMounted(async () => {
+  document.body.style.overflow = 'auto'
   window.scrollTo({
     top: 0
   })

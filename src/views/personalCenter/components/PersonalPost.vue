@@ -1,5 +1,8 @@
 <template>
-  <div v-if="loading" class="flex items-center justify-center py-4 h-full">
+  <div
+    v-if="loading"
+    class="flex text-gray items-center justify-center py-4 h-full"
+  >
     {{ $t('message.loading') }}
   </div>
   <template v-else-if="posts.length">
@@ -131,7 +134,10 @@
             </div>
           </div>
         </div>
-        <div class="flex items-center justify-end pb-2 relative">
+        <div
+          v-if="userInfo.email === post.email"
+          class="flex items-center justify-end pb-2 relative"
+        >
           <button @click="() => (post.active = !post.active)">...</button>
           <div
             v-if="post.active"

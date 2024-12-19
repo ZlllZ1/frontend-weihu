@@ -15,7 +15,7 @@
           <router-link to="/create" class="flex-1 text-center justify-center">{{
             $t('message.creativeCenter')
           }}</router-link>
-          <router-link to="friend" class="flex-1 text-center justify-center">{{
+          <router-link to="/friend" class="flex-1 text-center justify-center">{{
             $t('message.circleOfFriends')
           }}</router-link>
         </div>

@@ -93,3 +93,11 @@ export const showCircle = (email, circleId) => {
     { requiresAuth: true }
   )
 }
+
+export const deleteComments = (circleId, email, commentId) => {
+  return request.post(
+    '/circle/deleteComment',
+    { circleId, email, commentId },
+    { requiresAuth: true }
+  )
+}

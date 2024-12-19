@@ -1,5 +1,8 @@
 <template>
-  <div v-if="loading" class="flex items-center justify-center py-4 h-full">
+  <div
+    v-if="loading"
+    class="flex text-gray items-center justify-center py-4 h-full"
+  >
     {{ $t('message.loading') }}
   </div>
   <template v-if="posts.length">
