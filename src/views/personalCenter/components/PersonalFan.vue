@@ -13,7 +13,7 @@
             <router-link
               :to="{ name: 'userInfo', params: { email: user?.email } }"
               ><img
-                :src="user?.avatar"
+                :src="user?.avatar || require('@/assets/avatar_default.png')"
                 alt="avatar"
                 class="rounded-full w-14 h-14 mr-2"
             /></router-link>

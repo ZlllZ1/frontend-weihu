@@ -13,7 +13,7 @@
             <router-link
               :to="{ name: 'userInfo', params: { email: user?.email } }"
               ><img
-                :src="user?.avatar"
+                :src="user?.avatar || require('@/assets/avatar_default.png')"
                 alt="avatar"
                 class="rounded-full w-14 h-14 mr-2"
             /></router-link>
@@ -143,9 +143,13 @@ const follow = async email => {
     if (res.data.code !== 200) return
     users.value = users.value.map(user => {
       if (user?.email === email) {
-        if (user?.isFollowing)
+        if (user?.isFollowing) {
           emit('handleChange', { type: 'unFollow', num: -1 })
-        else emit('handleChange', { type: 'follow', num: 1 })
+          emit('handleChange', { type: 'deleteFriend', num: -1 })
+        } else {
+          emit('handleChange', { type: 'follow', num: 1 })
+          emit('handleChange', { type: 'addFriend', num: 1 })
+        }
         return { ...user, isFollowing: !user.isFollowing }
       }
       return user

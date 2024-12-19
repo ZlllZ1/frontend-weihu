@@ -29,7 +29,10 @@
               <div class="flex items-center gap-2">
                 <a :href="`/userInfo/${circle?.user?.email}`" target="_blank"
                   ><img
-                    :src="circle?.user?.avatar"
+                    :src="
+                      circle?.user?.avatar ||
+                      require('@/assets/avatar_default.png')
+                    "
                     alt="user avatar"
                     class="rounded-full w-8 h-8"
                 /></a>
@@ -152,7 +155,10 @@
             <div class="flex items-center gap-4">
               <a :href="`/userInfo/${circleInfo?.user?.email}`" target="_blank">
                 <img
-                  :src="circleInfo?.user?.avatar"
+                  :src="
+                    circleInfo?.user?.avatar ||
+                    require('@/assets/avatar_default.png')
+                  "
                   alt="user avatar"
                   class="rounded-full w-12 h-12"
                 />
@@ -208,7 +214,7 @@
             <template v-for="user in praiseUsers" :key="user?.email">
               <a :href="`/userInfo/${user?.email}`" target="_blank">
                 <img
-                  :src="user?.avatar"
+                  :src="user?.avatar || require('@/assets/avatar_default.png')"
                   alt="user avatar"
                   class="w-10 h-10 rounded-full"
                 />
@@ -295,7 +301,7 @@
         class="bg-white mt-2 w-[60%] h-16 rounded-sm flex items-center px-4 justify-between"
       >
         <img
-          :src="userInfo?.avatar"
+          :src="userInfo?.avatar || require('@/assets/avatar_default.png')"
           alt="user avatar"
           class="rounded-full w-10 h-10 mr-4"
         />

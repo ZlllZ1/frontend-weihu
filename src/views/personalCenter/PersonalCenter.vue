@@ -265,6 +265,12 @@ const handleChange = data => {
     case 'deleteCircle':
       user.circleNum += num
       break
+    case 'deleteFriend':
+      user.friendNum += num
+      break
+    case 'addFriend':
+      user.friendNum += num
+      break
   }
   store.commit('user/setUserInfo', user)
   localStorage.setItem('userInfo', JSON.stringify(user))

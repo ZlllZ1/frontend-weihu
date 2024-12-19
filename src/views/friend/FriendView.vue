@@ -6,7 +6,7 @@
       <div
         class="w-[650px] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
       >
-        <div class="px-4 py-3">
+        <div class="px-4 py-3 h-full">
           <div
             v-if="loading"
             class="flex items-center justify-center py-4 h-full text-gray"
@@ -33,7 +33,10 @@
                           :href="`/userInfo/${circle?.user?.email}`"
                           target="_blank"
                           ><img
-                            :src="circle?.user?.avatar"
+                            :src="
+                              circle?.user?.avatar ||
+                              require('@/assets/avatar_default.png')
+                            "
                             alt="user avatar"
                             class="rounded-full w-8 h-8"
                         /></a>
@@ -162,7 +165,10 @@
                   target="_blank"
                 >
                   <img
-                    :src="circleInfo?.user?.avatar"
+                    :src="
+                      circleInfo?.user?.avatar ||
+                      require('@/assets/avatar_default.png')
+                    "
                     alt="user avatar"
                     class="rounded-full w-8 h-8"
                   />
@@ -215,7 +221,9 @@
               <template v-for="user in praiseUsers" :key="user?.email">
                 <a :href="`/userInfo/${user?.email}`" target="_blank">
                   <img
-                    :src="user?.avatar"
+                    :src="
+                      user?.avatar || require('@/assets/avatar_default.png')
+                    "
                     alt="user avatar"
                     class="w-8 h-8 rounded-full"
                   />
@@ -308,7 +316,7 @@
             class="fixed flex items-center bottom-0 rounded-sm bg-white h-12 w-[320px] px-2 py-1 border border-warmGray-200"
           >
             <img
-              :src="userInfo?.avatar"
+              :src="userInfo?.avatar || require('@/assets/avatar_default.png')"
               alt="user avatar"
               class="rounded-full w-8 h-8 mr-2"
             />
@@ -479,6 +487,9 @@ const getCircle = async () => {
     )
     if (res.data.code !== 200) return
     circleLists.value = [...circleLists.value, ...res.data.data.circles]
+    circleLists.value = [
+      ...new Set(circleLists.value.map(i => JSON.stringify(i)))
+    ].map(i => JSON.parse(i))
     if (res.data.data.circles.length < limit.value) noMore.value = true
   } catch (error) {
     console.error(error)
@@ -553,6 +564,9 @@ const handlePraise = async circleId => {
           )
         } else {
           circle.praiseNum++
+          praiseUsers.value = praiseUsers.value.filter(
+            i => i.email !== userInfo.value.email
+          )
           praiseUsers.value.unshift({
             email: userInfo.value.email,
             avatar: userInfo.value.avatar

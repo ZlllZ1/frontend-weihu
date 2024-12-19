@@ -122,7 +122,10 @@
                       :href="`/userInfo/${comment?.user?.email}`"
                       target="_blank"
                       ><img
-                        :src="comment?.user?.avatar"
+                        :src="
+                          comment?.user?.avatar ||
+                          require('@/assets/avatar_default.png')
+                        "
                         alt="avatar"
                         class="rounded-full w-10 h-10"
                     /></a>
@@ -228,7 +231,10 @@
                               :href="`/userInfo/${reply?.email}`"
                               target="_blank"
                               ><img
-                                :src="reply?.user?.avatar"
+                                :src="
+                                  reply?.user?.avatar ||
+                                  require('@/assets/avatar_default.png')
+                                "
                                 alt="avatar"
                                 class="rounded-full w-8 h-8"
                             /></a>
@@ -366,7 +372,9 @@
           >
             <div class="flex items-center">
               <img
-                :src="storeUser?.avatar"
+                :src="
+                  storeUser?.avatar || require('@/assets/avatar_default.png')
+                "
                 alt="avatar"
                 class="w-8 h-8 rounded-full mr-3"
               />
@@ -488,7 +496,10 @@
               :href="`/userInfo/${moreOriginComment?.user?.email}`"
               target="_blank"
               ><img
-                :src="moreOriginComment?.user?.avatar"
+                :src="
+                  moreOriginComment?.user?.avatar ||
+                  require('@/assets/avatar_default.png')
+                "
                 alt="avatar"
                 class="rounded-full w-10 h-10"
             /></a>
@@ -577,7 +588,10 @@
                 <div class="flex items-center">
                   <a :href="`/userInfo/${reply?.email}`" target="_blank"
                     ><img
-                      :src="reply?.user?.avatar"
+                      :src="
+                        reply?.user?.avatar ||
+                        require('@/assets/avatar_default.png')
+                      "
                       alt="avatar"
                       class="rounded-full w-8 h-8"
                   /></a>
