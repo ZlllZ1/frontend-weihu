@@ -69,3 +69,27 @@ export const getMyCircles = (email, visitEmail, type, page, limit) => {
     { requiresAuth: true }
   )
 }
+
+export const deleteCircle = (email, circleId) => {
+  return request.post(
+    '/circle/deleteCircle',
+    { circleId, email },
+    { requiresAuth: true }
+  )
+}
+
+export const hideCircle = (email, circleId) => {
+  return request.post(
+    '/circle/hideCircle',
+    { circleId, email },
+    { requiresAuth: true }
+  )
+}
+
+export const showCircle = (email, circleId) => {
+  return request.post(
+    '/circle/showCircle',
+    { circleId, email },
+    { requiresAuth: true }
+  )
+}

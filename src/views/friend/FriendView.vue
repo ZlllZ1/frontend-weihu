@@ -101,6 +101,32 @@
                         >
                       </div>
                     </div>
+                    <div
+                      v-if="circle.email === userInfo.email"
+                      class="flex items-center justify-end relative"
+                    >
+                      <button @click="() => (circle.active = !circle.active)">
+                        ...
+                      </button>
+                      <div
+                        v-if="circle.active"
+                        class="overflow-hidden text-xs absolute w-16 flex flex-col items-center h-12 rounded-lg bg-white bottom-[10px] border border-gray p-1"
+                      >
+                        <button
+                          class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+                          @click="handleDelete(circle.circleId)"
+                        >
+                          {{ $t('message.delete') }}
+                        </button>
+                        <button
+                          v-if="circle.show && type === 'after'"
+                          class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+                          @click="handleHide(circle.circleId)"
+                        >
+                          {{ $t('message.hide') }}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -307,7 +333,9 @@ import {
   praiseCircle,
   handleComment,
   getCircleComments,
-  getPraiseUsers
+  getPraiseUsers,
+  deleteCircle,
+  hideCircle
 } from '@/api/circle'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
@@ -367,6 +395,40 @@ const getPraiseUser = async circle => {
     praiseUsers.value = res.data.data.praiseUsers
   } catch (error) {
     console.error(error)
+  }
+}
+
+const handleDelete = async circleId => {
+  try {
+    const res = await deleteCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    circleLists.value = circleLists.value.map(c => {
+      if (c.circleId === circleId) return { ...c, active: false }
+      return c
+    })
+  }
+}
+
+const handleHide = async circleId => {
+  try {
+    const res = await hideCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    circleLists.value = circleLists.value.map(c => {
+      if (c.circleId === circleId) return { ...c, active: false }
+      return c
+    })
   }
 }
 

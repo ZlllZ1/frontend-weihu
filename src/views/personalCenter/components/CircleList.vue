@@ -1,76 +1,191 @@
 <template>
-  <div class="flex flex-wrap p-8 gap-x-6 gap-y-4">
-    <div
-      v-if="loading && isInitialLoad"
-      class="flex items-center justify-center h-[72vh] w-full"
-    >
-      加载中...
-    </div>
-    <div
-      v-else-if="circleLists.length === 0"
-      class="flex items-center justify-center h-[72vh] w-full"
-    >
-      暂无数据
-    </div>
-    <template v-else>
+  <div>
+    <div class="flex flex-wrap p-8 gap-x-6 gap-y-4">
       <div
-        v-for="circle in circleLists"
-        :key="circle.id"
-        class="w-[48%] h-48 border border-warmGray-300 rounded-md overflow-hidden p-2 flex justify-between flex-col"
+        v-if="loading && isInitialLoad"
+        class="flex items-center justify-center h-[72vh] w-full"
       >
-        <span
-          class="cursor-pointer text-xs overflow-hidden"
-          @click="viewDetail(circle)"
-          v-html="circle?.content"
-        ></span>
-        <div class="flex flex-col gap-1 border-t border-warmGray-300 pt-1">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <a :href="`/userInfo/${circle?.user?.email}`" target="_blank"
-                ><img
-                  :src="circle?.user?.avatar"
-                  alt="user avatar"
-                  class="rounded-full w-8 h-8"
-              /></a>
-              <div class="flex items-center">
-                <a
-                  :href="`/userInfo/${circle?.user?.email}`"
-                  target="_blank"
-                  class="text-gray hover:text-black truncate w-20"
+        {{ $t('message.loading') }}
+      </div>
+      <div
+        v-else-if="circleLists.length === 0"
+        class="flex items-center justify-center h-[72vh] w-full"
+      >
+        {{ $t('message.noData') }}
+      </div>
+      <template v-else>
+        <div
+          v-for="circle in circleLists"
+          :key="circle.id"
+          class="w-[48%] h-56 border border-warmGray-300 rounded-md overflow-hidden p-2 flex justify-between flex-col"
+        >
+          <span
+            class="cursor-pointer text-xs overflow-hidden"
+            @click="viewDetail(circle)"
+            v-html="circle?.content"
+          ></span>
+          <div class="flex flex-col gap-1 border-t border-warmGray-300 pt-1">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <a :href="`/userInfo/${circle?.user?.email}`" target="_blank"
+                  ><img
+                    :src="circle?.user?.avatar"
+                    alt="user avatar"
+                    class="rounded-full w-8 h-8"
+                /></a>
+                <div class="flex items-center">
+                  <a
+                    :href="`/userInfo/${circle?.user?.email}`"
+                    target="_blank"
+                    class="text-gray hover:text-black truncate w-20"
+                  >
+                    {{ circle?.user?.nickname }}
+                  </a>
+                </div>
+              </div>
+              <span class="text-xs text-gray">{{
+                convertToCST(circle?.publishDate)
+              }}</span>
+            </div>
+            <div class="flex items-center justify-end gap-2 text-sm">
+              <img
+                v-if="!circle.show && circle.user.email === userInfo.email"
+                src="@/assets/lock.svg"
+                alt="lock"
+                class="w-5 h-5"
+              />
+              <div
+                class="flex items-center gap-1 group cursor-pointer"
+                @click="viewDetail(circle)"
+              >
+                <img
+                  class="w-5 h-5 group-hover:text-black"
+                  src="../../home/images/comment.svg"
+                  alt="comment"
+                />
+                <span class="text-[#8A8A8A] group-hover:text-blue"
+                  >{{ $t('message.comment') }}
+                  {{
+                    circle?.commentNum > 1000 ? '999+' : circle?.commentNum
+                  }}</span
                 >
-                  {{ circle?.user?.nickname }}
-                </a>
+              </div>
+              <div
+                class="flex items-center gap-1 group cursor-pointer"
+                @click="handlePraise(circle?.circleId)"
+              >
+                <img
+                  class="w-5 h-5 group-hover:text-black"
+                  :src="
+                    circle?.isPraise
+                      ? require('../../home/images/hasPraise.svg')
+                      : require('../../home/images/praise.svg')
+                  "
+                  alt="praise"
+                />
+                <span
+                  class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                  :class="{ 'text-[#FE4144]': circle?.isPraise }"
+                  >{{ $t('message.like') }}
+                  {{
+                    circle?.praiseNum > 1000 ? '999+' : circle?.praiseNum
+                  }}</span
+                >
               </div>
             </div>
-            <span class="text-xs text-gray">{{
-              convertToCST(circle?.publishDate)
-            }}</span>
-          </div>
-          <div class="flex items-center justify-end gap-2 text-sm">
             <div
-              class="flex items-center gap-1 group cursor-pointer"
-              @click="viewDetail(circle)"
+              v-if="circle.email === userInfo.email"
+              class="flex items-center justify-end relative"
             >
-              <img
-                class="w-5 h-5 group-hover:text-black"
-                src="../../home/images/comment.svg"
-                alt="comment"
-              />
-              <span class="text-[#8A8A8A] group-hover:text-blue"
-                >{{ $t('message.comment') }}
-                {{
-                  circle?.commentNum > 1000 ? '999+' : circle?.commentNum
-                }}</span
+              <button @click="() => (circle.active = !circle.active)">
+                ...
+              </button>
+              <div
+                v-if="circle.active"
+                class="overflow-hidden text-xs absolute w-16 flex flex-col items-center h-12 rounded-lg bg-white bottom-[20px] border border-gray p-1"
               >
+                <button
+                  class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+                  @click="handleDelete(circle.circleId)"
+                >
+                  {{ $t('message.delete') }}
+                </button>
+                <button
+                  v-if="circle.show && type === 'after'"
+                  class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+                  @click="handleHide(circle.circleId)"
+                >
+                  {{ $t('message.hide') }}
+                </button>
+                <button
+                  v-else
+                  class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
+                  @click="handleShow(circle.circleId)"
+                >
+                  {{ $t('message.show') }}
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
+      </template>
+    </div>
+    <div
+      v-if="noMore && circleLists.length && !isInitialLoad"
+      class="flex items-center justify-center border-t border-[#EBECED] p-4 w-full text-lg text-gray"
+    >
+      {{ $t('message.noMoreCircle') }}
+    </div>
+    <div
+      v-if="circleInfo"
+      class="fixed flex items-center justify-center flex-col bg-black bg-opacity-30 z-10 inset-0"
+      @mousedown.self="closeCircleInfo"
+    >
+      <div
+        class="mt-16 overflow-hidden w-[60%] h-[78%] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-md overflow-y-auto"
+      >
+        <div
+          v-if="circleInfo"
+          class="min-h-[280px] px-4 shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
+        >
+          <div class="flex items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+              <a :href="`/userInfo/${circleInfo?.user?.email}`" target="_blank">
+                <img
+                  :src="circleInfo?.user?.avatar"
+                  alt="user avatar"
+                  class="rounded-full w-12 h-12"
+                />
+              </a>
+              <div class="flex flex-col gap-1">
+                <a
+                  :href="`/userInfo/${circleInfo?.user?.email}`"
+                  target="_blank"
+                  class="text-gray hover:text-black truncate w-64"
+                >
+                  {{ circleInfo?.user?.nickname }}
+                </a>
+                <span class="text-xs text-gray">{{
+                  convertToCST(circleInfo?.publishDate)
+                }}</span>
+              </div>
+            </div>
+            <button class="text-gray hover:text-black" @click="closeCircleInfo">
+              X
+            </button>
+          </div>
+          <div class="py-2 border-t border-b border-[#EBECED]">
+            <span v-html="circleInfo?.content"></span>
+          </div>
+          <div class="flex items-center justify-end pt-2 pb-6">
             <div
-              class="flex items-center gap-1 group cursor-pointer"
-              @click="handlePraise(circle?.circleId)"
+              class="flex items-center justify-end gap-1 group cursor-pointer"
+              @click="handlePraise(circleInfo?.circleId)"
             >
               <img
                 class="w-5 h-5 group-hover:text-black"
                 :src="
-                  circle?.isPraise
+                  circleInfo?.isPraise
                     ? require('../../home/images/hasPraise.svg')
                     : require('../../home/images/praise.svg')
                 "
@@ -78,193 +193,119 @@
               />
               <span
                 class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                :class="{ 'text-[#FE4144]': circle?.isPraise }"
+                :class="{ 'text-[#FE4144]': circleInfo?.isPraise }"
                 >{{ $t('message.like') }}
                 {{
-                  circle?.praiseNum > 1000 ? '999+' : circle?.praiseNum
+                  circleInfo?.praiseNum > 1000 ? '999+' : circleInfo?.praiseNum
                 }}</span
               >
             </div>
           </div>
-        </div>
-      </div>
-    </template>
-  </div>
-  <div
-    v-if="noMore && circleLists.length && !isInitialLoad"
-    class="flex items-center justify-center border-t border-[#EBECED] p-4 w-full text-lg text-gray"
-  >
-    没有更多朋友圈了
-  </div>
-  <div
-    v-if="circleInfo"
-    class="fixed flex items-center justify-center flex-col bg-black bg-opacity-30 z-10 inset-0"
-    @mousedown.self="closeCircleInfo"
-  >
-    <div
-      class="mt-16 overflow-hidden w-[60%] h-[78%] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-md overflow-y-auto"
-    >
-      <div
-        v-if="circleInfo"
-        class="min-h-[280px] px-4 shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
-      >
-        <div class="flex items-center justify-between py-4">
-          <div class="flex items-center gap-4">
-            <a :href="`/userInfo/${circleInfo?.user?.email}`" target="_blank">
-              <img
-                :src="circleInfo?.user?.avatar"
-                alt="user avatar"
-                class="rounded-full w-12 h-12"
-              />
-            </a>
-            <div class="flex flex-col gap-1">
-              <a
-                :href="`/userInfo/${circleInfo?.user?.email}`"
-                target="_blank"
-                class="text-gray hover:text-black truncate w-64"
-              >
-                {{ circleInfo?.user?.nickname }}
-              </a>
-              <span class="text-xs text-gray">{{
-                convertToCST(circleInfo?.publishDate)
-              }}</span>
-            </div>
-          </div>
-          <button class="text-gray hover:text-black" @click="closeCircleInfo">
-            X
-          </button>
-        </div>
-        <div class="py-2 border-t border-b border-[#EBECED]">
-          <span v-html="circleInfo?.content"></span>
-        </div>
-        <div class="flex items-center justify-end pt-2 pb-6">
           <div
-            class="flex items-center justify-end gap-1 group cursor-pointer"
-            @click="handlePraise(circleInfo?.circleId)"
+            v-if="praiseUsers?.length"
+            class="px-5 pb-6 flex flex-wrap items-center justify-center w-full gap-1"
           >
-            <img
-              class="w-5 h-5 group-hover:text-black"
-              :src="
-                circleInfo?.isPraise
-                  ? require('../../home/images/hasPraise.svg')
-                  : require('../../home/images/praise.svg')
-              "
-              alt="praise"
-            />
-            <span
-              class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-              :class="{ 'text-[#FE4144]': circleInfo?.isPraise }"
-              >{{ $t('message.like') }}
-              {{
-                circleInfo?.praiseNum > 1000 ? '999+' : circleInfo?.praiseNum
-              }}</span
-            >
+            <template v-for="user in praiseUsers" :key="user?.email">
+              <a :href="`/userInfo/${user?.email}`" target="_blank">
+                <img
+                  :src="user?.avatar"
+                  alt="user avatar"
+                  class="w-10 h-10 rounded-full"
+                />
+              </a>
+            </template>
           </div>
-        </div>
-        <div
-          v-if="praiseUsers?.length"
-          class="px-5 pb-6 flex flex-wrap items-center justify-center w-full gap-1"
-        >
-          <template v-for="user in praiseUsers" :key="user?.email">
-            <a :href="`/userInfo/${user?.email}`" target="_blank">
-              <img
-                :src="user?.avatar"
-                alt="user avatar"
-                class="w-10 h-10 rounded-full"
-              />
-            </a>
-          </template>
-        </div>
-        <div>
-          <template v-if="commentLists?.length">
-            <div class="border border-[#EBECED] rounded-xs px-2 py-1">
-              <template v-for="comment in commentLists" :key="comment?._id">
-                <div
-                  class="flex items-center p-[2px] justify-between"
-                  :class="{
-                    'border-b border-[#EBECED]':
-                      comment !== commentLists[commentLists?.length - 1]
-                  }"
-                >
-                  <div class="flex flex-col gap-[2px] ml-2 flex-1">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center">
-                        <a
-                          :href="`/userInfo/${comment?.user?.email}`"
-                          target="_blank"
-                          class="text-gray hover:text-black truncate w-48 text-sm"
-                        >
-                          {{ comment?.user?.nickname }}
-                        </a>
-                        <template v-if="comment?.parentEmail">
-                          <span class="mx-1"> &gt; </span>
+          <div>
+            <template v-if="commentLists?.length">
+              <div class="border border-[#EBECED] rounded-xs px-2 py-1">
+                <template v-for="comment in commentLists" :key="comment?._id">
+                  <div
+                    class="flex items-center p-[2px] justify-between"
+                    :class="{
+                      'border-b border-[#EBECED]':
+                        comment !== commentLists[commentLists?.length - 1]
+                    }"
+                  >
+                    <div class="flex flex-col gap-[2px] ml-2 flex-1">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center">
                           <a
-                            :href="`/userInfo/${comment?.parentEmail}`"
+                            :href="`/userInfo/${comment?.user?.email}`"
                             target="_blank"
                             class="text-gray hover:text-black truncate w-48 text-sm"
                           >
-                            {{ comment?.parentUser?.nickname }}
+                            {{ comment?.user?.nickname }}
                           </a>
-                        </template>
+                          <template v-if="comment?.parentEmail">
+                            <span class="mx-1"> &gt; </span>
+                            <a
+                              :href="`/userInfo/${comment?.parentEmail}`"
+                              target="_blank"
+                              class="text-gray hover:text-black truncate w-48 text-sm"
+                            >
+                              {{ comment?.parentUser?.nickname }}
+                            </a>
+                          </template>
+                        </div>
+                        <span class="text-xs text-gray">{{
+                          convertToCST(comment?.publishDate)
+                        }}</span>
                       </div>
-                      <span class="text-xs text-gray">{{
-                        convertToCST(comment?.publishDate)
-                      }}</span>
-                    </div>
-                    <div
-                      class="w-[242px] flex flex-wrap break-all"
-                      v-html="comment?.content"
-                    ></div>
-                    <div class="flex items-center justify-end">
-                      <button
-                        class="text-gray hover:text-blue"
-                        @click="
-                          replyComment(
-                            comment?._id,
-                            comment?.user.email,
-                            comment?.user.nickname
-                          )
-                        "
-                      >
-                        {{ $t('message.reply') }}
-                      </button>
+                      <div
+                        class="w-[242px] flex flex-wrap break-all"
+                        v-html="comment?.content"
+                      ></div>
+                      <div class="flex items-center justify-end">
+                        <button
+                          class="text-gray hover:text-blue"
+                          @click="
+                            replyComment(
+                              comment?._id,
+                              comment?.user.email,
+                              comment?.user.nickname
+                            )
+                          "
+                        >
+                          {{ $t('message.reply') }}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
+                </template>
+              </div>
+            </template>
+            <div
+              v-else
+              class="border-t border-[#EBECED] min-h-24 flex items-center justify-center"
+            >
+              {{ $t('message.noComments') }}
             </div>
-          </template>
-          <div
-            v-else
-            class="border-t border-[#EBECED] min-h-24 flex items-center justify-center"
-          >
-            {{ $t('message.noComments') }}
           </div>
         </div>
       </div>
-    </div>
-    <div
-      class="bg-white mt-2 w-[60%] h-16 rounded-sm flex items-center px-4 justify-between"
-    >
-      <img
-        :src="userInfo?.avatar"
-        alt="user avatar"
-        class="rounded-full w-10 h-10 mr-4"
-      />
-      <textarea
-        ref="commentRef"
-        v-model="commentText"
-        type="text"
-        :placeholder="commentPlaceHolder"
-        class="w-[600px] outline-none h-10 rounded-xl overflow-hidden scroll-auto px-2 pt-1 resize-none text-sm"
-        maxlength="100"
-      ></textarea>
-      <button
-        class="h-8 w-24 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
-        @click="commentCircle"
+      <div
+        class="bg-white mt-2 w-[60%] h-16 rounded-sm flex items-center px-4 justify-between"
       >
-        {{ $t('message.comment') }}
-      </button>
+        <img
+          :src="userInfo?.avatar"
+          alt="user avatar"
+          class="rounded-full w-10 h-10 mr-4"
+        />
+        <textarea
+          ref="commentRef"
+          v-model="commentText"
+          type="text"
+          :placeholder="commentPlaceHolder"
+          class="w-[600px] outline-none h-10 rounded-xl overflow-hidden scroll-auto px-2 pt-1 resize-none text-sm"
+          maxlength="100"
+        ></textarea>
+        <button
+          class="h-8 w-24 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
+          @click="commentCircle"
+        >
+          {{ $t('message.comment') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -276,12 +317,16 @@ import {
   praiseCircle,
   getPraiseUsers,
   getCircleComments,
-  handleComment
+  handleComment,
+  deleteCircle,
+  hideCircle,
+  showCircle
 } from '@/api/circle'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 
+const emit = defineEmits(['handleChange'])
 const props = defineProps({
   type: {
     type: String,
@@ -335,6 +380,58 @@ watch(circleInfo, newValue => {
   if (newValue) document.body.style.overflow = 'hidden'
   else document.body.style.overflow = 'auto'
 })
+
+const handleDelete = async circleId => {
+  try {
+    const res = await deleteCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
+    emit('handleChange', { type: 'deleteCircle', num: -1 })
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    circleLists.value = circleLists.value.map(c => {
+      if (c.circleId === circleId) return { ...c, active: false }
+      return c
+    })
+  }
+}
+
+const handleHide = async circleId => {
+  try {
+    const res = await hideCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    circleLists.value = circleLists.value.map(c => {
+      if (c.circleId === circleId) return { ...c, active: false }
+      return c
+    })
+  }
+}
+
+const handleShow = async circleId => {
+  try {
+    const res = await showCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    circleLists.value = circleLists.value.map(c => {
+      if (c.circleId === circleId) return { ...c, active: false }
+      return c
+    })
+  }
+}
 
 const replyComment = (commentId, email, nickname) => {
   parentId.value = commentId
@@ -429,6 +526,12 @@ const getCircles = async () => {
       limit.value
     )
     if (res.data.code !== 200) return
+    res.data.data.circles = res.data.data.circles.map(circle => {
+      return {
+        ...circle,
+        active: false
+      }
+    })
     circleLists.value = [...circleLists.value, ...res.data.data.circles]
     if (res.data.data.circles.length < limit.value) noMore.value = true
   } catch (error) {

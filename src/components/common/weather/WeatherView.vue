@@ -24,8 +24,13 @@
             <span v-else>{{ weatherData.casts[0].nightweather }}</span>
           </div>
           <div class="text-white opacity-80">
-            <span v-if="isDayTime">{{ weatherData.casts[0].daywind }}风</span>
-            <span v-else>{{ weatherData.casts[0].nightwind }}风</span>
+            <span v-if="isDayTime"
+              >{{ weatherData.casts[0].daywind }}{{ $t('message.wind') }}</span
+            >
+            <span v-else
+              >{{ weatherData.casts[0].nightwind
+              }}{{ $t('message.wind') }}</span
+            >
           </div>
         </div>
       </div>

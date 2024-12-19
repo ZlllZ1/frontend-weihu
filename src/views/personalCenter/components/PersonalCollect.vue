@@ -144,21 +144,21 @@
               class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
               @click="handleDelete(post.postId)"
             >
-              删除
+              {{ $t('message.delete') }}
             </button>
             <button
               v-if="post.show"
               class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
               @click="handleHide(post.postId)"
             >
-              隐藏
+              {{ $t('message.hide') }}
             </button>
             <button
               v-else
               class="h-1/2 hover:bg-warmGray-200 w-full rounded-lg"
               @click="handleShow(post.postId)"
             >
-              展示
+              {{ $t('message.show') }}
             </button>
           </div>
         </div>

@@ -11,7 +11,6 @@
           <button
             class="hover:text-blue division flex-1"
             :class="{ 'text-blue': tab.selected }"
-            :aria-label="`切换到${tab.label}标签`"
             @click="changeTab(tab.value)"
           >
             {{ tab.label }}

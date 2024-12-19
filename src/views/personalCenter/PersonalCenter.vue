@@ -262,6 +262,9 @@ const handleChange = data => {
     case 'deleteCollect':
       user.collectNum += num
       break
+    case 'deleteCircle':
+      user.circleNum += num
+      break
   }
   store.commit('user/setUserInfo', user)
   localStorage.setItem('userInfo', JSON.stringify(user))
