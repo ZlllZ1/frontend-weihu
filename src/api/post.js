@@ -153,3 +153,12 @@ export const deleteComments = (postId, email, commentId) => {
     { requiresAuth: true }
   )
 }
+
+export const uploadPostImg = formData => {
+  return request.post('/post/uploadPostImg', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    requiresAuth: true
+  })
+}

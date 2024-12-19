@@ -94,8 +94,13 @@ const imageHandler = () => {
 }
 
 const publish = async () => {
+  const isHtmlEmpty = html => {
+    const text = html.replace(/<[^>]*>/g, '')
+    if (text.trim() === '') return !/<img[^>]*>/i.test(html)
+    return false
+  }
   const { delta, html } = getContent()
-  if (!html.replace(/<[^>]*>/g, '').trim()) {
+  if (isHtmlEmpty(html)) {
     $toast.error(t('message.contentEmpty'))
     return
   }

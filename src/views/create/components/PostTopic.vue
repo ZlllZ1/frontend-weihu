@@ -128,7 +128,8 @@ import {
   uploadCover,
   publishPost,
   saveDraft,
-  publishSchedulePost
+  publishSchedulePost,
+  uploadPostImg
 } from '@/api/post'
 import { useStore } from 'vuex'
 import ImageResize from 'quill-image-resize-module'
@@ -139,6 +140,7 @@ const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 let quill = null
 const title = ref('')
 const coverRef = ref(null)
@@ -163,6 +165,43 @@ const toolbarOptions = [
   ['clean'],
   ['link', 'image', 'video']
 ]
+
+const imageHandler = () => {
+  const input = document.createElement('input')
+  input.setAttribute('type', 'file')
+  input.setAttribute('accept', 'image/*')
+  input.click()
+  input.onchange = async () => {
+    const file = input.files[0]
+    if (file.size > MAX_FILE_SIZE) {
+      $toast.error(t('message.imageTooLarge'))
+      return
+    }
+    const formData = new FormData()
+    formData.append('postImg', file)
+    formData.append('type', 'postImg')
+    formData.append('email', userInfo.value.email)
+    try {
+      const res = await uploadPostImg(formData)
+      if (res.data.code !== 200) return
+      if (res.data.data.postImgUrl) {
+        const length = quill.getLength()
+        quill.setSelection(length, 0)
+        quill.insertEmbed(
+          length,
+          'image',
+          res.data.data.postImgUrl,
+          'user',
+          range => {
+            quill.setSelection(range.index + 1)
+          }
+        )
+      }
+    } catch (error) {
+      console.error('Image upload error:', error)
+    }
+  }
+}
 
 const minDate = computed(() => {
   const date = new Date()
@@ -218,12 +257,17 @@ const saveToDraft = async () => {
 }
 
 const publish = async () => {
+  const isHtmlEmpty = html => {
+    const text = html.replace(/<[^>]*>/g, '')
+    if (text.trim() === '') return !/<img[^>]*>/i.test(html)
+    return false
+  }
   const { delta, html } = getContent()
   if (!title.value) {
     $toast.error(t('message.titleEmpty'))
     return
   }
-  if (!html.replace(/<[^>]*>/g, '').trim()) {
+  if (isHtmlEmpty(html)) {
     $toast.error(t('message.contentEmpty'))
     return
   }
@@ -271,15 +315,16 @@ const initEditor = () => {
   quill = new Quill(container, {
     theme: 'snow',
     modules: {
-      toolbar: toolbarOptions,
+      toolbar: {
+        container: toolbarOptions,
+        handlers: {
+          image: imageHandler
+        }
+      },
       history: {
         delay: 1000,
         maxStack: 100,
         userOnly: false
-      },
-      imageResize: {
-        displaySize: true,
-        modules: ['Resize', 'DisplaySize', 'Toolbar']
       },
       clipboard: {
         matchVisual: true
