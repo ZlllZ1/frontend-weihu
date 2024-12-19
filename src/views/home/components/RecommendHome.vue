@@ -22,7 +22,7 @@
         <div class="py-2 flex">
           <router-link :to="{ name: 'post', params: { postId: post.postId } }">
             <img
-              :src="post.coverUrl"
+              v-lazy="post.coverUrl"
               alt="post cover"
               class="w-[190px] h-[105px]"
             />
