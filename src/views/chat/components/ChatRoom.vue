@@ -6,7 +6,7 @@
       class="flex items-center px-4 py-3 bg-white border-b border-warmGray-400"
     >
       <img
-        :src="require('@/assets/bg_default.png')"
+        :src="require('@/assets/avatar_default.png')"
         alt="avatar"
         class="w-10 h-10 rounded-full border-2 border-white shadow-lg"
       />

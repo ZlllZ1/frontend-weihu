@@ -1,4 +1,5 @@
 /* eslint-env worker */
+/* global SparkMD5:false */
 importScripts(
   'https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.0/spark-md5.min.js'
 )
@@ -72,6 +73,7 @@ const uploadChunk = async (
   email,
   token
 ) => {
+  console.log(1111)
   const formData = new FormData()
   formData.append('chunk', chunk)
   formData.append('chunkIndex', chunkIndex)
@@ -91,6 +93,7 @@ const uploadChunk = async (
 }
 
 const mergeVideoChunks = async (fileName, fileMD5, email, token) => {
+  console.log('test')
   const response = await fetch('http://127.0.0.1:3007/circle/mergeChunks', {
     method: 'POST',
     headers: {

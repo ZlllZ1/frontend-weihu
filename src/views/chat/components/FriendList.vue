@@ -16,7 +16,7 @@
       >
         <div class="relative">
           <img
-            :src="require('@/assets/bg_default.png')"
+            :src="require('@/assets/avatar_default.png')"
             alt="avatar"
             class="w-10 h-10 rounded-full"
           />
@@ -30,7 +30,7 @@
             <span class="font-semibold">{{ friend.name }}</span>
             <span class="text-xs text-gray">{{ friend.time }}</span>
           </div>
-          <div class="text-sm text-warmGray-500 w-[178px] truncate">
+          <div class="text-sm text-warmGray-500 w-[148px] truncate">
             {{ friend.message }}
           </div>
         </div>
