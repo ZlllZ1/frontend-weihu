@@ -75,6 +75,10 @@ export default {
     wind: 'wind',
     noData: 'no data',
     visible: 'visible',
+    videoUploadProgress: 'video upload progress',
+    videoTooLong:
+      'the video duration cannot exceed {maxDuration} minutes. please try again',
+    videoUploadError: 'Video upload failed, please try again',
     noMoreCircle: 'no more friend circles',
     invisible: 'invisible',
     author: 'author',

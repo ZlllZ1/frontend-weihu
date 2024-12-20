@@ -13,6 +13,16 @@
       </div>
     </div>
     <div id="editor"></div>
+    <div v-if="uploadProgress" class="flex gap-[10px] items-center ml-4">
+      <span>{{ $t('message.videoUploadProgress') }}</span>
+      <div class="w-[200px] h-5 bg-[#E0E0E0] rounded-lg overflow-hidden">
+        <div
+          class="h-full bg-[#1172F6] transition-all"
+          :style="{ width: `${uploadProgress}%` }"
+        ></div>
+      </div>
+      <span>{{ uploadProgress.toFixed(0) }}%</span>
+    </div>
     <div class="px-4 pb-24">
       <div class="text-lg">{{ $t('message.articleSetting') }}</div>
       <div class="mt-6">
@@ -134,19 +144,36 @@ import {
 import { useStore } from 'vuex'
 import ImageResize from 'quill-image-resize-module'
 
+const VideoBlot = Quill.import('formats/video')
+class CustomVideoBlot extends VideoBlot {
+  static create(value) {
+    const node = super.create(value)
+    node.setAttribute('controls', 'true')
+    node.setAttribute('playsinline', 'true')
+    node.setAttribute('webkit-playsinline', 'true')
+    return node
+  }
+}
+CustomVideoBlot.blotName = 'custom-video'
+CustomVideoBlot.tagName = 'VIDEO'
+
+Quill.register(CustomVideoBlot)
 Quill.register('modules/imageResize', ImageResize)
 
 const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
+const MAX_VIDEO_DURATION = 300
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 let quill = null
 const title = ref('')
+const uploadProgress = ref(0)
 const coverRef = ref(null)
 const isScheduled = ref(false)
 const scheduledDate = ref(null)
 const introduction = ref('')
+const loading = ref(false)
 const coverUrl = ref('')
 const userInfo = computed(() => store.state.user.userInfo)
 
@@ -199,6 +226,73 @@ const imageHandler = () => {
       }
     } catch (error) {
       console.error('Image upload error:', error)
+    }
+  }
+}
+
+const getVideoDuration = file => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src)
+      resolve(video.duration)
+    }
+    video.onerror = e => {
+      reject(e)
+    }
+    video.src = URL.createObjectURL(file)
+  })
+}
+
+const videoHandler = () => {
+  const input = document.createElement('input')
+  input.setAttribute('type', 'file')
+  input.setAttribute('accept', 'video/*')
+  input.click()
+  input.onchange = async () => {
+    const file = input.files[0]
+    try {
+      if (loading.value) return
+      loading.value = true
+      const duration = await getVideoDuration(file)
+      if (duration > MAX_VIDEO_DURATION) {
+        $toast.error(
+          t('message.videoTooLong', { maxDuration: MAX_VIDEO_DURATION / 60 })
+        )
+        return
+      }
+      const workerUrl = new URL(
+        '../../../utils/video-worker.js',
+        import.meta.url
+      )
+      const worker = new Worker(workerUrl)
+      worker.onmessage = e => {
+        const { type, progress, videoUrl, message } = e.data
+        if (type === 'progress') {
+          uploadProgress.value = progress
+          if (uploadProgress.value === 100)
+            setTimeout(() => {
+              uploadProgress.value = 0
+            }, 3000)
+        } else if (type === 'success') {
+          const secureVideoUrl = videoUrl.replace('http://', 'https://')
+          const length = quill.getLength()
+          quill.insertEmbed(length, 'custom-video', secureVideoUrl, 'user')
+          quill.setSelection(length + 1)
+          worker.terminate()
+        } else if (type === 'error') worker.terminate()
+      }
+      worker.postMessage({
+        file,
+        email: userInfo.value.email,
+        token: localStorage.getItem('token')
+      })
+    } catch (error) {
+      console.error('Video upload error:', error)
+      $toast.error(t('message.videoUploadError'))
+    } finally {
+      loading.value = false
     }
   }
 }
@@ -259,8 +353,8 @@ const saveToDraft = async () => {
 const publish = async () => {
   const isHtmlEmpty = html => {
     const text = html.replace(/<[^>]*>/g, '')
-    if (text.trim() === '') return !/<img[^>]*>/i.test(html)
-    return false
+    if (text.trim() !== '') return false
+    return !/<(img|video)[^>]*>/i.test(html)
   }
   const { delta, html } = getContent()
   if (!title.value) {
@@ -318,7 +412,8 @@ const initEditor = () => {
       toolbar: {
         container: toolbarOptions,
         handlers: {
-          image: imageHandler
+          image: imageHandler,
+          video: videoHandler
         }
       },
       history: {
