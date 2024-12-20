@@ -12,13 +12,6 @@
       <div class="flex-grow overflow-y-auto">
         <div>1</div>
       </div>
-      <div
-        class="flex flex-shrink-0 items-center py-4 px-2 justify-end h-10 border-t border-[#EBECED]"
-      >
-        <a class="hover:text-blue cursor-pointer">{{
-          $t('message.viewAllPrivateMessages')
-        }}</a>
-      </div>
     </div>
   </div>
 </template>
@@ -31,5 +24,18 @@
   &:after {
     @apply absolute content-[''] -bottom-[2px] rotate-[45deg] h-6 w-6 -m-3 bg-white;
   }
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #ebeced;
+}
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #ebeced;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #ddd;
 }
 </style>

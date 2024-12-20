@@ -20,13 +20,6 @@
       <div class="flex-grow overflow-y-auto">
         <component :is="currentContent"></component>
       </div>
-      <div
-        class="flex flex-shrink-0 items-center py-4 px-2 justify-end h-10 border-t border-[#EBECED]"
-      >
-        <a class="hover:text-blue cursor-pointer">{{
-          $t('message.viewAllNotifications')
-        }}</a>
-      </div>
     </div>
   </div>
 </template>
@@ -75,7 +68,6 @@ const changeTab = value => {
     @apply absolute content-[''] -bottom-[2px] rotate-[45deg] h-6 w-6 -m-3 bg-white;
   }
 }
-
 .division {
   @apply relative;
   &:not(:last-child) {
@@ -83,5 +75,18 @@ const changeTab = value => {
       @apply content-[''] absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-[#EBECED];
     }
   }
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #ebeced;
+}
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #ebeced;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #ddd;
 }
 </style>

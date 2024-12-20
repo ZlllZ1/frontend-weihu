@@ -18,6 +18,9 @@
           <router-link to="/friend" class="flex-1 text-center justify-center">{{
             $t('message.circleOfFriends')
           }}</router-link>
+          <router-link to="/chat" class="flex-1 text-center justify-center">{{
+            $t('message.chat')
+          }}</router-link>
         </div>
       </div>
       <div class="nav-item inline-flex items-center justify-center gap-4">
