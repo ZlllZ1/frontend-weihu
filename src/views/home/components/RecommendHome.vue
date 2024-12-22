@@ -340,7 +340,7 @@ const debounce = (func, wait) => {
 }
 
 const loadMore = async () => {
-  if (noMore.value || isInitialLoad.value || [posts.value]) return
+  if (noMore.value || isInitialLoad.value || posts.value.length) return
   currentPage.value++
   await getHomePosts()
 }
