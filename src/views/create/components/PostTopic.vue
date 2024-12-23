@@ -164,7 +164,7 @@ const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
-const MAX_VIDEO_DURATION = 300
+const MAX_VIDEO_DURATION = 30000
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 let quill = null
 const title = ref('')
@@ -244,7 +244,6 @@ const getVideoDuration = file => {
     video.src = URL.createObjectURL(file)
   })
 }
-
 const videoHandler = () => {
   const input = document.createElement('input')
   input.setAttribute('type', 'file')

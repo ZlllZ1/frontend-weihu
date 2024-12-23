@@ -8,15 +8,15 @@ const CHUNK_SIZE = 2 * 1024 * 1024
 self.onmessage = async e => {
   const { file, email, token } = e.data
   try {
-    const fileMD5 = await calculateFileMD5(file) // 计算文件MD5
-    const totalChunks = Math.ceil(file.size / CHUNK_SIZE) // 总切片数
+    const fileMD5 = await calculateFileMD5(file)
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
     for (let i = 0; i < totalChunks; i++) {
-      const start = i * CHUNK_SIZE // 每个切片的起始位置
-      const end = Math.min(file.size, start + CHUNK_SIZE) // 每个切片的结束位置
-      const chunk = file.slice(start, end) // 切片
-      await uploadChunk(chunk, i, totalChunks, file.name, fileMD5, email, token) // 上传切片
-      const progress = Math.round(((i + 1) / totalChunks) * 100) // 进度
-      self.postMessage({ type: 'progress', progress }) // 发送进度消息
+      const start = i * CHUNK_SIZE
+      const end = Math.min(file.size, start + CHUNK_SIZE)
+      const chunk = file.slice(start, end)
+      await uploadChunk(chunk, i, totalChunks, file.name, fileMD5, email, token)
+      const progress = Math.round(((i + 1) / totalChunks) * 100)
+      self.postMessage({ type: 'progress', progress })
     }
     const mergeResponse = await mergeVideoChunks(
       file.name,
@@ -39,26 +39,25 @@ self.onerror = error => console.error('Worker internal error:', error)
 const calculateFileMD5 = file => {
   return new Promise((resolve, reject) => {
     const blobSlice =
-      File.prototype.slice || // Chrome
-      File.prototype.mozSlice || // Firefox
-      File.prototype.webkitSlice // IE11+
-    const chunkSize = 2097152 // 2MB
-    const chunks = Math.ceil(file.size / chunkSize) // 总切片数
-    let currentChunk = 0 // 当前切片数
-    const spark = new SparkMD5.ArrayBuffer() // 创建一个SparkMD5对象
-    const fileReader = new FileReader() // 创建一个FileReader对象
+      File.prototype.slice ||
+      File.prototype.mozSlice ||
+      File.prototype.webkitSlice
+    const chunkSize = 2097152
+    const chunks = Math.ceil(file.size / chunkSize)
+    let currentChunk = 0
+    const spark = new SparkMD5.ArrayBuffer()
+    const fileReader = new FileReader()
     fileReader.onload = e => {
-      spark.append(e.target.result) // 将文件内容追加到SparkMD5对象中
-      currentChunk++ // 当前切片数加1
-      if (currentChunk < chunks)
-        loadNext() // 如果当前切片数小于总切片数，则继续加载下一个切片
-      else resolve(spark.end()) // 如果当前切片数等于总切片数，则结束加载
+      spark.append(e.target.result)
+      currentChunk++
+      if (currentChunk < chunks) loadNext()
+      else resolve(spark.end())
     }
     fileReader.onerror = e => reject(e)
     const loadNext = () => {
-      const start = currentChunk * chunkSize // 每个切片的起始位置
-      const end = Math.min(file.size, start + chunkSize) // 每个切片的结束位置
-      fileReader.readAsArrayBuffer(blobSlice.call(file, start, end)) // 读取文件内容
+      const start = currentChunk * chunkSize
+      const end = Math.min(file.size, start + chunkSize)
+      fileReader.readAsArrayBuffer(blobSlice.call(file, start, end))
     }
     loadNext()
   })
@@ -73,7 +72,6 @@ const uploadChunk = async (
   email,
   token
 ) => {
-  console.log(1111)
   const formData = new FormData()
   formData.append('chunk', chunk)
   formData.append('chunkIndex', chunkIndex)

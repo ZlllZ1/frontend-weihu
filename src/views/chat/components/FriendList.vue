@@ -11,27 +11,40 @@
     <div class="flex-1 overflow-y-auto">
       <div
         v-for="friend in filteredFriends"
-        :key="friend.id"
+        :key="friend?.id"
         class="flex items-center p-3 hover:bg-warmGray-200 cursor-pointer rounded-xl"
+        @click="openChat(friend?.friend?.email)"
       >
         <div class="relative">
           <img
-            :src="require('@/assets/avatar_default.png')"
+            :src="
+              friend?.friend?.avatar || require('@/assets/avatar_default.png')
+            "
             alt="avatar"
             class="w-10 h-10 rounded-full"
           />
           <div
+            v-if="friend?.myUnreadCount"
+            class="absolute -top-[2px] left-[30px] z-10 bg-red-600 rounded-full text-white w-3 h-3 text-xs flex items-center justify-center"
+          >
+            {{ friend?.myUnreadCount }}
+          </div>
+          <div
             class="absolute bottom-0 right-0 w-3 h-3 rounded-full"
-            :class="friend.online ? 'bg-green-500' : 'bg-warmGray-500'"
+            :class="friend?.friend?.online ? 'bg-green-500' : 'bg-warmGray-500'"
           ></div>
         </div>
-        <div class="ml-3 flex-1">
+        <div class="ml-3 flex-1 flex flex-col h-10 gap-1">
           <div class="mb-1 flex items-center justify-between">
-            <span class="font-semibold">{{ friend.name }}</span>
-            <span class="text-xs text-gray">{{ friend.time }}</span>
+            <div class="font-semibold w-24 truncate">
+              {{ friend?.friend?.nickname }}
+            </div>
+            <span class="text-xs text-gray">{{
+              friend?.lastMessage?.timestamp
+            }}</span>
           </div>
           <div class="text-sm text-warmGray-500 w-[148px] truncate">
-            {{ friend.message }}
+            {{ friend?.lastMessage?.content }}
           </div>
         </div>
       </div>
@@ -42,57 +55,14 @@
 <script setup>
 import { ref, computed, watchEffect } from 'vue'
 
-const friends = ref([
-  {
-    id: 1,
-    name: '张三',
-    avatar: 'path/to/avatar1.jpg',
-    online: true,
-    message: '上号上号上号',
-    time: '2024-12-20 17:06'
-  },
-  {
-    id: 2,
-    name: '李四',
-    avatar: 'path/to/avatar2.jpg',
-    online: false,
-    message: '吃了吗',
-    time: '2024-12-20 17:06'
-  },
-  {
-    id: 3,
-    name: '张三',
-    avatar: 'path/to/avatar1.jpg',
-    online: true,
-    message: '我敢',
-    time: '2024-12-20 17:06'
-  },
-  {
-    id: 4,
-    name: '李四',
-    avatar: 'path/to/avatar2.jpg',
-    online: false,
-    message: '901看看傻得可怜',
-    time: '2024-12-20 17:06'
-  },
-  {
-    id: 5,
-    name: '张三',
-    avatar: 'path/to/avatar1.jpg',
-    online: true,
-    message: '哈哈哈哈哈哈哈哈哈哈哈哈21321321',
-    time: '2024-12-20 17:06'
-  },
-  {
-    id: 6,
-    name: '李四',
-    avatar: 'path/to/avatar2.jpg',
-    online: false,
-    message: '离线',
-    time: '2024-12-20 17:06'
+const props = defineProps({
+  friends: {
+    type: Array,
+    default: () => []
   }
-])
+})
 
+const emit = defineEmits(['open'])
 const searchQuery = ref('')
 const debouncedSearchQuery = ref('')
 
@@ -115,14 +85,18 @@ watchEffect(() => {
 })
 
 const filteredFriends = computed(() => {
-  if (!debouncedSearchQuery.value) return friends.value
+  if (!debouncedSearchQuery.value) return props.friends
   const lowercaseQuery = debouncedSearchQuery.value.toLowerCase()
-  return friends.value.filter(
+  return props.friends.filter(
     friend =>
       friend.name.toLowerCase().includes(lowercaseQuery) ||
       friend.message.toLowerCase().includes(lowercaseQuery)
   )
 })
+
+const openChat = email => {
+  emit('open', email)
+}
 </script>
 
 <style lang="scss" scoped>
