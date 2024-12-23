@@ -23,15 +23,11 @@ module.exports = defineConfig({
     ]
   },
   chainWebpack: config => {
-    config.plugin('html').tap(args => {
-      args[0].title = '微乎'
-      return args
-    }),
-      config.plugin('provide').use(webpack.ProvidePlugin, [
-        {
-          'window.Quill': 'quill'
-        }
-      ])
+    config.plugin('provide').use(webpack.ProvidePlugin, [
+      {
+        'window.Quill': 'quill'
+      }
+    ])
   },
   css: {},
   devServer: {

@@ -99,6 +99,7 @@ const handleScroll = () => {
 onMounted(async () => {
   await getInfo()
   window.addEventListener('scroll', handleScroll)
+  document.title = '微乎'
 })
 
 onUnmounted(() => {
