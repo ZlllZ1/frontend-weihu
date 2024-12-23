@@ -22,6 +22,7 @@ export default {
     comment: '评论',
     follow: '关注',
     about: '关于',
+    newMessage: '有新消息,前往查看吧',
     imageTooLarge: '图片太大,超过5MB',
     videoTooLong: '视频时长不能超过{maxDuration}分钟,请重试',
     videoUploadProgress: '视频上传进度',

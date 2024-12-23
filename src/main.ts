@@ -14,6 +14,16 @@ import VueLazyload from 'vue-lazyload'
 const app = createApp(App)
 
 app.use(router).use(store)
+
+store.watch(
+  state => state.user.token,
+  newToken => {
+    if (newToken) {
+      app.config.globalProperties.$newToken = newToken
+    }
+  }
+)
+
 app.use(VueToast, {
   position: 'top-right',
   duration: 2000

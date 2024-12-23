@@ -24,6 +24,7 @@ export default {
     titleEmpty: 'the title cannot be empty',
     contentEmpty: 'the content cannot be empty',
     coverEmpty: 'the cover cannot be empty',
+    newMessage: "there's something new. Check it out",
     publishSuccess: 'publishing success',
     reply: 'reply',
     viewMore: 'view more',
