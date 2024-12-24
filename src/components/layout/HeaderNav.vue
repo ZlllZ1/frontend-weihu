@@ -2,7 +2,7 @@
   <header
     class="shadow-[0_0_20px_0_rgba(0,0,0,0.1)] text-gray w-full sticky top-0 left-0 z-20"
   >
-    <nav class="flex justify-between px-2 bg-white h-14">
+    <nav class="flex justify-between px-10 bg-white h-14">
       <div class="inline-flex items-center justify-center">
         <router-link to="/" class="flex items-center cursor-pointer">
           <span class="text-3xl text-blue">{{ $t('message.wei') }}</span>
@@ -47,14 +47,6 @@
             <MessageCard v-if="showMessage" />
           </transition>
         </div>
-        <div class="relative clickOut">
-          <button class="hover:text-blue" @click.stop="togglePrivateLetter">
-            {{ $t('message.privateLetter') }}
-          </button>
-          <transition name="fade">
-            <PrivateLetterCard v-if="showPrivateLetter" />
-          </transition>
-        </div>
         <div v-if="!userInfo" class="relative clickOut ml-2">
           <button class="hover:text-blue" @click.stop="toggleLogin">
             {{ $t('message.login') }}
@@ -93,7 +85,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import MessageCard from './message/MessageCard.vue'
-import PrivateLetterCard from './PrivateLetterCard.vue'
 import LoginCard from './login/LoginCard.vue'
 import UserDropdown from './UserDropdown.vue'
 import eventBus from '@/utils/eventBus'
@@ -106,13 +97,18 @@ const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
 const searchText = ref('')
 const showMessage = ref(false)
-const showPrivateLetter = ref(false)
 const showLogin = ref(false)
 const showDropdown = ref(false)
 const changeLanguage = () => {
   locale.value = currentLanguage.value
   localStorage.setItem('language', currentLanguage.value)
 }
+
+watch(showLogin, (newValue, oldValue) => {
+  if (oldValue === newValue) return
+  if (newValue) document.body.style.overflow = 'hidden'
+  else document.body.style.overflow = 'auto'
+})
 
 watch(currentLanguage, changeLanguage)
 
@@ -130,37 +126,23 @@ const toggleMessage = () => {
     return
   }
   showMessage.value = !showMessage.value
-  showPrivateLetter.value = false
-  showLogin.value = false
-  showDropdown.value = false
-}
-const togglePrivateLetter = () => {
-  if (!localStorage.getItem('token')) {
-    eventBus.emit('openLogin')
-    return
-  }
-  showPrivateLetter.value = !showPrivateLetter.value
-  showMessage.value = false
   showLogin.value = false
   showDropdown.value = false
 }
 const toggleLogin = () => {
   showLogin.value = !showLogin.value
   showMessage.value = false
-  showPrivateLetter.value = false
   showDropdown.value = false
 }
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value
   showMessage.value = false
-  showPrivateLetter.value = false
   showLogin.value = false
 }
 
 const handleClickOutside = event => {
   if (!event.target.closest('.clickOut')) {
     showMessage.value = false
-    showPrivateLetter.value = false
     showLogin.value = false
     showDropdown.value = false
   }
@@ -195,7 +177,6 @@ const closeLogin = () => (showLogin.value = false)
     }
   }
 }
-
 .fade-enter-active,
 .fade-leave-active {
   @apply transition-opacity duration-300 ease-in-out;

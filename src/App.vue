@@ -21,6 +21,7 @@ const $toast = useToast()
 const showLogin = ref(false)
 const showLoading = ref(false)
 const wsManager = ref(null)
+const newMessage = ref(null)
 
 const openLoading = () => (showLoading.value = true)
 const closeLoading = () => (showLoading.value = false)
@@ -30,6 +31,7 @@ const closeLogin = () => (showLogin.value = false)
 const handleMessage = message => {
   if (message.type === 'chat') {
     $toast.info(t('message.newMessage'))
+    newMessage.value = message
   }
 }
 
@@ -70,4 +72,5 @@ watch(
 )
 
 provide('wsManager', wsManager)
+provide('newMessage', newMessage)
 </script>

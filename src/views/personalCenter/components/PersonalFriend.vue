@@ -41,7 +41,7 @@
           </div>
           <div class="flex items-center gap-2">
             <template v-if="!email">
-              <div v-if="user?.token" class="flex items-center gap-1">
+              <div v-if="user?.refreshToken" class="flex items-center gap-1">
                 <div
                   class="w-0 h-0 border-4 border-[#4CAF50] rounded-full"
                 ></div>

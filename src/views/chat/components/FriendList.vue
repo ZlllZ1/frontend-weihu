@@ -8,12 +8,12 @@
         class="w-full px-3 py-2 rounded-md border border-warmGray-300 focus:outline-none focus:ring-1 focus:border-transparent focus:ring-blue-500"
       />
     </div>
-    <div class="flex-1 overflow-y-auto">
+    <div v-if="filteredFriends.length" class="flex-1 overflow-y-auto">
       <div
         v-for="friend in filteredFriends"
         :key="friend?.id"
         class="flex items-center p-3 hover:bg-warmGray-200 cursor-pointer rounded-xl"
-        @click="openChat(friend?.friend?.email)"
+        @click="openChat(friend?.chatId, friend?.friend?.email)"
       >
         <div class="relative">
           <img
@@ -25,36 +25,47 @@
           />
           <div
             v-if="friend?.myUnreadCount"
-            class="absolute -top-[2px] left-[30px] z-10 bg-red-600 rounded-full text-white w-3 h-3 text-xs flex items-center justify-center"
+            class="absolute -top-[2px] left-[30px] z-10 bg-red-600 rounded-full text-white w-4 h-4 text-xs flex items-center justify-center"
           >
-            {{ friend?.myUnreadCount }}
+            {{ friend?.myUnreadCount > 100 ? '99+' : friend?.myUnreadCount }}
           </div>
-          <div
-            class="absolute bottom-0 right-0 w-3 h-3 rounded-full"
-            :class="friend?.friend?.online ? 'bg-green-500' : 'bg-warmGray-500'"
-          ></div>
         </div>
-        <div class="ml-3 flex-1 flex flex-col h-10 gap-1">
+        <div class="ml-3 flex-1 flex flex-col h-11">
           <div class="mb-1 flex items-center justify-between">
-            <div class="font-semibold w-24 truncate">
+            <div class="w-16 truncate">
               {{ friend?.friend?.nickname }}
             </div>
             <span class="text-xs text-gray">{{
-              friend?.lastMessage?.timestamp
+              convertToCST(friend?.lastMessage?.timestamp) || ''
             }}</span>
           </div>
-          <div class="text-sm text-warmGray-500 w-[148px] truncate">
-            {{ friend?.lastMessage?.content }}
+          <div class="text-sm text-warmGray-500">
+            <template v-if="friend?.lastMessage?.senderEmail"
+              ><span v-if="friend?.lastMessage?.senderEmail === userInfo?.email"
+                >[{{ $t('message.me') }}]:
+              </span>
+              <span
+                v-else-if="friend?.lastMessage?.senderEmail !== userInfo?.email"
+                >[{{ $t('message.f') }}]:
+              </span></template
+            >
+            {{ processHtmlString(friend?.lastMessage?.content) }}
           </div>
         </div>
       </div>
+    </div>
+    <div v-else class="flex items-center justify-center h-full">
+      <div class="text-gray">{{ $t('message.noFriends') }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watchEffect } from 'vue'
+import { useStore } from 'vuex'
 
+const store = useStore()
+const userInfo = computed(() => store.state.user.userInfo)
 const props = defineProps({
   friends: {
     type: Array,
@@ -89,13 +100,36 @@ const filteredFriends = computed(() => {
   const lowercaseQuery = debouncedSearchQuery.value.toLowerCase()
   return props.friends.filter(
     friend =>
-      friend.name.toLowerCase().includes(lowercaseQuery) ||
-      friend.message.toLowerCase().includes(lowercaseQuery)
+      friend.friend.nickname.toLowerCase().includes(lowercaseQuery) ||
+      friend.lastMessage.content.toLowerCase().includes(lowercaseQuery)
   )
 })
 
-const openChat = email => {
-  emit('open', email)
+const openChat = (chatId, email) => emit('open', { chatId, email })
+
+const convertToCST = isoString => {
+  if (!isoString) return ''
+  const date = new Date(isoString.replace('Z', '+00:00'))
+  const utcTimestamp = date.getTime()
+  const cstDate = new Date(utcTimestamp)
+  const formattedDate =
+    cstDate.toLocaleDateString().replace(/-/g, ' ') +
+    ' ' +
+    cstDate
+      .toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+      .replace(/^\D*/, '')
+  return formattedDate
+}
+const processHtmlString = htmlString => {
+  if (/<video[^>]*>/i.test(htmlString)) return '[视频]'
+  if (/<img[^>]*>/i.test(htmlString)) return '[图片]'
+  let text = htmlString.replace(/<[^>]*>/g, '')
+  text = text.replace(/&nbsp;/g, ' ').trim()
+  if (text.length > 8) return text.substring(0, 8) + '...'
+  return text
 }
 </script>
 

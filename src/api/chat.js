@@ -4,10 +4,10 @@ export const getFriendLists = email => {
   return request.get('/chat/getFriendLists', { email }, { requiresAuth: true })
 }
 
-export const getChatInfos = (email, chatId) => {
+export const getChatInfos = (email, chatId, page, limit) => {
   return request.get(
     '/chat/getChatInfos',
-    { email, chatId },
+    { email, chatId, page, limit },
     { requiresAuth: true }
   )
 }
@@ -19,4 +19,20 @@ export const uploadChatImg = formData => {
     },
     requiresAuth: true
   })
+}
+
+export const sendMessages = (chatId, content, senderEmail, recipientEmail) => {
+  return request.post(
+    '/chat/sendMessages',
+    { chatId, content, senderEmail, recipientEmail },
+    { requiresAuth: true }
+  )
+}
+
+export const readMessages = (chatId, email, senderEmail) => {
+  return request.post(
+    '/chat/readMessages',
+    { chatId, email, senderEmail },
+    { requiresAuth: true }
+  )
 }

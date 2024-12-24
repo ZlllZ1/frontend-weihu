@@ -91,7 +91,6 @@ const uploadChunk = async (
 }
 
 const mergeVideoChunks = async (fileName, fileMD5, email, token) => {
-  console.log('test')
   const response = await fetch('http://127.0.0.1:3007/circle/mergeChunks', {
     method: 'POST',
     headers: {

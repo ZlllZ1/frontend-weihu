@@ -29,6 +29,7 @@ import { ref, markRaw } from 'vue'
 import PraiseContent from './PraiseContent.vue'
 import CommentContent from './CommentContent.vue'
 import FollowContent from './FollowContent.vue'
+import CollectContent from './CollectContent.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -40,14 +41,20 @@ const headerTab = [
     component: markRaw(PraiseContent)
   },
   {
-    label: t('message.comment'),
+    label: t('message.collect'),
     value: 1,
+    selected: false,
+    component: markRaw(CollectContent)
+  },
+  {
+    label: t('message.comment'),
+    value: 2,
     selected: false,
     component: markRaw(CommentContent)
   },
   {
     label: t('message.follow'),
-    value: 2,
+    value: 3,
     selected: false,
     component: markRaw(FollowContent)
   }
