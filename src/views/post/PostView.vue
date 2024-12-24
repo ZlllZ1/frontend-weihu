@@ -947,7 +947,7 @@ const getComment = async () => {
   try {
     const res = await getComments(
       postId,
-      userInfo.value.email,
+      storeUser.value.email,
       currentPage.value,
       limit.value
     )
