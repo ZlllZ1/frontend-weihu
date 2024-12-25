@@ -40,9 +40,13 @@
       </div>
       <div class="inline-flex items-center justify-center gap-4">
         <div class="relative clickOut">
-          <button class="hover:text-blue" @click.stop="toggleMessage">
+          <button class="hover:text-blue relative" @click.stop="toggleMessage">
             {{ $t('message.message') }}
           </button>
+          <div
+            v-if="newNotification"
+            class="rounded-full border-4 border-[#FE4144] w-0 h-0 absolute top-0 -right-1"
+          ></div>
           <transition name="fade">
             <MessageCard v-if="showMessage" />
           </transition>
@@ -90,6 +94,7 @@ import UserDropdown from './UserDropdown.vue'
 import eventBus from '@/utils/eventBus'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { judgeNewNotification } from '@/api/notification'
 
 const { locale } = useI18n()
 const currentLanguage = ref(localStorage.getItem('language') || 'zh-cn')
@@ -99,6 +104,7 @@ const searchText = ref('')
 const showMessage = ref(false)
 const showLogin = ref(false)
 const showDropdown = ref(false)
+const newNotification = ref(false)
 const changeLanguage = () => {
   locale.value = currentLanguage.value
   localStorage.setItem('language', currentLanguage.value)
@@ -148,7 +154,15 @@ const handleClickOutside = event => {
   }
 }
 
+const judgeNew = async () => {
+  if (!localStorage.getItem('token')) return
+  const res = await judgeNewNotification(userInfo.value._id)
+  if (res.data.code !== 200) return
+  newNotification.value = res.data.data.new
+}
+
 onMounted(() => {
+  judgeNew()
   document.addEventListener('click', handleClickOutside)
 })
 

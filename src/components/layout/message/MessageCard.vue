@@ -1,9 +1,7 @@
 <template>
   <div class="absolute top-12 left-1/2 -translate-x-1/2">
     <span class="triangle"></span>
-    <div
-      class="flex flex-col relative bg-white w-[360px] h-[440px] rounded shadow-sm"
-    >
+    <div class="flex flex-col bg-white w-[360px] h-[440px] rounded shadow-sm">
       <div
         class="flex items-center justify-evenly h-12 w-full border-b border-[#EBECED] flex-shrink-0"
       >
@@ -17,7 +15,7 @@
           </button>
         </template>
       </div>
-      <div class="flex-grow overflow-y-auto">
+      <div class="flex-grow">
         <component :is="currentContent"></component>
       </div>
     </div>
@@ -33,7 +31,7 @@ import CollectContent from './CollectContent.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const headerTab = [
+const headerTab = ref([
   {
     label: t('message.praise'),
     value: 0,
@@ -58,11 +56,11 @@ const headerTab = [
     selected: false,
     component: markRaw(FollowContent)
   }
-]
-const currentContent = ref(headerTab[0].component)
+])
+const currentContent = ref(headerTab.value[0].component)
 const changeTab = value => {
-  headerTab.forEach(tab => (tab.selected = false))
-  const tab = headerTab.find(item => item.value === value)
+  headerTab.value.forEach(tab => (tab.selected = false))
+  const tab = headerTab.value.find(item => item.value === value)
   tab.selected = true
   currentContent.value = markRaw(tab.component)
 }

@@ -62,6 +62,7 @@ export default {
     edit: 'edit',
     noPublishPost: 'no posts have been posted',
     tiaomessages: 'new messages',
+    content: 'content',
     gender: 'gender',
     dateOfBirth: 'date of birth',
     enterTitle: 'enter a title (up to 200 words)',

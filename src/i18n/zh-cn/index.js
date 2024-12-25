@@ -89,6 +89,7 @@ export default {
     tiaoComment: '条评论',
     tiaomessages: '条新消息',
     emailLogin: '邮箱登录',
+    content: '内容',
     passwordLogin: '密码登录',
     uploadCover: '上传封面',
     addCover: ' 添加封面',
