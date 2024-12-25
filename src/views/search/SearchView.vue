@@ -187,6 +187,11 @@ watch(type, () => {
 
 onMounted(() => {
   handleSearch()
+  if (window.location.search) {
+    const currentUrl = window.location.href
+    const urlWithoutQuery = currentUrl.split('?')[0]
+    window.history.replaceState(null, '', urlWithoutQuery)
+  }
 })
 </script>
 
