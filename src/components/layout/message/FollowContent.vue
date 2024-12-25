@@ -43,6 +43,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { getNotifications, readNew } from '@/api/notification'
+import eventBus from '@/utils/eventBus'
 
 const store = useStore()
 const notifications = ref([])
@@ -102,7 +103,10 @@ const handleScroll = () => {
   if (scrollHeight - scrollTop - clientHeight < 20) loadMore()
 }
 
-const readNews = () => readNew(userInfo.value?._id, 'follow')
+const readNews = () => {
+  readNew(userInfo.value?._id, 'follow')
+  eventBus.emit('refreshNotification')
+}
 
 onMounted(() => {
   getNotification()

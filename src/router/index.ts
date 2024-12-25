@@ -80,6 +80,14 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/chat/ChatView.vue')
   },
   {
+    path: '/search',
+    name: 'search',
+    meta: {
+      title: '搜索 - 微乎'
+    },
+    component: () => import('@/views/search/SearchView.vue')
+  },
+  {
     path: '/privacyGuidelines',
     name: 'privacyGuidelines',
     meta: {

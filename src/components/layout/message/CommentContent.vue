@@ -66,6 +66,7 @@
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import { getNotifications, readNew } from '@/api/notification'
+import eventBus from '@/utils/eventBus'
 
 const store = useStore()
 const notifications = ref([])
@@ -95,7 +96,10 @@ const getNotification = async () => {
   }
 }
 
-const readNews = () => readNew(userInfo.value?._id, 'comment')
+const readNews = () => {
+  readNew(userInfo.value?._id, 'comment')
+  eventBus.emit('refreshNotification')
+}
 
 const loadMore = async () => {
   loading.value = true

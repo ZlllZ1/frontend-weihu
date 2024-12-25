@@ -164,10 +164,12 @@ const judgeNew = async () => {
 onMounted(() => {
   judgeNew()
   document.addEventListener('click', handleClickOutside)
+  eventBus.on('refreshNotification', () => judgeNew())
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  eventBus.off('refreshNotification', () => judgeNew())
 })
 
 const closeLogin = () => (showLogin.value = false)
