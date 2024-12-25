@@ -23,20 +23,120 @@
           }}</router-link>
         </div>
       </div>
-      <div class="nav-item inline-flex items-center justify-center gap-4">
+      <div
+        class="nav-item inline-flex items-center justify-center gap-4 relative"
+      >
         <input
-          v-model="searchText"
+          v-model="searchQuery"
           type="text"
           :placeholder="$t('message.searchContent')"
           class="w-[350px] h-8 rounded-2xl px-3"
-          @keyup.enter="search"
+          @keyup.enter="handleSearch"
+          @focus="isFocused = true"
+          @blur="handleBlur"
         />
         <button
           class="h-8 w-20 rounded-2xl text-white bg-blue hover:bg-[#0E66E7]"
-          @click="search"
+          @click="handleSearch"
         >
           {{ $t('message.search') }}
         </button>
+        <div
+          v-if="isFocused || isHoveringResults"
+          class="w-full rounded-sm absolute top-[56px] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-[400px] overflow-y-auto"
+          @mouseenter="isHoveringResults = true"
+          @mouseleave="isHoveringResults = false"
+        >
+          <div
+            class="flex items-center justify-around py-2 border-b border-[#EBECED]"
+          >
+            <template v-for="(h, index) in searchHeader" :key="index">
+              <button
+                class="py-1 hover:text-black"
+                :class="{ 'text-black': h.active }"
+                @click="toggleHeader(h.value)"
+              >
+                {{ h.label }}
+              </button>
+            </template>
+          </div>
+          <template v-if="type === 'post'">
+            <template v-for="s in searchResult" :key="s._id">
+              <a
+                :href="`/post/${s.postId}`"
+                target="_blank"
+                class="cursor-pointer flex items-center gap-2 p-2 hover:bg-[#F5F5F5] !h-[85px]"
+                @mousedown.prevent="handleResultClick()"
+              >
+                <img
+                  :src="s.coverUrl"
+                  alt="cover"
+                  class="w-[85px] h-[60px] rounded-sm"
+                />
+                <div class="flex flex-col items-center gap-1">
+                  <div class="w-[310px] truncate">
+                    {{ $t('message.title') }}: {{ s.title }}
+                  </div>
+                  <div class="w-[310px] truncate">
+                    {{ $t('message.introduction') }}: {{ s.introduction }}
+                  </div>
+                </div>
+              </a>
+            </template>
+            <div
+              v-if="!searchResult.length"
+              class="flex items-center justify-center h-[350px] text-gray"
+            >
+              {{ $t('message.noData') }}
+            </div>
+          </template>
+          <template v-else-if="type === 'user'">
+            <template v-for="s in searchResult" :key="s._id">
+              <a
+                :href="`/userInfo/${s.email}`"
+                target="_blank"
+                class="cursor-pointer flex !items-baseline flex-col gap-2 py-2 px-4 hover:bg-[#F5F5F5] !h-[110px]"
+                @mousedown.prevent="handleResultClick()"
+              >
+                <div class="flex items-center gap-2">
+                  <img
+                    :src="s.avatar"
+                    alt="avatar"
+                    class="w-[60px] h-[60px] rounded-full"
+                  />
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="w-[310px] truncate">
+                      {{ s.nickname }}
+                    </div>
+                    <div class="w-[310px] truncate">
+                      {{ s.introduction }}
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                  <span
+                    >{{ $t('message.post') }}:
+                    {{ s.postNum > 10000 ? '9999+' : s.postNum }}</span
+                  >
+                  <span
+                    >{{ $t('message.follow') }}:
+                    {{ s.followNum > 10000 ? '9999+' : s.followNum }}</span
+                  >
+                  <span
+                    >{{ $t('message.fans') }}:
+                    {{ s.fanNum > 10000 ? '9999+' : s.fanNum }}</span
+                  >
+                </div>
+              </a>
+            </template>
+            <div
+              v-if="!searchResult.length"
+              class="flex items-center justify-center h-[350px] text-gray"
+            >
+              {{ $t('message.noData') }}
+            </div>
+          </template>
+        </div>
       </div>
       <div class="inline-flex items-center justify-center gap-4">
         <div class="relative clickOut">
@@ -95,35 +195,100 @@ import eventBus from '@/utils/eventBus'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { judgeNewNotification } from '@/api/notification'
+import { search } from '@/api/post'
+import router from '@/router'
 
 const { locale } = useI18n()
 const currentLanguage = ref(localStorage.getItem('language') || 'zh-cn')
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)
-const searchText = ref('')
+const searchQuery = ref('')
 const showMessage = ref(false)
 const showLogin = ref(false)
 const showDropdown = ref(false)
 const newNotification = ref(false)
+const searchResult = ref([])
+const isFocused = ref(false)
+const isHoveringResults = ref(false)
+const type = ref('post')
+
+const searchHeader = computed(() => {
+  return [
+    { label: '帖子', value: 'post', active: type.value === 'post' },
+    { label: '用户', value: 'user', active: type.value === 'user' }
+  ]
+})
+
 const changeLanguage = () => {
   locale.value = currentLanguage.value
   localStorage.setItem('language', currentLanguage.value)
 }
 
+const handleBlur = () => {
+  setTimeout(() => {
+    if (!isHoveringResults.value) isFocused.value = false
+  }, 100)
+}
+
+const toggleHeader = v => {
+  if (type.value === v) return
+  type.value = v
+}
+
+watch(type, () => {
+  if (isFocused.value || isHoveringResults.value) {
+    searchResult.value = []
+    debouncedSearch(searchQuery.value)
+  }
+})
+
+const handleResultClick = () => {
+  setTimeout(() => {
+    isFocused.value = false
+    isHoveringResults.value = false
+  }, 100)
+}
+
 watch(showLogin, (newValue, oldValue) => {
   if (oldValue === newValue) return
-  if (newValue) document.body.style.overflow = 'hidden'
-  else document.body.style.overflow = 'auto'
+  document.body.style.overflow = newValue ? 'hidden' : 'auto'
 })
 
 watch(currentLanguage, changeLanguage)
 
-const search = () => {
+const debounce = (func, wait) => {
+  let timeout
+  return function (...args) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func.apply(this, args), wait)
+  }
+}
+
+const debouncedSearch = debounce(async query => {
+  const res = await search(query, type.value)
+  if (res.data.code !== 200) return
+  searchResult.value = res.data.data?.results
+}, 500)
+
+watch(searchQuery, newQuery => {
+  if (newQuery === '') {
+    searchResult.value = []
+    return
+  }
+  if (isFocused.value || isHoveringResults.value) debouncedSearch(newQuery)
+})
+
+const handleSearch = () => {
   if (!localStorage.getItem('token')) {
     eventBus.emit('openLogin')
     return
   }
-  console.log('搜索')
+  if (searchQuery.value === '') return
+  let route = router.resolve({
+    path: '/search',
+    query: { q: searchQuery.value, t: type.value }
+  })
+  window.open(route.href, '_blank')
 }
 
 const toggleMessage = () => {

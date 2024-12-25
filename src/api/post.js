@@ -162,3 +162,11 @@ export const uploadPostImg = formData => {
     requiresAuth: true
   })
 }
+
+export const search = (searchQuery, type, page = 1, limit = 10) => {
+  return request.post(
+    '/post/search',
+    { searchQuery, type, page, limit },
+    { requiresAuth: true }
+  )
+}

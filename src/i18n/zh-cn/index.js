@@ -90,6 +90,8 @@ export default {
     tiaomessages: '条新消息',
     emailLogin: '邮箱登录',
     content: '内容',
+    title: '标题',
+    introduction: '简介',
     passwordLogin: '密码登录',
     uploadCover: '上传封面',
     addCover: ' 添加封面',

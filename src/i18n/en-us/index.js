@@ -62,6 +62,8 @@ export default {
     edit: 'edit',
     noPublishPost: 'no posts have been posted',
     tiaomessages: 'new messages',
+    title: 'title',
+    introduction: 'introduction',
     content: 'content',
     gender: 'gender',
     dateOfBirth: 'date of birth',
