@@ -1,7 +1,7 @@
 <template>
-  <div class="absolute top-12 left-1/2 -translate-x-1/2">
+  <div class="absolute top-12 left-1/2 -translate-x-1/2 z-20">
     <span class="triangle"></span>
-    <div class="flex flex-col bg-white w-[360px] h-[440px] rounded shadow-sm">
+    <div class="flex flex-col bg-white w-[360px] h-[420px] rounded shadow-sm">
       <div
         class="flex items-center justify-evenly h-12 w-full border-b border-[#EBECED] flex-shrink-0"
       >

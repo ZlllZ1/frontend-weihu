@@ -1,7 +1,7 @@
 <template>
   <div
     ref="scrollContainer"
-    class="overflow-y-auto h-[392px]"
+    class="overflow-y-auto h-[372px]"
     @scroll="handleScroll"
   >
     <template v-for="n in notifications" :key="n._id">
