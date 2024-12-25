@@ -156,7 +156,7 @@
         >
           <div
             v-if="circleInfo"
-            class="min-h-[280px] p-2 shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
+            class="min-h-[400px] p-2 shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
           >
             <div class="flex items-center justify-between py-2">
               <div class="flex items-center gap-1">
@@ -313,7 +313,7 @@
           </div>
           <div
             v-if="circleInfo"
-            class="fixed flex items-center bottom-0 rounded-sm bg-white h-12 w-[320px] px-2 py-1 border border-warmGray-200"
+            class="fixed flex items-center bottom-0 rounded-sm bg-white h-12 w-[330px] px-2 py-1 border border-warmGray-200"
           >
             <img
               :src="userInfo?.avatar || require('@/assets/avatar_default.png')"
