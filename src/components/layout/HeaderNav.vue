@@ -43,7 +43,7 @@
         </button>
         <div
           v-if="isFocused || isHoveringResults"
-          class="w-full rounded-sm absolute top-[56px] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-[400px] overflow-y-auto"
+          class="w-full rounded-sm absolute right-[50px] top-[56px] bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-[400px] overflow-y-auto"
           @mouseenter="isHoveringResults = true"
           @mouseleave="isHoveringResults = false"
         >
