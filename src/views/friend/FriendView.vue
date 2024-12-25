@@ -567,10 +567,12 @@ const handlePraise = async circleId => {
           praiseUsers.value = praiseUsers.value.filter(
             i => i.email !== userInfo.value.email
           )
-          praiseUsers.value.unshift({
-            email: userInfo.value.email,
-            avatar: userInfo.value.avatar
-          })
+          if (circleInfo.value.circleId === circleId) {
+            praiseUsers.value.unshift({
+              email: userInfo.value.email,
+              avatar: userInfo.value.avatar
+            })
+          }
         }
         circle.isPraise = !circle.isPraise
       }
