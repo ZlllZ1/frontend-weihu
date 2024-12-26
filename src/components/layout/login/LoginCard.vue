@@ -1,5 +1,5 @@
 <template>
-  <div
+  <section
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-1 cursor-pointer"
     @mousedown.self="emit('closeLogin')"
   >
@@ -7,7 +7,7 @@
       class="bg-white w-[360px] h-[440px] py-6 px-4 rounded shadow-[0_0_20px_0_rgba(0,0,0,0.1)] transition-all duration-300 ease-in-out cursor-default"
       @click.stop
     >
-      <div class="flex">
+      <header class="flex">
         <div
           v-for="(method, index) in loginMethod"
           :key="index"
@@ -29,11 +29,8 @@
             class="w-px h-4 bg-[#EBECED] mx-4"
           ></div>
         </div>
-      </div>
-      <component
-        :is="currentComponent"
-        @closeLogin="emit('closeLogin')"
-      ></component>
+      </header>
+      <component :is="currentComponent" @closeLogin="emit('closeLogin')" />
       <div class="flex text-xs items-center">
         <div class="flex-1 h-px bg-[#EBECED] mr-2"></div>
         <span>{{ $t('message.otherLogin') }}</span>
@@ -41,12 +38,12 @@
       </div>
       <div class="py-6 flex items-center justify-center">
         <img
-          src="../../../assets/weChat.png"
+          src="../images/weChat.png"
           class="w-6 h-6 cursor-pointer"
           @click="showCode = !showCode"
         />
       </div>
-      <div
+      <section
         v-if="showCode"
         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-1 cursor-pointer"
         @mousedown.self="showCode = false"
@@ -60,8 +57,8 @@
             {{ $t('message.refresh') }}
           </button>
         </div>
-      </div>
-      <div class="text-xs">
+      </section>
+      <footer class="text-xs">
         <span>{{ $t('message.remind') }}</span>
         <a href="/protocol" target="_blank" class="hover:text-black">{{
           $t('message.protocol')
@@ -69,20 +66,25 @@
         <a href="/privacyGuidelines" target="_blank" class="hover:text-black">{{
           $t('message.privacy')
         }}</a>
-      </div>
+      </footer>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { computed, ref, markRaw } from 'vue'
+import { useI18n } from 'vue-i18n'
 import PasswordLogin from './PasswordLogin.vue'
 import CodeLogin from './CodeLogin.vue'
-import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
 const emit = defineEmits(['closeLogin'])
 
+const { t } = useI18n()
+
+// 微信扫码登录
+const showCode = ref(false)
+
+// 登录方式
 const loginMethod = ref([
   {
     label: t('message.emailLogin'),
@@ -97,11 +99,12 @@ const loginMethod = ref([
     component: markRaw(PasswordLogin)
   }
 ])
+
 const currentComponent = computed(
   () => loginMethod.value.find(m => m.active)?.component
 )
-const showCode = ref(false)
 
+// 切换登陆方式
 const changeLoginMethod = v => {
   loginMethod.value.forEach(m => {
     m.active = false
@@ -114,7 +117,6 @@ const changeLoginMethod = v => {
 .fixed {
   animation: fadeIn 0.3s ease-in-out;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -123,7 +125,6 @@ const changeLoginMethod = v => {
     opacity: 1;
   }
 }
-
 .border-b-rectangle {
   @apply border-b-[3px] border-transparent py-1;
   &:hover {

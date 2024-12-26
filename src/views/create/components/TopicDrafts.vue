@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-6">
+  <section class="pb-6">
     <div class="p-4 text-[#999] rounded">
       <textarea
         :value="title"
@@ -72,7 +72,7 @@
         </div>
       </div>
     </div>
-    <div
+    <footer
       class="flex items-center gap-4 justify-between fixed bottom-0 bg-white left-0 right-0 p-4 border-t border-[#EBECED]"
     >
       <div>
@@ -128,17 +128,19 @@
           {{ $t('message.publish') }}
         </button>
       </div>
-    </div>
-  </div>
+    </footer>
+  </section>
 </template>
 
 <script setup>
 import { onMounted, ref, computed, nextTick, onUnmounted } from 'vue'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
+import ImageResize from 'quill-image-resize-module'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
 import { useToast } from 'vue-toast-notification'
 import {
   uploadCover,
@@ -149,9 +151,12 @@ import {
   clearDraft,
   uploadPostImg
 } from '@/api/post'
-import { useStore } from 'vuex'
-import ImageResize from 'quill-image-resize-module'
 
+// 视频时长限制,文件大小限制
+const MAX_VIDEO_DURATION = 30000
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+
+// 编辑器注册相关模块
 const VideoBlot = Quill.import('formats/video')
 class CustomVideoBlot extends VideoBlot {
   static create(value) {
@@ -164,53 +169,39 @@ class CustomVideoBlot extends VideoBlot {
 }
 CustomVideoBlot.blotName = 'custom-video'
 CustomVideoBlot.tagName = 'VIDEO'
-
 Quill.register(CustomVideoBlot)
 Quill.register('modules/imageResize', ImageResize)
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024
 const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
 let quill = null
+
+// 用户信息
+const userInfo = computed(() => store.state.user.userInfo)
+
+// 文章相关
 const title = ref('')
+const introduction = ref('')
+const coverUrl = ref('')
 const coverRef = ref(null)
-const MAX_VIDEO_DURATION = 300
 const uploadProgress = ref(0)
 const loading = ref(false)
 const isScheduled = ref(false)
 const scheduledDate = ref(null)
-const introduction = ref('')
-const coverUrl = ref('')
-const userInfo = computed(() => store.state.user.userInfo)
 
-const toolbarOptions = [
-  ['bold', 'italic', 'underline', 'strike'],
-  ['blockquote', 'code-block'],
-  [{ list: 'ordered' }, { list: 'bullet' }],
-  [{ header: 1 }, { header: 2 }],
-  [{ script: 'sub' }, { script: 'super' }],
-  [{ indent: '-1' }, { indent: '+1' }],
-  [{ size: ['small', false, 'large', 'huge'] }],
-  [{ header: [1, 2, 3, 4, 5, 6, false] }],
-  [{ color: [] }, { background: [] }],
-  [{ font: [] }],
-  [{ align: [] }],
-  ['clean'],
-  ['link', 'image', 'video']
-]
-
+// 输入限制
 const minDate = computed(() => {
   const date = new Date()
   date.setMinutes(date.getMinutes() + 5)
   return date
 })
-
 const updateTitle = value => (title.value = value.replace(/\s/g, ''))
 const updateIntroduction = value =>
   (introduction.value = value.replace(/\s/g, ''))
 
+// 获取草稿
 const getDraftData = async () => {
   try {
     await new Promise(resolve => setTimeout(resolve, 100))
@@ -229,21 +220,7 @@ const getDraftData = async () => {
   }
 }
 
-const clearDrafts = async () => {
-  try {
-    const res = await clearDraft(userInfo.value.email)
-    if (res.data.code !== 200) return
-    introduction.value = ''
-    coverUrl.value = ''
-    quill.setContents([])
-    title.value = ''
-    $toast.success(t('message.clearDraftSuccess'))
-  } catch (error) {
-    console.error(error)
-    $toast.error(t('message.operateFail'))
-  }
-}
-
+// 上传封面
 const coverChange = async event => {
   const file = event.target.files[0]
   if (file) {
@@ -262,40 +239,19 @@ const coverChange = async event => {
   }
 }
 
-const imageHandler = () => {
-  const input = document.createElement('input')
-  input.setAttribute('type', 'file')
-  input.setAttribute('accept', 'image/*')
-  input.click()
-  input.onchange = async () => {
-    const file = input.files[0]
-    if (file.size > MAX_FILE_SIZE) {
-      $toast.error(t('message.imageTooLarge'))
-      return
-    }
-    const formData = new FormData()
-    formData.append('postImg', file)
-    formData.append('type', 'postImg')
-    formData.append('email', userInfo.value.email)
-    try {
-      const res = await uploadPostImg(formData)
-      if (res.data.code !== 200) return
-      if (res.data.data.postImgUrl) {
-        const length = quill.getLength()
-        quill.setSelection(length, 0)
-        quill.insertEmbed(
-          length,
-          'image',
-          res.data.data.postImgUrl,
-          'user',
-          range => {
-            quill.setSelection(range.index + 1)
-          }
-        )
-      }
-    } catch (error) {
-      console.error('Image upload error:', error)
-    }
+// 清空草稿
+const clearDrafts = async () => {
+  try {
+    const res = await clearDraft(userInfo.value.email)
+    if (res.data.code !== 200) return
+    introduction.value = ''
+    coverUrl.value = ''
+    quill.setContents([])
+    title.value = ''
+    $toast.success(t('message.clearDraftSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
   }
 }
 
@@ -304,7 +260,7 @@ const getContent = () => {
   const html = quill.root.innerHTML
   return { delta, html }
 }
-
+// 保存草稿
 const saveToDraft = async () => {
   const { delta, html } = getContent()
   try {
@@ -324,7 +280,7 @@ const saveToDraft = async () => {
     $toast.error(t('message.saveDraftError'))
   }
 }
-
+// 发布文章
 const publish = async () => {
   const isHtmlEmpty = html => {
     const text = html.replace(/<[^>]*>/g, '')
@@ -382,6 +338,53 @@ const publish = async () => {
   }
 }
 
+// 回到顶部
+const goTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
+// 上传图片
+const imageHandler = () => {
+  const input = document.createElement('input')
+  input.setAttribute('type', 'file')
+  input.setAttribute('accept', 'image/*')
+  input.click()
+  input.onchange = async () => {
+    const file = input.files[0]
+    if (file.size > MAX_FILE_SIZE) {
+      $toast.error(t('message.imageTooLarge'))
+      return
+    }
+    const formData = new FormData()
+    formData.append('postImg', file)
+    formData.append('type', 'postImg')
+    formData.append('email', userInfo.value.email)
+    try {
+      const res = await uploadPostImg(formData)
+      if (res.data.code !== 200) return
+      if (res.data.data.postImgUrl) {
+        const length = quill.getLength()
+        quill.setSelection(length, 0)
+        quill.insertEmbed(
+          length,
+          'image',
+          res.data.data.postImgUrl,
+          'user',
+          range => {
+            quill.setSelection(range.index + 1)
+          }
+        )
+      }
+    } catch (error) {
+      console.error('Image upload error:', error)
+    }
+  }
+}
+
+// 视频上传
 const getVideoDuration = file => {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video')
@@ -396,7 +399,6 @@ const getVideoDuration = file => {
     video.src = URL.createObjectURL(file)
   })
 }
-
 const videoHandler = () => {
   const input = document.createElement('input')
   input.setAttribute('type', 'file')
@@ -449,6 +451,22 @@ const videoHandler = () => {
   }
 }
 
+// 初始化编辑器
+const toolbarOptions = [
+  ['bold', 'italic', 'underline', 'strike'],
+  ['blockquote', 'code-block'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  [{ header: 1 }, { header: 2 }],
+  [{ script: 'sub' }, { script: 'super' }],
+  [{ indent: '-1' }, { indent: '+1' }],
+  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  [{ color: [] }, { background: [] }],
+  [{ font: [] }],
+  [{ align: [] }],
+  ['clean'],
+  ['link', 'image', 'video']
+]
 const initEditor = () => {
   return new Promise(resolve => {
     const container = document.getElementById('editor')
@@ -481,13 +499,6 @@ const initEditor = () => {
   })
 }
 
-const goTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
-}
-
 onMounted(async () => {
   await initEditor()
   await nextTick()
@@ -501,7 +512,6 @@ onUnmounted(() => {
 
 <style lang="scss">
 @import '../styles/editor.scss';
-
 #editor {
   @apply h-[300px] mb-4;
 }

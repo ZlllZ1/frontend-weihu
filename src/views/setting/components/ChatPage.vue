@@ -1,5 +1,5 @@
 <template>
-  <div class="py-6">
+  <section class="py-6">
     <div class="border-b border-[#999] pb-2">
       <span>{{ $t('message.privateMessageRange') }}</span>
       <div class="flex flex-col gap-y-2 mt-3">
@@ -17,7 +17,7 @@
         </template>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -30,6 +30,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const store = useStore()
 const $toast = useToast()
+
 const setting = computed(() => store.state.user.userInfo.setting)
 const userInfo = computed(() => store.state.user.userInfo)
 const selectedLimit = ref(setting.value.chatLimit)

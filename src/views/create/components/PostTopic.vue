@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-6">
+  <section class="pb-6">
     <div class="p-4 text-[#999] rounded">
       <textarea
         :value="title"
@@ -72,17 +72,15 @@
         </div>
       </div>
     </div>
-    <div
+    <footer
       class="flex items-center gap-4 justify-between fixed bottom-0 bg-white left-0 right-0 p-4 border-t border-[#EBECED]"
     >
-      <div>
-        <button
-          class="w-fit h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
-          @click="goTop"
-        >
-          {{ $t('message.toTop') }}
-        </button>
-      </div>
+      <button
+        class="w-fit h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
+        @click="goTop"
+      >
+        {{ $t('message.toTop') }}
+      </button>
       <div class="flex items-center gap-4">
         <div class="flex items-center">
           <div class="w-52 mr-6 h-8">
@@ -122,17 +120,19 @@
           {{ $t('message.publish') }}
         </button>
       </div>
-    </div>
-  </div>
+    </footer>
+  </section>
 </template>
 
 <script setup>
 import { onMounted, ref, computed, onUnmounted } from 'vue'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
+import ImageResize from 'quill-image-resize-module'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
 import { useToast } from 'vue-toast-notification'
 import {
   uploadCover,
@@ -141,9 +141,12 @@ import {
   publishSchedulePost,
   uploadPostImg
 } from '@/api/post'
-import { useStore } from 'vuex'
-import ImageResize from 'quill-image-resize-module'
 
+// 视频时长限制,文件大小限制
+const MAX_VIDEO_DURATION = 30000
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+
+// 编辑器注册相关模块
 const VideoBlot = Quill.import('formats/video')
 class CustomVideoBlot extends VideoBlot {
   static create(value) {
@@ -156,7 +159,6 @@ class CustomVideoBlot extends VideoBlot {
 }
 CustomVideoBlot.blotName = 'custom-video'
 CustomVideoBlot.tagName = 'VIDEO'
-
 Quill.register(CustomVideoBlot)
 Quill.register('modules/imageResize', ImageResize)
 
@@ -164,35 +166,31 @@ const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
 
-const MAX_VIDEO_DURATION = 30000
-const MAX_FILE_SIZE = 5 * 1024 * 1024
 let quill = null
+
+// 用户信息
+const userInfo = computed(() => store.state.user.userInfo)
+
+// 文章相关
 const title = ref('')
-const uploadProgress = ref(0)
+const introduction = ref('')
+const coverUrl = ref('')
 const coverRef = ref(null)
 const isScheduled = ref(false)
 const scheduledDate = ref(null)
-const introduction = ref('')
 const loading = ref(false)
-const coverUrl = ref('')
-const userInfo = computed(() => store.state.user.userInfo)
 
-const toolbarOptions = [
-  ['bold', 'italic', 'underline', 'strike'],
-  ['blockquote', 'code-block'],
-  [{ list: 'ordered' }, { list: 'bullet' }],
-  [{ header: 1 }, { header: 2 }],
-  [{ script: 'sub' }, { script: 'super' }],
-  [{ indent: '-1' }, { indent: '+1' }],
-  [{ size: ['small', false, 'large', 'huge'] }],
-  [{ header: [1, 2, 3, 4, 5, 6, false] }],
-  [{ color: [] }, { background: [] }],
-  [{ font: [] }],
-  [{ align: [] }],
-  ['clean'],
-  ['link', 'image', 'video']
-]
+// 输入限制
+const minDate = computed(() => {
+  const date = new Date()
+  date.setMinutes(date.getMinutes() + 5)
+  return date
+})
+const updateTitle = value => (title.value = value.replace(/\s/g, ''))
+const updateIntroduction = value =>
+  (introduction.value = value.replace(/\s/g, ''))
 
+// 上传图片
 const imageHandler = () => {
   const input = document.createElement('input')
   input.setAttribute('type', 'file')
@@ -230,6 +228,8 @@ const imageHandler = () => {
   }
 }
 
+//  上传视频
+const uploadProgress = ref(0)
 const getVideoDuration = file => {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video')
@@ -296,15 +296,7 @@ const videoHandler = () => {
   }
 }
 
-const minDate = computed(() => {
-  const date = new Date()
-  date.setMinutes(date.getMinutes() + 5)
-  return date
-})
-const updateTitle = value => (title.value = value.replace(/\s/g, ''))
-const updateIntroduction = value =>
-  (introduction.value = value.replace(/\s/g, ''))
-
+// 上传封面
 const coverChange = async event => {
   const file = event.target.files[0]
   if (file) {
@@ -328,7 +320,7 @@ const getContent = () => {
   const html = quill.root.innerHTML
   return { delta, html }
 }
-
+// 保存草稿
 const saveToDraft = async () => {
   const { delta, html } = getContent()
   try {
@@ -348,7 +340,7 @@ const saveToDraft = async () => {
     $toast.error(t('message.saveDraftError'))
   }
 }
-
+// 发布文章
 const publish = async () => {
   const isHtmlEmpty = html => {
     const text = html.replace(/<[^>]*>/g, '')
@@ -403,6 +395,30 @@ const publish = async () => {
   }
 }
 
+// 回到顶部
+const goTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
+// 初始化编辑器
+const toolbarOptions = [
+  ['bold', 'italic', 'underline', 'strike'],
+  ['blockquote', 'code-block'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  [{ header: 1 }, { header: 2 }],
+  [{ script: 'sub' }, { script: 'super' }],
+  [{ indent: '-1' }, { indent: '+1' }],
+  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  [{ color: [] }, { background: [] }],
+  [{ font: [] }],
+  [{ align: [] }],
+  ['clean'],
+  ['link', 'image', 'video']
+]
 const initEditor = () => {
   const container = document.getElementById('editor')
   quill = new Quill(container, {
@@ -428,13 +444,6 @@ const initEditor = () => {
   })
 }
 
-const goTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
-}
-
 onMounted(() => {
   initEditor()
 })
@@ -446,7 +455,6 @@ onUnmounted(() => {
 
 <style lang="scss">
 @import '../styles/editor.scss';
-
 #editor {
   @apply h-[300px] mb-4;
 }

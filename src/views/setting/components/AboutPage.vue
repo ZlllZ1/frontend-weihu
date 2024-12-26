@@ -1,5 +1,5 @@
 <template>
-  <div class="py-8">
+  <article class="py-8">
     <p>{{ $t('message.aboutContent.title') }}</p>
     <p>{{ $t('message.aboutContent.welcome') }}</p>
 
@@ -35,5 +35,5 @@
     </p>
 
     <p class="mt-6">{{ $t('message.aboutContent.closing') }}</p>
-  </div>
+  </article>
 </template>

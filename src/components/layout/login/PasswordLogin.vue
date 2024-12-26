@@ -1,28 +1,27 @@
 <template>
-  <div class="py-6 px-4 flex flex-col">
-    <div class="text-sm h-[135px]">
-      <input
-        :value="account.trim()"
-        type="text"
-        :placeholder="$t('message.enterEmail')"
-        class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
-        @input="updateAccount($event.target.value)"
-      />
-      <input
-        :value="password.trim()"
-        type="password"
-        :placeholder="$t('message.enterPassword')"
-        class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
-        @input="updatePassword($event.target.value)"
-      />
-      <div class="flex justify-end py-2">
-        <button
-          class="hover:text-black w-fit"
-          @click="showForgetPassword = true"
-        >
-          {{ $t('message.forgetPassword') }}
-        </button>
-      </div>
+  <section class="py-6 px-4 flex flex-col">
+    <form class="text-sm h-[100px]" @submit.prevent="login">
+      <label>
+        <input
+          :value="account.trim()"
+          type="text"
+          :placeholder="$t('message.enterEmail')"
+          class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
+          @input="updateAccount($event.target.value)"
+        />
+        <input
+          :value="password.trim()"
+          type="password"
+          :placeholder="$t('message.enterPassword')"
+          class="border-b border-[#EBECED] w-full py-2 outline-none h-12"
+          @input="updatePassword($event.target.value)"
+        />
+      </label>
+    </form>
+    <div class="flex justify-end py-2 text-sm">
+      <button class="hover:text-black w-fit" @click="showForgetPassword = true">
+        {{ $t('message.forgetPassword') }}
+      </button>
     </div>
     <button
       class="bg-blue text-white rounded-sm h-9 hover:bg-[#0E66E7] mt-2"
@@ -35,34 +34,36 @@
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-1 cursor-pointer"
       @mousedown.self="showForgetPassword = false"
     >
-      <div
-        class="w-[400px] h-[280px] cursor-default p-4 bg-white rounded-lg flex flex-col justify-between"
+      <article
+        class="w-[400px] h-[250px] cursor-default p-4 bg-white rounded-lg"
         @click.stop
       >
-        <div
+        <header
           class="text-lg flex items-center justify-center text-black font-lg"
         >
           {{ $t('message.forgetPassword') }}
-        </div>
-        <template v-if="forgetPasswordStep === 0">
-          <div class="text-sm h-[135px]">
-            <input
-              :value="forgetAccount.trim()"
-              type="text"
-              :placeholder="$t('message.enterEmail')"
-              class="border-b border-[#EBECED] w-full outline-none h-12"
-              @input="updateForgetAccount($event.target.value)"
-            />
-            <div
-              class="border-b border-[#EBECED] w-full flex flex-1 justify-between"
-            >
+        </header>
+        <section v-if="forgetPasswordStep === 0" class="text-sm h-[100px] mt-3">
+          <form @submit.prevent="gotoNext">
+            <label>
               <input
-                :value="authCode.trim()"
+                :value="forgetAccount.trim()"
                 type="text"
-                :placeholder="$t('message.enterAuthCode')"
-                class="flex-1 outline-none h-12"
-                @input="updateAuthCode($event.target.value)"
+                :placeholder="$t('message.enterEmail')"
+                class="border-b border-[#EBECED] w-full outline-none h-12"
+                @input="updateForgetAccount($event.target.value)"
               />
+            </label>
+            <div class="border-b border-[#EBECED] w-full flex justify-between">
+              <label class="flex-grow">
+                <input
+                  :value="authCode.trim()"
+                  type="text"
+                  :placeholder="$t('message.enterAuthCode')"
+                  class="w-full outline-none h-12"
+                  @input="updateAuthCode($event.target.value)"
+                />
+              </label>
               <button
                 v-if="!authCodeTimer"
                 class="text-blue hover:text-gray"
@@ -74,8 +75,8 @@
                 $t('message.afterSeconds', { seconds: authCodeTimer })
               }}</span>
             </div>
-          </div>
-          <div class="px-4 flex items-center justify-center">
+          </form>
+          <div class="px-4 flex items-center justify-center mt-8">
             <button
               class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
               @click="cancelNext"
@@ -89,24 +90,27 @@
               {{ $t('message.nextStep') }}
             </button>
           </div>
-        </template>
-        <template v-else-if="forgetPasswordStep === 1">
-          <div class="text-sm h-[135px]">
-            <div
-              class="border-b border-[#EBECED] w-full flex flex-1 justify-between"
-            >
+        </section>
+        <section
+          v-else-if="forgetPasswordStep === 1"
+          class="text-sm h-[100px] mt-3"
+        >
+          <div class="border-b border-[#EBECED] w-full flex justify-between">
+            <label class="flex-grow">
               <input
                 v-model="newPassword"
                 type="text"
                 :placeholder="$t('message.newPassword')"
-                class="flex-1 outline-none h-12"
+                class="w-full outline-none h-12"
                 minLength="6"
                 maxlength="20"
               />
-            </div>
-            <div
-              class="border-b border-[#EBECED] w-full flex flex-1 justify-between"
-            >
+            </label>
+          </div>
+          <div
+            class="border-b border-[#EBECED] w-full flex flex-1 justify-between"
+          >
+            <label>
               <input
                 v-model="newPasswordAgain"
                 type="password"
@@ -115,9 +119,9 @@
                 maxlength="20"
                 class="flex-1 outline-none h-12"
               />
-            </div>
+            </label>
           </div>
-          <div class="px-4 flex items-center justify-center">
+          <div class="px-4 flex items-center justify-center mt-8">
             <button
               class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
               @click="cancelNext"
@@ -131,80 +135,57 @@
               {{ $t('message.commit') }}
             </button>
           </div>
-        </template>
-      </div>
+        </section>
+      </article>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useToast } from 'vue-toast-notification'
-import { passwordLogin, sendAuthCode, judgeAuthCode } from '@/api/login.js'
-import { getUserInfo } from '@/api/user.js'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { passwordLogin, sendAuthCode, judgeAuthCode } from '@/api/login.js'
+import { getUserInfo } from '@/api/user.js'
 import { savePassword } from '@/api/other'
-
-const { t } = useI18n()
-const store = useStore()
 
 const emits = defineEmits(['closeLogin'])
 
+const { t } = useI18n()
+const $toast = useToast()
+const store = useStore()
+
+// 验证密码登录
 const account = ref('')
 const password = ref('')
-const $toast = useToast()
+
+// 忘记密码处理
 const showForgetPassword = ref(false)
 const forgetAccount = ref('')
+const forgetPasswordStep = ref(0)
+
+// 验证码
 const authCode = ref('')
 const authCodeTimer = ref(null)
 let intervalId = null
-const forgetPasswordStep = ref(0)
+
+// 输入新密码/再次输入新密码
 const newPassword = ref('')
 const newPasswordAgain = ref('')
 
+// 验证输入文本是否符合要求
 const validateAccount = account => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   return emailRegex.test(account)
 }
-
 const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updatePassword = value => (password.value = value.replace(/\s/g, ''))
 const updateForgetAccount = value =>
   (forgetAccount.value = value.replace(/\s/g, ''))
 const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
-const login = async () => {
-  try {
-    if (!account.value.length) {
-      $toast.error(t('message.emailEmpty'))
-      return
-    }
-    if (!validateAccount(account.value)) {
-      $toast.error(t('message.emailFormatError'))
-      return
-    }
-    if (!password.value.length) {
-      $toast.error(t('message.passwordEmpty'))
-      return
-    }
-    const res = await passwordLogin(account.value, password.value)
-    if (res.data.code !== 200) return
-    store.commit('user/setToken', res.data.data.token)
-    store.commit('user/setRefreshToken', res.data.data.refreshToken)
-    localStorage.setItem('token', res.data.data.token)
-    localStorage.setItem('refreshToken', res.data.data.refreshToken)
-    const { data } = await getUserInfo(account.value)
-    if (data.code !== 200) return
-    store.commit('user/setUserInfo', data.data)
-    localStorage.setItem('userInfo', JSON.stringify(data.data))
-    emits('closeLogin')
-    location.reload()
-  } catch (error) {
-    $toast.error(t('message.emailPasswordError'))
-  }
-}
-
+// 获取验证码
 const getAuthCode = async () => {
   try {
     if (!forgetAccount.value.length) {
@@ -238,6 +219,46 @@ const getAuthCode = async () => {
   }
 }
 
+// 辅助函数(本地存token/refreshToken/userInfo)
+const saveTokens = (token, refreshToken) => {
+  store.commit('user/setToken', token)
+  store.commit('user/setRefreshToken', refreshToken)
+  localStorage.setItem('token', token)
+  localStorage.setItem('refreshToken', refreshToken)
+}
+const saveUserInfo = userInfo => {
+  store.commit('user/setUserInfo', userInfo)
+  localStorage.setItem('userInfo', JSON.stringify(userInfo))
+}
+// 密码登录
+const login = async () => {
+  try {
+    if (!account.value.length) {
+      $toast.error(t('message.emailEmpty'))
+      return
+    }
+    if (!validateAccount(account.value)) {
+      $toast.error(t('message.emailFormatError'))
+      return
+    }
+    if (!password.value.length) {
+      $toast.error(t('message.passwordEmpty'))
+      return
+    }
+    const res = await passwordLogin(account.value, password.value)
+    if (res.data.code !== 200) return
+    saveTokens(res.data.data.token, res.data.data.refreshToken)
+    const { data } = await getUserInfo(account.value)
+    if (data.code !== 200) return
+    saveUserInfo(data.data)
+    emits('closeLogin')
+    location.reload()
+  } catch (error) {
+    $toast.error(t('message.emailPasswordError'))
+  }
+}
+
+// 取消修改密码
 const cancelNext = () => {
   forgetPasswordStep.value = 0
   forgetAccount.value = ''
@@ -245,6 +266,7 @@ const cancelNext = () => {
   showForgetPassword.value = false
 }
 
+// 修改密码下一步
 const gotoNext = async () => {
   try {
     if (!forgetAccount.value.length) {
@@ -268,19 +290,23 @@ const gotoNext = async () => {
   }
 }
 
+// 修改密码
 const saveChangePassword = async () => {
   if (!newPassword.value.length) {
     $toast.error(t('message.newPasswordEmpty'))
+    return
   }
   if (!newPasswordAgain.value.length) {
     $toast.error(t('message.newPasswordAgainEmpty'))
+    return
   }
   if (newPassword.value !== newPasswordAgain.value) {
     $toast.error(t('message.newPasswordNotEqual'))
+    return
   }
   try {
-    const saveRes = await savePassword(forgetAccount.value, newPassword.value)
-    if (saveRes.data.code !== 200) return
+    const res = await savePassword(forgetAccount.value, newPassword.value)
+    if (res.data.code !== 200) return
     $toast.success(t('message.modifySuccess'))
     cancelNext()
   } catch (error) {

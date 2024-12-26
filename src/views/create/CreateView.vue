@@ -1,6 +1,6 @@
 <template>
-  <div class="mx-4 my-5 min-h-[100vh] flex gap-x-3">
-    <div
+  <section class="mx-4 my-5 min-h-[100vh] flex gap-x-3">
+    <aside
       class="w-[15%] p-2 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded h-full"
     >
       <div class="flex flex-col items-center justify-center gap-y-2">
@@ -16,13 +16,13 @@
           </button>
         </template>
       </div>
-    </div>
+    </aside>
     <div
       class="w-[85%] shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded h-fit"
     >
       <component :is="currentComponent"></component>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -59,6 +59,7 @@ const currentComponent = computed(
   () => sideNav.value.find(nav => nav.active).component
 )
 
+// 切换侧边栏
 const changeNav = v => {
   const activeNav = sideNav.value.find(nav => nav.active)
   if (v === activeNav.value) return

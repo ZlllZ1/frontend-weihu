@@ -22,6 +22,7 @@ export default {
     follow: '关注',
     about: '关于',
     send: '发送',
+    privateLetter: '私信',
     sendFail: '发送失败',
     selectFriend: '选择发送好友',
     noFriends: '暂无好友',

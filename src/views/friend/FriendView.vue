@@ -1,5 +1,5 @@
 <template>
-  <div
+  <section
     class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
   >
     <div class="w-full flex gap-x-2">
@@ -149,7 +149,7 @@
           </div>
         </div>
       </div>
-      <div ref="rightColumn">
+      <aside ref="rightColumn">
         <div
           class="bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] w-[336px] p-1 rounded-lg top-14 max-h-[80vh] overflow-y-auto overflow-x-hidden"
           :class="{ fixed: isFixed }"
@@ -336,14 +336,16 @@
             </button>
           </div>
         </div>
-      </div>
+      </aside>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+import { useToast } from 'vue-toast-notification'
 import {
   getCircles,
   praiseCircle,
@@ -354,128 +356,39 @@ import {
   hideCircle,
   deleteComments
 } from '@/api/circle'
-import { useI18n } from 'vue-i18n'
-import { useToast } from 'vue-toast-notification'
 
 const $toast = useToast()
 const { t } = useI18n()
 const store = useStore()
+
+const userInfo = computed(() => store.state.user.userInfo)
+
+const currentPage = ref(1)
+const limit = ref(10)
+
 const rightColumn = ref(null)
 const isFixed = ref(false)
-const userInfo = computed(() => store.state.user.userInfo)
-const limit = ref(10)
-const currentPage = ref(1)
+
 const circleLists = ref([])
 const circleInfo = ref(null)
+
 const noMore = ref(false)
 const isInitialLoad = ref(true)
 const loading = ref(false)
 const commentText = ref('')
+
 const commentPlaceHolder = ref(t('message.commentText'))
+
 const parentId = ref(null)
 const parentEmail = ref(null)
+
 const commentRef = ref(null)
 const commentLists = ref([])
 const parentNickname = ref('')
+
 const praiseUsers = ref([])
 
-const getCommentLists = async () => {
-  try {
-    if (loading.value) return
-    loading.value = true
-    const res = await getCircleComments(
-      userInfo.value.email,
-      circleInfo.value.user.email,
-      circleInfo.value.circleId
-    )
-    if (res.data.code !== 200) return
-    commentLists.value = res.data.data.comments
-  } catch (error) {
-    console.error(error)
-  } finally {
-    loading.value = false
-  }
-}
-
-const deleteComment = async commentId => {
-  try {
-    const res = await deleteComments(
-      circleInfo.value.circleId,
-      userInfo.value.email,
-      commentId
-    )
-    if (res.data.code !== 200) return
-    commentLists.value = commentLists.value.filter(
-      c => c._id !== commentId && c.parentId !== commentId
-    )
-    $toast.success(t('message.operateSuccess'))
-  } catch (error) {
-    console.error(error)
-    $toast.error(t('message.operateFail'))
-  }
-}
-
-watch(circleInfo, newValue => {
-  if (newValue) getCommentLists()
-})
-
-const getPraiseUser = async circle => {
-  try {
-    const res = await getPraiseUsers(
-      userInfo.value.email,
-      circle.user.email,
-      circle.circleId
-    )
-    if (res.data.code !== 200) return
-    praiseUsers.value = res.data.data.praiseUsers
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-const handleDelete = async circleId => {
-  try {
-    const res = await deleteCircle(userInfo.value.email, circleId)
-    if (res.data.code !== 200) return
-    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
-    $toast.success(t('message.operateSuccess'))
-  } catch (error) {
-    console.error(error)
-    $toast.error(t('message.operateFail'))
-  } finally {
-    circleLists.value = circleLists.value.map(c => {
-      if (c.circleId === circleId) return { ...c, active: false }
-      return c
-    })
-  }
-}
-
-const handleHide = async circleId => {
-  try {
-    const res = await hideCircle(userInfo.value.email, circleId)
-    if (res.data.code !== 200) return
-    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
-    $toast.success(t('message.operateSuccess'))
-  } catch (error) {
-    console.error(error)
-    $toast.error(t('message.operateFail'))
-  } finally {
-    circleLists.value = circleLists.value.map(c => {
-      if (c.circleId === circleId) return { ...c, active: false }
-      return c
-    })
-  }
-}
-
-const replyComment = (commentId, email, nickname) => {
-  parentId.value = commentId
-  parentEmail.value = email
-  parentNickname.value = nickname
-  commentText.value = ''
-  commentPlaceHolder.value = `${t('message.reply')} ${nickname} :`
-  commentRef.value.focus()
-}
-
+// 获取朋友圈列表
 const getCircle = async () => {
   try {
     if (loading.value) return
@@ -498,6 +411,111 @@ const getCircle = async () => {
   }
 }
 
+// 获取评论列表
+const getCommentLists = async () => {
+  try {
+    if (loading.value) return
+    loading.value = true
+    const res = await getCircleComments(
+      userInfo.value.email,
+      circleInfo.value.user.email,
+      circleInfo.value.circleId
+    )
+    if (res.data.code !== 200) return
+    commentLists.value = res.data.data.comments
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 删除评论
+const deleteComment = async commentId => {
+  try {
+    const res = await deleteComments(
+      circleInfo.value.circleId,
+      userInfo.value.email,
+      commentId
+    )
+    if (res.data.code !== 200) return
+    commentLists.value = commentLists.value.filter(
+      c => c._id !== commentId && c.parentId !== commentId
+    )
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  }
+}
+
+// 回复评论
+const replyComment = (commentId, email, nickname) => {
+  parentId.value = commentId
+  parentEmail.value = email
+  parentNickname.value = nickname
+  commentText.value = ''
+  commentPlaceHolder.value = `${t('message.reply')} ${nickname} :`
+  commentRef.value.focus()
+}
+
+// 监听朋友圈变化,刷新评论
+watch(circleInfo, newValue => {
+  if (newValue) getCommentLists()
+})
+
+// 获取点赞用户
+const getPraiseUser = async circle => {
+  try {
+    const res = await getPraiseUsers(
+      userInfo.value.email,
+      circle.user.email,
+      circle.circleId
+    )
+    if (res.data.code !== 200) return
+    praiseUsers.value = res.data.data.praiseUsers
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 删朋友圈
+const handleDelete = async circleId => {
+  try {
+    const res = await deleteCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    circleLists.value = circleLists.value.map(c => {
+      if (c.circleId === circleId) return { ...c, active: false }
+      return c
+    })
+  }
+}
+
+// 隐藏朋友圈
+const handleHide = async circleId => {
+  try {
+    const res = await hideCircle(userInfo.value.email, circleId)
+    if (res.data.code !== 200) return
+    circleLists.value = circleLists.value.filter(c => c.circleId !== circleId)
+    $toast.success(t('message.operateSuccess'))
+  } catch (error) {
+    console.error(error)
+    $toast.error(t('message.operateFail'))
+  } finally {
+    circleLists.value = circleLists.value.map(c => {
+      if (c.circleId === circleId) return { ...c, active: false }
+      return c
+    })
+  }
+}
+
+// 评论朋友圈
 const commentCircle = async () => {
   if (!commentText.value) return
   try {
@@ -551,6 +569,7 @@ const commentCircle = async () => {
   }
 }
 
+// 点赞朋友圈
 const handlePraise = async circleId => {
   try {
     const res = await praiseCircle(userInfo.value.email, circleId)
@@ -585,11 +604,13 @@ const handlePraise = async circleId => {
   }
 }
 
+// 查看朋友圈详情
 const viewDetail = circle => {
   circleInfo.value = circle
   getPraiseUser(circle)
 }
 
+// 防抖加载朋友圈
 const debounce = (func, wait) => {
   let timeout
   return function executedFunction(...args) {
@@ -601,13 +622,11 @@ const debounce = (func, wait) => {
     timeout = setTimeout(later, wait)
   }
 }
-
 const loadMore = async () => {
   if (noMore.value || isInitialLoad.value) return
   currentPage.value++
   await getCircle()
 }
-
 const handleScroll = debounce(async () => {
   const scrollTop = window.scrollY || document.documentElement.scrollTop
   const windowHeight = window.innerHeight
@@ -621,10 +640,28 @@ const handleScroll = debounce(async () => {
   }
 }, 200)
 
+// 右侧沾顶
 const handleFixed = () => {
   if (!rightColumn.value) return
   const rect = rightColumn.value.getBoundingClientRect()
   isFixed.value = rect.top <= 56
+}
+
+// 格式化时间
+const convertToCST = isoString => {
+  const date = new Date(isoString.replace('Z', '+00:00'))
+  const utcTimestamp = date.getTime()
+  const cstDate = new Date(utcTimestamp)
+  const formattedDate =
+    cstDate.toLocaleDateString().replace(/-/g, ' ') +
+    ' ' +
+    cstDate
+      .toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+      .replace(/^\D*/, '')
+  return formattedDate
 }
 
 onMounted(async () => {
@@ -641,22 +678,6 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('scroll', handleFixed)
 })
-
-const convertToCST = isoString => {
-  const date = new Date(isoString.replace('Z', '+00:00'))
-  const utcTimestamp = date.getTime()
-  const cstDate = new Date(utcTimestamp)
-  const formattedDate =
-    cstDate.toLocaleDateString().replace(/-/g, ' ') +
-    ' ' +
-    cstDate
-      .toLocaleTimeString('zh-CN', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-      .replace(/^\D*/, '')
-  return formattedDate
-}
 </script>
 
 <style lang="scss" scoped>

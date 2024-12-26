@@ -1,9 +1,9 @@
 <template>
-  <div class="loading-overlay" :class="{ 'bg-transparent': transparent }">
+  <section class="loading-overlay" :class="{ 'bg-transparent': transparent }">
     <div class="loading-wrapper">
       <div class="loading-spinner"></div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -25,13 +25,11 @@ defineProps({
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9999;
 }
-
 .loading-wrapper {
   background-color: white;
   border-radius: 0.5rem;
   padding: 1rem;
 }
-
 .loading-spinner {
   width: 2rem;
   height: 2rem;
@@ -41,7 +39,6 @@ defineProps({
   animation: spin 1s cubic-bezier(0.55, 0.25, 0.25, 0.7) infinite;
   will-change: transform;
 }
-
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -50,7 +47,6 @@ defineProps({
     transform: rotate(360deg);
   }
 }
-
 .bg-transparent {
   background-color: transparent;
 }

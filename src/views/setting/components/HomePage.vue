@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <section class="flex flex-col">
     <div
       v-for="(option, index) in options"
       :key="option.value"
@@ -16,12 +16,13 @@
         />
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 import {
   changeShowIp,
@@ -33,7 +34,6 @@ import {
   changeShowFriend,
   changeShowLive
 } from '@/api/setting'
-import { useI18n } from 'vue-i18n'
 
 const store = useStore()
 const userInfo = computed(() => store.state.user.userInfo)

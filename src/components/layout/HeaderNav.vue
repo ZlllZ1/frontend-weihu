@@ -3,7 +3,7 @@
     class="shadow-[0_0_20px_0_rgba(0,0,0,0.1)] text-gray w-full sticky top-0 left-0 z-20"
   >
     <nav class="flex justify-between px-10 bg-white h-14">
-      <div class="inline-flex items-center justify-center">
+      <section class="inline-flex items-center justify-center">
         <router-link to="/" class="flex items-center cursor-pointer">
           <span class="text-3xl text-blue">{{ $t('message.wei') }}</span>
           <span class="text-3xl text-blue ml-1">{{ $t('message.hu') }}</span>
@@ -22,8 +22,8 @@
             $t('message.chat')
           }}</router-link>
         </div>
-      </div>
-      <div
+      </section>
+      <section
         class="nav-item inline-flex items-center justify-center gap-4 relative"
       >
         <input
@@ -137,8 +137,8 @@
             </div>
           </template>
         </div>
-      </div>
-      <div class="inline-flex items-center justify-center gap-4">
+      </section>
+      <section class="inline-flex items-center justify-center gap-4">
         <div class="relative clickOut">
           <button class="hover:text-blue relative" @click.stop="toggleMessage">
             {{ $t('message.message') }}
@@ -181,37 +181,40 @@
           <option value="zh-cn">中文</option>
           <option value="en-us">English</option>
         </select>
-      </div>
+      </section>
     </nav>
   </header>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+import router from '@/router'
+import eventBus from '@/utils/eventBus'
 import MessageCard from './message/MessageCard.vue'
 import LoginCard from './login/LoginCard.vue'
 import UserDropdown from './UserDropdown.vue'
-import eventBus from '@/utils/eventBus'
-import { useStore } from 'vuex'
-import { useI18n } from 'vue-i18n'
 import { judgeNewNotification } from '@/api/notification'
 import { search } from '@/api/post'
-import router from '@/router'
 
-const { locale } = useI18n()
-const currentLanguage = ref(localStorage.getItem('language') || 'zh-cn')
 const store = useStore()
+const { locale } = useI18n()
+
+// 用户信息
 const userInfo = computed(() => store.state.user.userInfo)
-const searchQuery = ref('')
+
+// 显示消息框/登录框/下拉框
 const showMessage = ref(false)
 const showLogin = ref(false)
 const showDropdown = ref(false)
-const newNotification = ref(false)
+
+// 搜索
+const searchQuery = ref('')
 const searchResult = ref([])
 const isFocused = ref(false)
 const isHoveringResults = ref(false)
 const type = ref('post')
-
 const searchHeader = computed(() => {
   return [
     { label: '帖子', value: 'post', active: type.value === 'post' },
@@ -219,29 +222,31 @@ const searchHeader = computed(() => {
   ]
 })
 
+// 切换语言
+const currentLanguage = ref(localStorage.getItem('language') || 'zh-cn')
 const changeLanguage = () => {
   locale.value = currentLanguage.value
   localStorage.setItem('language', currentLanguage.value)
 }
+watch(currentLanguage, changeLanguage)
 
+// 是否有新消息
+const newNotification = ref(false)
+const judgeNew = async () => {
+  if (!localStorage.getItem('token')) return
+  const res = await judgeNewNotification(userInfo.value._id)
+  if (res.data.code !== 200) return
+  newNotification.value = res.data.data.new
+}
+
+// 搜索框失去焦点
 const handleBlur = () => {
   setTimeout(() => {
     if (!isHoveringResults.value) isFocused.value = false
   }, 100)
 }
 
-const toggleHeader = v => {
-  if (type.value === v) return
-  type.value = v
-}
-
-watch(type, () => {
-  if (isFocused.value || isHoveringResults.value) {
-    searchResult.value = []
-    debouncedSearch(searchQuery.value)
-  }
-})
-
+// 点击跳转搜索结果
 const handleResultClick = () => {
   setTimeout(() => {
     isFocused.value = false
@@ -249,13 +254,13 @@ const handleResultClick = () => {
   }, 100)
 }
 
-watch(showLogin, (newValue, oldValue) => {
-  if (oldValue === newValue) return
-  document.body.style.overflow = newValue ? 'hidden' : 'auto'
-})
+// 切换搜素类型
+const toggleHeader = v => {
+  if (type.value === v) return
+  type.value = v
+}
 
-watch(currentLanguage, changeLanguage)
-
+// 防抖搜索
 const debounce = (func, wait) => {
   let timeout
   return function (...args) {
@@ -263,13 +268,13 @@ const debounce = (func, wait) => {
     timeout = setTimeout(() => func.apply(this, args), wait)
   }
 }
-
 const debouncedSearch = debounce(async query => {
   const res = await search(query, type.value)
   if (res.data.code !== 200) return
   searchResult.value = res.data.data?.results
 }, 500)
 
+// 监听搜索框输入搜索
 watch(searchQuery, newQuery => {
   if (newQuery === '') {
     searchResult.value = []
@@ -277,7 +282,15 @@ watch(searchQuery, newQuery => {
   }
   if (isFocused.value || isHoveringResults.value) debouncedSearch(newQuery)
 })
+// 搜索类型变化 重新搜索
+watch(type, () => {
+  if (isFocused.value || isHoveringResults.value) {
+    searchResult.value = []
+    debouncedSearch(searchQuery.value)
+  }
+})
 
+// 点击搜索跳转
 const handleSearch = () => {
   if (!localStorage.getItem('token')) {
     eventBus.emit('openLogin')
@@ -291,6 +304,7 @@ const handleSearch = () => {
   window.open(route.href, '_blank')
 }
 
+// 切换消息框/登录框/下拉框的显示状态(互斥)
 const toggleMessage = () => {
   if (!localStorage.getItem('token')) {
     eventBus.emit('openLogin')
@@ -310,7 +324,7 @@ const toggleDropdown = () => {
   showMessage.value = false
   showLogin.value = false
 }
-
+// 点击区域外关闭
 const handleClickOutside = event => {
   if (!event.target.closest('.clickOut')) {
     showMessage.value = false
@@ -318,13 +332,14 @@ const handleClickOutside = event => {
     showDropdown.value = false
   }
 }
+// 关闭登录框
+const closeLogin = () => (showLogin.value = false)
 
-const judgeNew = async () => {
-  if (!localStorage.getItem('token')) return
-  const res = await judgeNewNotification(userInfo.value._id)
-  if (res.data.code !== 200) return
-  newNotification.value = res.data.data.new
-}
+// 登录框显示时禁止页面滚动
+watch(showLogin, (newValue, oldValue) => {
+  if (oldValue === newValue) return
+  document.body.style.overflow = newValue ? 'hidden' : 'auto'
+})
 
 onMounted(() => {
   judgeNew()
@@ -336,8 +351,6 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   eventBus.off('refreshNotification', () => judgeNew())
 })
-
-const closeLogin = () => (showLogin.value = false)
 </script>
 
 <style lang="scss" scoped>

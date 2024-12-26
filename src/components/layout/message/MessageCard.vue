@@ -24,11 +24,11 @@
 
 <script setup>
 import { ref, markRaw } from 'vue'
+import { useI18n } from 'vue-i18n'
 import PraiseContent from './PraiseContent.vue'
 import CommentContent from './CommentContent.vue'
 import FollowContent from './FollowContent.vue'
 import CollectContent from './CollectContent.vue'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const headerTab = ref([

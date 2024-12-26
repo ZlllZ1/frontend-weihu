@@ -1,9 +1,11 @@
 <template>
-  <div
+  <section
     v-if="user"
     class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
   >
-    <div class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">
+    <header
+      class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
+    >
       <div
         class="h-32 bg-cover bg-center relative"
         :style="{
@@ -81,7 +83,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </header>
     <div class="w-full flex gap-x-2">
       <div
         class="w-2/3 bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] min-h-[100vh] pt-2 overflow-hidden rounded-sm"
@@ -102,45 +104,49 @@
         </div>
         <component :is="currentComponent" :email="visitEmail" />
       </div>
-      <div ref="rightColumn" class="w-[328px]">
+      <aside ref="rightColumn" class="w-[328px]">
         <div
           class="bg-white shadow-[0_0_20px_0_rgba(0,0,0,0.1)] h-fit p-1 rounded-lg top-14"
           :class="{ fixed: isFixed }"
         >
           <WeatherView />
         </div>
-      </div>
+      </aside>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, markRaw } from 'vue'
-import WeatherView from '@/components/common/weather/WeatherView.vue'
-import { getOtherUserInfo, followUser } from '@/api/user'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toast-notification'
 import { useI18n } from 'vue-i18n'
+import WeatherView from '@/components/common/weather/WeatherView.vue'
 import PersonalPost from '../personalCenter/components/PersonalPost.vue'
 import PersonalCircle from '../personalCenter/components/PersonalCircle.vue'
 import PersonalFollow from '../personalCenter/components/PersonalFollow.vue'
 import PersonalFan from '../personalCenter/components/PersonalFan.vue'
 import PersonalPraise from '../personalCenter/components/PersonalPraise.vue'
 import PersonalCollect from '../personalCenter/components/PersonalCollect.vue'
+import { getOtherUserInfo, followUser } from '@/api/user'
 
 const { t } = useI18n()
 const $toast = useToast()
 const store = useStore()
+
+// 用户信息
+const userInfo = computed(() => store.state.user.userInfo)
+
+const visitEmail = window.location.pathname.split('/')[2]
+
 const rightColumn = ref(null)
 const isFixed = ref(false)
-const user = ref(null)
-const userInfo = computed(() => store.state.user.userInfo)
-const visitEmail = window.location.pathname.split('/')[2]
+
 const headers = ref([])
 const currentComponent = computed(() => {
   return headers.value.find(header => header.active)?.component
 })
-
+// 根据返回的数据生成header
 const generateHeader = t => {
   let headers = []
   const headerMap = {
@@ -184,18 +190,30 @@ const generateHeader = t => {
   return headers
 }
 
+// 获取访问用户的信息
+const user = ref(null)
+const getInfo = async () => {
+  const res = await getOtherUserInfo(userInfo.value.email, visitEmail)
+  if (res.data.code !== 200) return
+  user.value = res.data.data
+  headers.value = generateHeader(res.data.data)
+}
+
+//  切换header
 const toggleHeader = value => {
   headers.value.forEach(header => {
     header.active = header.value === value
   })
 }
 
+// 监听滚动,天气组件沾顶
 const handleScroll = () => {
   if (!rightColumn.value) return
   const rect = rightColumn.value.getBoundingClientRect()
   isFixed.value = rect.top <= 56
 }
 
+// 关注用户
 const follow = async () => {
   try {
     const res = await followUser(userInfo.value.email, user.value.email)
@@ -206,13 +224,6 @@ const follow = async () => {
     console.error(error)
     $toast.error(t('message.operateFail'))
   }
-}
-
-const getInfo = async () => {
-  const res = await getOtherUserInfo(userInfo.value.email, visitEmail)
-  if (res.data.code !== 200) return
-  user.value = res.data.data
-  headers.value = generateHeader(res.data.data)
 }
 
 onMounted(async () => {

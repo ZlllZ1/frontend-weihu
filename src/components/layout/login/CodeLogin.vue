@@ -1,21 +1,25 @@
 <template>
-  <div class="py-6 px-4 flex flex-col">
-    <div class="text-sm h-[135px]">
-      <input
-        :value="account.trim()"
-        type="text"
-        :placeholder="$t('message.enterEmail')"
-        class="border-b border-[#EBECED] w-full outline-none h-12"
-        @input="updateAccount($event.target.value)"
-      />
-      <div class="border-b border-[#EBECED] w-full flex flex-1 justify-between">
+  <section class="py-6 px-4 flex flex-col">
+    <form class="text-sm h-[100px]" @submit.prevent="login">
+      <label>
         <input
-          :value="authCode.trim()"
+          :value="account.trim()"
           type="text"
-          :placeholder="$t('message.enterAuthCode')"
-          class="flex-1 outline-none h-12"
-          @input="updateAuthCode($event.target.value)"
+          :placeholder="$t('message.enterEmail')"
+          class="border-b border-[#EBECED] w-full outline-none h-12"
+          @input="updateAccount($event.target.value)"
         />
+      </label>
+      <div class="border-b border-[#EBECED] w-full flex flex-1 justify-between">
+        <label>
+          <input
+            :value="authCode.trim()"
+            type="text"
+            :placeholder="$t('message.enterAuthCode')"
+            class="flex-1 outline-none h-12"
+            @input="updateAuthCode($event.target.value)"
+          />
+        </label>
         <button
           v-if="!authCodeTimer"
           class="text-blue hover:text-gray"
@@ -27,11 +31,11 @@
           $t('message.afterSeconds', { seconds: authCodeTimer })
         }}</span>
       </div>
-      <div class="flex justify-end py-2">
-        <button class="hover:text-black w-fit" @click="openLog">
-          {{ $t('message.feedbackError') }}
-        </button>
-      </div>
+    </form>
+    <div class="flex justify-end py-2 text-sm">
+      <button class="hover:text-black w-fit" @click="openLog">
+        {{ $t('message.feedbackError') }}
+      </button>
     </div>
     <button
       class="bg-blue text-white rounded-sm h-9 hover:bg-[#0E66E7] mt-2"
@@ -44,24 +48,24 @@
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-1 cursor-pointer"
       @mousedown.self="showErrorLog = false"
     >
-      <div
-        class="w-[400px] h-[280px] cursor-default p-4 bg-white rounded-lg flex flex-col justify-between"
+      <article
+        class="w-[400px] h-[250px] cursor-default p-4 bg-white rounded-lg flex flex-col justify-between"
         @click.stop
       >
-        <div
-          class="text-lg flex items-center justify-center text-black font-lg"
+        <header
+          class="text-md flex items-center justify-center text-black font-lg"
         >
           {{ $t('message.feedbackError') }}
-        </div>
+        </header>
         <div class="flex items-center justify-center my-4">
           <textarea
             v-model="commitErrorLog"
             name="errorLog"
             :placeholder="$t('message.feedbackErrorContent')"
-            class="border border-gray rounded-lg w-80 h-36 outline-none p-2"
+            class="border border-gray rounded-lg w-80 h-32 outline-none p-2"
           ></textarea>
         </div>
-        <div class="px-4 flex items-center justify-center">
+        <footer class="px-4 flex items-center justify-center">
           <button
             class="ml-6 w-16 h-8 py-1 px-2 border border-gray text-sm rounded bg-white text-gray hover:bg-[#EBECED]"
             @click="showErrorLog = false"
@@ -74,44 +78,46 @@
           >
             {{ $t('message.commit') }}
           </button>
-        </div>
-      </div>
+        </footer>
+      </article>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, onUnmounted } from 'vue'
 import { useToast } from 'vue-toast-notification'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { sendAuthCode, codeLogin } from '@/api/login.js'
 import { getUserInfo } from '@/api/user.js'
-import { useI18n } from 'vue-i18n'
 import { commitError } from '@/api/other'
 
-const { t } = useI18n()
 const emits = defineEmits(['closeLogin'])
+
+const { t } = useI18n()
+const $toast = useToast()
 const store = useStore()
+
+// 验证码登录
 const account = ref('')
 const authCode = ref('')
 const authCodeTimer = ref(null)
 let intervalId = null
-const $toast = useToast()
+
+// 反馈错误
 const showErrorLog = ref(false)
 const commitErrorLog = ref('')
 
+// 验证输入文本是否符合要求
 const validateAccount = account => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   return emailRegex.test(account)
 }
-
 const updateAccount = value => (account.value = value.replace(/\s/g, ''))
 const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
-const openLog = () => {
-  showErrorLog.value = true
-}
-
+// 获取验证码
 const getAuthCode = async () => {
   try {
     if (!account.value.length) {
@@ -145,6 +151,18 @@ const getAuthCode = async () => {
   }
 }
 
+// 辅助函数(本地存token/refreshToken/userInfo)
+const saveTokens = (token, refreshToken) => {
+  store.commit('user/setToken', token)
+  store.commit('user/setRefreshToken', refreshToken)
+  localStorage.setItem('token', token)
+  localStorage.setItem('refreshToken', refreshToken)
+}
+const saveUserInfo = userInfo => {
+  store.commit('user/setUserInfo', userInfo)
+  localStorage.setItem('userInfo', JSON.stringify(userInfo))
+}
+// 验证码登录
 const login = async () => {
   try {
     if (!account.value.length) {
@@ -161,14 +179,10 @@ const login = async () => {
     }
     const res = await codeLogin(account.value, authCode.value)
     if (res.data.code !== 200) return
-    store.commit('user/setToken', res.data.data.token)
-    store.commit('user/setRefreshToken', res.data.data.refreshToken)
-    localStorage.setItem('token', res.data.data.token)
-    localStorage.setItem('refreshToken', res.data.data.refreshToken)
-    const userRes = await getUserInfo(account.value)
-    if (userRes.data.code !== 200) return
-    store.commit('user/setUserInfo', userRes.data.data)
-    localStorage.setItem('userInfo', JSON.stringify(userRes.data.data))
+    saveTokens(res.data.data.token, res.data.data.refreshToken)
+    const { data } = await getUserInfo(account.value)
+    if (data.code !== 200) return
+    saveUserInfo(data.data)
     emits('closeLogin')
     location.reload()
   } catch (error) {
@@ -176,6 +190,10 @@ const login = async () => {
   }
 }
 
+// 打开反馈错误框
+const openLog = () => (showErrorLog.value = true)
+
+// 提交错误信息
 const commit = async () => {
   if (!commitErrorLog.value.length) {
     $toast.error(t('message.commitErrorLogEmpty'))

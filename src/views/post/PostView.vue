@@ -1,5 +1,5 @@
 <template>
-  <div
+  <section
     v-if="postInfo && userInfo"
     class="flex flex-col gap-y-2 items-center mx-32 my-5 min-h-[100vh] overflow-hidden"
   >
@@ -470,231 +470,229 @@
         </div>
       </div>
     </div>
-  </div>
-  <template v-if="moreOriginComment">
+  </section>
+  <section
+    v-if="moreOriginComment"
+    class="fixed flex items-center justify-center bg-black bg-opacity-30 z-1 inset-0"
+    @mousedown.self="closeMoreComment"
+  >
     <div
-      class="fixed flex items-center justify-center bg-black bg-opacity-30 z-1 inset-0"
-      @mousedown.self="closeMoreComment"
+      class="overflow-hidden w-[60%] h-[78%] bg-warmGray-200 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-md overflow-y-auto"
     >
-      <div
-        class="overflow-hidden w-[60%] h-[78%] bg-warmGray-200 shadow-[0_0_20px_0_rgba(0,0,0,0.1)] rounded-md overflow-y-auto"
-      >
-        <div class="flex items-center flex-col p-4 gap-4 bg-white">
-          <div class="w-full pb-2 flex items-center justify-between">
-            <p>
-              {{ $t('message.commentReply') }}
-            </p>
-            <button
-              class="text-gray hover:text-black"
-              @click="closeMoreComment"
-            >
-              X
-            </button>
-          </div>
-          <div class="flex items-center gap-2 w-full">
-            <a
-              :href="`/userInfo/${moreOriginComment?.user?.email}`"
-              target="_blank"
-              ><img
-                :src="
-                  moreOriginComment?.user?.avatar ||
-                  require('@/assets/avatar_default.png')
+      <div class="flex items-center flex-col p-4 gap-4 bg-white">
+        <div class="w-full pb-2 flex items-center justify-between">
+          <p>
+            {{ $t('message.commentReply') }}
+          </p>
+          <button class="text-gray hover:text-black" @click="closeMoreComment">
+            X
+          </button>
+        </div>
+        <div class="flex items-center gap-2 w-full">
+          <a
+            :href="`/userInfo/${moreOriginComment?.user?.email}`"
+            target="_blank"
+            ><img
+              :src="
+                moreOriginComment?.user?.avatar ||
+                require('@/assets/avatar_default.png')
+              "
+              alt="avatar"
+              class="rounded-full w-10 h-10"
+          /></a>
+          <div class="flex flex-col gap-y-1 w-full">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="truncate max-w-64">
+                  <a
+                    :href="`/userInfo/${moreOriginComment?.user?.email}`"
+                    target="_blank"
+                  >
+                    {{ moreOriginComment?.user?.nickname }}</a
+                  >
+                </div>
+                <span
+                  v-if="moreOriginComment?.user?.own"
+                  class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-lg"
+                  >{{ $t('message.owner') }}</span
+                >
+                <img
+                  v-if="moreOriginComment?.user?.email === storeUser?.email"
+                  src="../home/images/self.svg"
+                  alt="self"
+                  class="rounded-full w-4 h-4"
+                />
+              </div>
+              <div
+                class="flex items-center gap-1 group cursor-pointer"
+                @click="
+                  praiseComment(
+                    moreOriginComment?._id,
+                    moreOriginComment?.isPraise
+                  )
                 "
-                alt="avatar"
-                class="rounded-full w-10 h-10"
-            /></a>
-            <div class="flex flex-col gap-y-1 w-full">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <div class="truncate max-w-64">
-                    <a
-                      :href="`/userInfo/${moreOriginComment?.user?.email}`"
-                      target="_blank"
+              >
+                <img
+                  class="w-5 h-5 group-hover:text-black"
+                  :src="
+                    moreOriginComment?.isPraise
+                      ? require('../home/images/hasPraise.svg')
+                      : require('../home/images/praise.svg')
+                  "
+                  alt="praise"
+                />
+                <span
+                  class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                  :class="{ 'text-[#FE4144]': moreOriginComment?.isPraise }"
+                >
+                  {{
+                    moreOriginComment?.praiseNum > 1000
+                      ? '999+'
+                      : moreOriginComment?.praiseNum
+                  }}</span
+                >
+              </div>
+            </div>
+            <div>
+              <span>{{ moreOriginComment?.content }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-gray text-xs">{{
+                convertToCST(moreOriginComment?.commentDate)
+              }}</span>
+              <button
+                class="text-gray hover:text-blue"
+                @click="
+                  replyComment(
+                    moreOriginComment?._id,
+                    moreOriginComment?.user.email,
+                    moreOriginComment?.user.nickname
+                  )
+                "
+              >
+                {{ $t('message.reply') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-full bg-white mt-4">
+        <template v-for="reply in moreComments" :key="reply?._id">
+          <div
+            class="flex items-center border-b border-warmGray-400 px-4 flex-col gap-1 py-1"
+          >
+            <div class="flex items-center gap-2 w-full">
+              <div class="flex items-center">
+                <a :href="`/userInfo/${reply?.email}`" target="_blank"
+                  ><img
+                    :src="
+                      reply?.user?.avatar ||
+                      require('@/assets/avatar_default.png')
+                    "
+                    alt="avatar"
+                    class="rounded-full w-8 h-8"
+                /></a>
+              </div>
+              <div class="flex flex-col gap-1 w-full">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="truncate max-w-64">
+                      <a
+                        :href="`/userInfo/${reply?.user?.email}`"
+                        target="_blank"
+                      >
+                        {{ reply?.user?.nickname }}</a
+                      >
+                    </div>
+                    &gt;
+                    <div class="truncate max-w-64">
+                      <a
+                        :href="`/userInfo/${reply?.parentUser?.email}`"
+                        target="_blank"
+                      >
+                        {{ reply?.parentUser?.nickname }}</a
+                      >
+                    </div>
+                    <span
+                      v-if="reply?.user?.own"
+                      class="bg-red-100 text-red-600 text-xs px-1 rounded-lg"
+                      >{{ $t('message.owner') }}</span
                     >
-                      {{ moreOriginComment?.user?.nickname }}</a
+                    <img
+                      v-if="reply?.user?.email === storeUser?.email"
+                      src="../home/images/self.svg"
+                      alt="self"
+                      class="rounded-full w-4 h-4"
+                    />
+                  </div>
+                  <div
+                    class="flex items-center gap-1 group cursor-pointer"
+                    @click="
+                      praiseComment(reply?._id, reply?.isPraise, comment?._id)
+                    "
+                  >
+                    <img
+                      class="w-5 h-5 group-hover:text-black"
+                      :src="
+                        reply?.isPraise
+                          ? require('../home/images/hasPraise.svg')
+                          : require('../home/images/praise.svg')
+                      "
+                      alt="praise"
+                    />
+                    <span
+                      class="text-[#8A8A8A] group-hover:text-[#FE4144]"
+                      :class="{ 'text-[#FE4144]': reply?.isPraise }"
+                    >
+                      {{
+                        reply?.praiseNum > 1000 ? '999+' : reply?.praiseNum
+                      }}</span
                     >
                   </div>
-                  <span
-                    v-if="moreOriginComment?.user?.own"
-                    class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-lg"
-                    >{{ $t('message.owner') }}</span
-                  >
-                  <img
-                    v-if="moreOriginComment?.user?.email === storeUser?.email"
-                    src="../home/images/self.svg"
-                    alt="self"
-                    class="rounded-full w-4 h-4"
-                  />
                 </div>
-                <div
-                  class="flex items-center gap-1 group cursor-pointer"
-                  @click="
-                    praiseComment(
-                      moreOriginComment?._id,
-                      moreOriginComment?.isPraise
-                    )
-                  "
-                >
-                  <img
-                    class="w-5 h-5 group-hover:text-black"
-                    :src="
-                      moreOriginComment?.isPraise
-                        ? require('../home/images/hasPraise.svg')
-                        : require('../home/images/praise.svg')
-                    "
-                    alt="praise"
-                  />
-                  <span
-                    class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                    :class="{ 'text-[#FE4144]': moreOriginComment?.isPraise }"
-                  >
-                    {{
-                      moreOriginComment?.praiseNum > 1000
-                        ? '999+'
-                        : moreOriginComment?.praiseNum
-                    }}</span
-                  >
-                </div>
+                <span>{{ reply.content }}</span>
+                <div class="flex items-center justify-between"></div>
               </div>
-              <div>
-                <span>{{ moreOriginComment?.content }}</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-gray text-xs">{{
-                  convertToCST(moreOriginComment?.commentDate)
-                }}</span>
+            </div>
+            <div class="flex items-center justify-between w-full pl-8 pr-4">
+              <span class="text-gray text-xs">{{
+                convertToCST(reply?.commentDate)
+              }}</span>
+              <div class="flex items-center justify-center text-gray gap-3">
                 <button
-                  class="text-gray hover:text-blue"
+                  class="hover:text-blue"
                   @click="
                     replyComment(
-                      moreOriginComment?._id,
-                      moreOriginComment?.user.email,
-                      moreOriginComment?.user.nickname
+                      reply?._id,
+                      reply?.user.email,
+                      reply?.user.nickname
                     )
                   "
                 >
                   {{ $t('message.reply') }}
                 </button>
+                <button
+                  v-if="reply?.user?.email === storeUser?.email"
+                  class="hover:text-[#FE4144]"
+                  @click="deleteComment(reply?._id, reply?.parentId)"
+                >
+                  {{ $t('message.delete') }}
+                </button>
               </div>
             </div>
           </div>
-        </div>
-        <div class="w-full bg-white mt-4">
-          <template v-for="reply in moreComments" :key="reply?._id">
-            <div
-              class="flex items-center border-b border-warmGray-400 px-4 flex-col gap-1 py-1"
-            >
-              <div class="flex items-center gap-2 w-full">
-                <div class="flex items-center">
-                  <a :href="`/userInfo/${reply?.email}`" target="_blank"
-                    ><img
-                      :src="
-                        reply?.user?.avatar ||
-                        require('@/assets/avatar_default.png')
-                      "
-                      alt="avatar"
-                      class="rounded-full w-8 h-8"
-                  /></a>
-                </div>
-                <div class="flex flex-col gap-1 w-full">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <div class="truncate max-w-64">
-                        <a
-                          :href="`/userInfo/${reply?.user?.email}`"
-                          target="_blank"
-                        >
-                          {{ reply?.user?.nickname }}</a
-                        >
-                      </div>
-                      &gt;
-                      <div class="truncate max-w-64">
-                        <a
-                          :href="`/userInfo/${reply?.parentUser?.email}`"
-                          target="_blank"
-                        >
-                          {{ reply?.parentUser?.nickname }}</a
-                        >
-                      </div>
-                      <span
-                        v-if="reply?.user?.own"
-                        class="bg-red-100 text-red-600 text-xs px-1 rounded-lg"
-                        >{{ $t('message.owner') }}</span
-                      >
-                      <img
-                        v-if="reply?.user?.email === storeUser?.email"
-                        src="../home/images/self.svg"
-                        alt="self"
-                        class="rounded-full w-4 h-4"
-                      />
-                    </div>
-                    <div
-                      class="flex items-center gap-1 group cursor-pointer"
-                      @click="
-                        praiseComment(reply?._id, reply?.isPraise, comment?._id)
-                      "
-                    >
-                      <img
-                        class="w-5 h-5 group-hover:text-black"
-                        :src="
-                          reply?.isPraise
-                            ? require('../home/images/hasPraise.svg')
-                            : require('../home/images/praise.svg')
-                        "
-                        alt="praise"
-                      />
-                      <span
-                        class="text-[#8A8A8A] group-hover:text-[#FE4144]"
-                        :class="{ 'text-[#FE4144]': reply?.isPraise }"
-                      >
-                        {{
-                          reply?.praiseNum > 1000 ? '999+' : reply?.praiseNum
-                        }}</span
-                      >
-                    </div>
-                  </div>
-                  <span>{{ reply.content }}</span>
-                  <div class="flex items-center justify-between"></div>
-                </div>
-              </div>
-              <div class="flex items-center justify-between w-full pl-8 pr-4">
-                <span class="text-gray text-xs">{{
-                  convertToCST(reply?.commentDate)
-                }}</span>
-                <div class="flex items-center justify-center text-gray gap-3">
-                  <button
-                    class="hover:text-blue"
-                    @click="
-                      replyComment(
-                        reply?._id,
-                        reply?.user.email,
-                        reply?.user.nickname
-                      )
-                    "
-                  >
-                    {{ $t('message.reply') }}
-                  </button>
-                  <button
-                    v-if="reply?.user?.email === storeUser?.email"
-                    class="hover:text-[#FE4144]"
-                    @click="deleteComment(reply?._id, reply?.parentId)"
-                  >
-                    {{ $t('message.delete') }}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
+        </template>
       </div>
     </div>
-  </template>
+  </section>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
-import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { useStore } from 'vuex'
+import { useToast } from 'vue-toast-notification'
+import { useI18n } from 'vue-i18n'
+import WeatherView from '@/components/common/weather/WeatherView.vue'
 import { followUser } from '@/api/user'
 import {
   getPostInfo,
@@ -706,25 +704,30 @@ import {
   praiseComments,
   deleteComments
 } from '@/api/post'
-import { useToast } from 'vue-toast-notification'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const $toast = useToast()
 const store = useStore()
+
+// 用户信息
 const storeUser = computed(() => store.state.user.userInfo)
+
 const rightColumn = ref(null)
 const isFixed = ref(false)
+
 const postId = window.location.pathname.split('/')[2]
 const postInfo = ref(null)
 const userInfo = ref(null)
 const commentText = ref('')
 const parentId = ref(null)
 const parentEmail = ref(null)
-const limit = ref(10)
+
 const currentPage = ref(1)
+const limit = ref(10)
+
 const noMore = ref(false)
 const isInitialLoad = ref(false)
+
 const commentList = ref([])
 const commentRef = ref(null)
 const commentPlaceHolder = ref(t('message.commentText'))

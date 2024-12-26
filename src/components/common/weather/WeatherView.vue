@@ -1,6 +1,6 @@
 <template>
-  <div v-if="weatherData" class="weather-card rounded-lg overflow-hidden">
-    <div class="weather-background p-4">
+  <section v-if="weatherData" class="weather-card rounded-lg overflow-hidden">
+    <article class="weather-background p-4">
       <div class="flex justify-between items-center mb-3">
         <span class="text-lg font-semibold text-white">{{ date }}</span>
         <span class="text-2xl font-bold text-white">{{ formattedTime }}</span>
@@ -54,19 +54,21 @@
           }}°
         </div>
       </div>
-    </div>
-  </div>
+    </article>
+  </section>
 </template>
 
 <script setup>
-import request from '@/utils/request'
 import { computed, onMounted, ref, onUnmounted } from 'vue'
-import AMapLoader from '@amap/amap-jsapi-loader'
 import { useI18n } from 'vue-i18n'
+import AMapLoader from '@amap/amap-jsapi-loader'
+import request from '@/utils/request'
 
 const { t } = useI18n()
-const weatherData = ref(null)
+
+// 城市数据 天气数据
 const cityInfo = ref(null)
+const weatherData = ref(null)
 const weekDay = [
   '',
   t('message.Monday'),
@@ -78,51 +80,11 @@ const weekDay = [
   t('message.Sunday')
 ]
 const time = ref('')
+
+// 计时器
 const intervalId = ref(null)
 
-const date = computed(() => {
-  const now = weatherData.value?.casts[0].date
-  const part = now.split('-')
-  return `${part[0]}${t('message.year')}${part[1]}${t('message.month')}${
-    part[2]
-  }${t('message.day')}`
-})
-
-const formattedTime = computed(() => {
-  const [hours, minutes, seconds] = time.value.split(':')
-  return `${hours?.padStart(2, '0')}:${minutes?.padStart(
-    2,
-    '0'
-  )}:${seconds?.padStart(2, '0')}`
-})
-
-const updateTime = () => {
-  let [hours, minutes, seconds] = time.value.split(':').map(Number)
-  seconds++
-  if (seconds >= 60) {
-    seconds = 0
-    minutes++
-    if (minutes >= 60) {
-      minutes = 0
-      hours++
-      if (hours >= 24) {
-        hours = 0
-      }
-    }
-  }
-  time.value = `${hours}:${minutes}:${seconds}`
-}
-
-const isDayTime = computed(() => {
-  if (!weatherData.value?.reporttime) return false
-  const [datePart, timePart] = weatherData.value.reporttime.split(' ')
-  const [year, month, day] = datePart.split('-')
-  const [hour, minute, second] = timePart.split(':')
-  const reportDate = new Date(year, month - 1, day, hour, minute, second)
-  const reportHour = reportDate.getHours()
-  return reportHour >= 6 && reportHour < 18
-})
-
+// 获取城市数据
 const getCity = () => {
   return new Promise((resolve, reject) => {
     AMapLoader.load({
@@ -141,6 +103,7 @@ const getCity = () => {
   })
 }
 
+// 获取天气数据
 const getWeatherData = async cityCode => {
   try {
     const res = await request.get(
@@ -150,6 +113,51 @@ const getWeatherData = async cityCode => {
   } catch (error) {
     console.error('获取天气数据失败:', error)
   }
+}
+
+// 判断白天黑天
+const isDayTime = computed(() => {
+  if (!weatherData.value?.reporttime) return false
+  const [datePart, timePart] = weatherData.value.reporttime.split(' ')
+  const [year, month, day] = datePart.split('-')
+  const [hour, minute, second] = timePart.split(':')
+  const reportDate = new Date(year, month - 1, day, hour, minute, second)
+  const reportHour = reportDate.getHours()
+  return reportHour >= 6 && reportHour < 18
+})
+
+// 转换日期为 xxxx年xx月xx日 展示
+const date = computed(() => {
+  const now = weatherData.value?.casts[0].date
+  const part = now.split('-')
+  return `${part[0]}${t('message.year')}${part[1]}${t('message.month')}${
+    part[2]
+  }${t('message.day')}`
+})
+
+// 时间补0
+const formattedTime = computed(() => {
+  const [hours, minutes, seconds] = time.value.split(':')
+  return `${hours?.padStart(2, '0')}:${minutes?.padStart(
+    2,
+    '0'
+  )}:${seconds?.padStart(2, '0')}`
+})
+
+// 时间进位
+const updateTime = () => {
+  let [hours, minutes, seconds] = time.value.split(':').map(Number)
+  seconds++
+  if (seconds >= 60) {
+    seconds = 0
+    minutes++
+    if (minutes >= 60) {
+      minutes = 0
+      hours++
+      if (hours >= 24) hours = 0
+    }
+  }
+  time.value = `${hours}:${minutes}:${seconds}`
 }
 
 onMounted(async () => {
@@ -176,13 +184,11 @@ onUnmounted(() => {
   margin: 0 auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .weather-background {
   background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
   position: relative;
   overflow: hidden;
 }
-
 .weather-background::before,
 .weather-background::after {
   content: '';
@@ -190,14 +196,12 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
 }
-
 .weather-background::before {
   width: 140px;
   height: 140px;
   top: -70px;
   right: -70px;
 }
-
 .weather-background::after {
   width: 80px;
   height: 80px;

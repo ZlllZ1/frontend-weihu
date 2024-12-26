@@ -1,5 +1,5 @@
 <template>
-  <div
+  <section
     ref="scrollContainer"
     class="overflow-y-auto h-[372px]"
     @scroll="handleScroll"
@@ -46,27 +46,41 @@
         </div>
       </div>
     </template>
-    <div v-if="noMore" class="flex items-center justify-center py-2">
+    <div
+      v-if="noMore"
+      class="flex items-center justify-center py-2"
+      :class="{ 'h-full': !notifications.length }"
+    >
       {{ $t('message.noMore') }}
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
-import { getNotifications, readNew } from '@/api/notification'
 import eventBus from '@/utils/eventBus'
+import { getNotifications, readNew } from '@/api/notification'
 
 const store = useStore()
-const notifications = ref([])
+
+// 用户信息
 const userInfo = computed(() => store.state.user.userInfo)
+
+// 滚动容器
+const scrollContainer = ref(null)
+
+// 分页
 const currentPage = ref(1)
 const limit = ref(10)
+
+// 加载/没有更多
 const noMore = ref(false)
-const scrollContainer = ref(null)
 const loading = ref(false)
 
+// 通知
+const notifications = ref([])
+// 获取通知
 const getNotification = async () => {
   try {
     const res = await getNotifications(

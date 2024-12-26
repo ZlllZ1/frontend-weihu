@@ -1,5 +1,5 @@
 <template>
-  <div
+  <section
     class="mx-32 my-5 bg-white rounded-sm relative overflow-hidden shadow-[0_0_20px_0_rgba(0,0,0,0.1)]"
   >
     <div class="bg-white w-full relative shadow-[0_0_10px_0_rgba(0,0,0,0.1)]">
@@ -527,12 +527,13 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -549,38 +550,65 @@ import {
   saveLive
 } from '@/api/user'
 import { judgeAuthCode, sendAuthCode } from '@/api/login'
-import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const store = useStore()
+const $toast = useToast()
+
+// 用户信息
 const userInfo = computed(() => store.state.user.userInfo)
+
+// 验证码
+const authCode = ref('')
+const authCodeTimer = ref(null)
+let intervalId = null
+
+// 文件上传input
 const bgFileInput = ref(null)
 const avatarFileInput = ref(null)
+
+// 修改昵称
 const changeNickname = ref(false)
 const newNickname = ref('')
-const changeSex = ref(false)
+
+// 修改邮箱
 const changeEmail = ref(false)
 const email = ref('')
 const changeEmailStep = ref(0)
-const authCodeTimer = ref(null)
-let intervalId = null
-const $toast = useToast()
-const authCode = ref('')
+
+// 修改性别
 const sex = ref(userInfo?.value.sex)
+const changeSex = ref(false)
+
+// 修改密码
 const changePassword = ref(false)
 const changePasswordStep = ref(0)
 const oldPassword = ref('')
 const newPassword = ref('')
+
+// 修改简介
 const changeIntroduction = ref(false)
 const introduction = ref(userInfo.value.introduction)
-const changeBirthDate = ref(false)
+
+// 修改生日
 const birthDate = ref(userInfo.value.birthDate)
+const changeBirthDate = ref(false)
+
+// 修改居住地
 const changeLive = ref(false)
 const newLive = ref(userInfo.value.live)
 
+// 输入限制
 const format = date =>
   `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+const validateAccount = account => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  return emailRegex.test(account)
+}
+const updateAccount = value => (email.value = value.replace(/\s/g, ''))
+const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
 
+// 获取用户信息
 const getInfo = async () => {
   const res = await getUserInfo(userInfo?.value.email)
   if (res.data.code !== 200) return
@@ -588,6 +616,7 @@ const getInfo = async () => {
   localStorage.setItem('userInfo', JSON.stringify(res.data.data))
 }
 
+// 修改背景
 const handleBgChange = async event => {
   const file = event.target.files[0]
   if (file) {
@@ -606,6 +635,7 @@ const handleBgChange = async event => {
   }
 }
 
+// 修改头像
 const handleAvatarChange = async event => {
   const file = event.target.files[0]
   if (file) {
@@ -624,6 +654,7 @@ const handleAvatarChange = async event => {
   }
 }
 
+// 修改昵称
 const saveChangeNickname = async () => {
   try {
     const res = await saveNickname(userInfo.value.email, newNickname.value)
@@ -636,6 +667,7 @@ const saveChangeNickname = async () => {
   }
 }
 
+// 修改性别
 const saveChangeSex = async () => {
   try {
     const res = await saveSex(userInfo.value.email, sex.value)
@@ -648,6 +680,7 @@ const saveChangeSex = async () => {
   }
 }
 
+// 修改居住地
 const saveChangeLive = async () => {
   try {
     const res = await saveLive(userInfo.value.email, newLive.value)
@@ -660,13 +693,7 @@ const saveChangeLive = async () => {
   }
 }
 
-const validateAccount = account => {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-  return emailRegex.test(account)
-}
-const updateAccount = value => (email.value = value.replace(/\s/g, ''))
-const updateAuthCode = value => (authCode.value = value.replace(/\s/g, ''))
-
+// 获取验证码
 const getAuthCode = async (type = '') => {
   if (email.value !== userInfo.value.email && type === 'old') {
     $toast.error(t('message.enterOldEmail'))
@@ -708,22 +735,6 @@ const cancelEmail = () => {
   changeEmail.value = false
   clearInterval(intervalId)
 }
-
-const cancelPassword = () => {
-  intervalId = null
-  authCodeTimer.value = null
-  email.value = ''
-  authCode.value = ''
-  changePasswordStep.value = 0
-  changePassword.value = false
-  clearInterval(intervalId)
-}
-
-const cancelIntroduction = () => {
-  changeIntroduction.value = false
-  introduction.value = ''
-}
-
 const nextEmailStep = async () => {
   try {
     const res = await judgeAuthCode(email.value, authCode.value)
@@ -738,22 +749,6 @@ const nextEmailStep = async () => {
     $toast.error(t('message.authCodeError'))
   }
 }
-
-const nextPasswordStep = async () => {
-  try {
-    const res = await judgeAuthCode(email.value, authCode.value)
-    if (res.data.code !== 200) return
-    email.value = ''
-    authCode.value = ''
-    authCodeTimer.value = null
-    intervalId = null
-    changePasswordStep.value = 1
-    clearInterval(intervalId)
-  } catch (error) {
-    $toast.error(t('message.authCodeError'))
-  }
-}
-
 const saveChangeEmail = async () => {
   try {
     const judgeRes = await judgeAuthCode(email.value, authCode.value)
@@ -777,6 +772,29 @@ const saveChangeEmail = async () => {
   }
 }
 
+const cancelPassword = () => {
+  intervalId = null
+  authCodeTimer.value = null
+  email.value = ''
+  authCode.value = ''
+  changePasswordStep.value = 0
+  changePassword.value = false
+  clearInterval(intervalId)
+}
+const nextPasswordStep = async () => {
+  try {
+    const res = await judgeAuthCode(email.value, authCode.value)
+    if (res.data.code !== 200) return
+    email.value = ''
+    authCode.value = ''
+    authCodeTimer.value = null
+    intervalId = null
+    changePasswordStep.value = 1
+    clearInterval(intervalId)
+  } catch (error) {
+    $toast.error(t('message.authCodeError'))
+  }
+}
 const saveChangePassword = async () => {
   try {
     if (userInfo.value.password !== oldPassword.value) {
@@ -807,6 +825,10 @@ const saveChangePassword = async () => {
   }
 }
 
+const cancelIntroduction = () => {
+  changeIntroduction.value = false
+  introduction.value = ''
+}
 const saveChangeIntroduction = async () => {
   try {
     const res = await saveIntroduction(userInfo.value.email, introduction.value)

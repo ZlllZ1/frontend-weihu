@@ -1,6 +1,6 @@
 <template>
-  <div class="min-w-[100vw] min-h-[100vh] flex justify-center bg-white">
-    <div class="flex flex-col h-full py-2 px-4 gap-3 w-[75%]">
+  <section class="min-w-[98vw] min-h-[90vh] flex justify-center bg-white">
+    <div class="flex flex-col h-full py-2 px-2 gap-3 w-[75%]">
       <div class="flex gap-2 w-full justify-center">
         <input
           v-model="searchQuery"
@@ -72,6 +72,12 @@
           >
             {{ $t('message.noData') }}
           </div>
+          <div
+            v-if="!loading && searchResult.length && noMore"
+            class="flex justify-center w-full py-4 text-gray border-t border-[#EBECED]"
+          >
+            {{ $t('message.noMore') }}
+          </div>
         </template>
       </div>
       <div class="bg-white w-full flex flex-wrap gap-2">
@@ -119,16 +125,23 @@
           >
             {{ $t('message.noData') }}
           </div>
+          <div
+            v-if="!loading && searchResult.length && noMore"
+            class="flex justify-center w-full py-4 text-gray border-t border-[#EBECED]"
+          >
+            {{ $t('message.noMore') }}
+          </div>
         </template>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { search } from '@/api/post'
 
+// 获取url参数
 const getQueryVariable = v => {
   const query = window.location.search.substring(1)
   const vars = query.split('&')
@@ -143,8 +156,12 @@ const getQueryVariable = v => {
 const searchQuery = ref(getQueryVariable('q') || '')
 const type = ref(getQueryVariable('t') || 'post')
 const searchResult = ref([])
+const loading = ref(false)
+
+// 分页
 const currentPage = ref(1)
-const limit = ref(10)
+const limit = ref(30)
+const noMore = ref(false)
 
 const searchHeader = computed(() => {
   return [
@@ -153,6 +170,7 @@ const searchHeader = computed(() => {
   ]
 })
 
+// 转换时间
 const convertToCST = isoString => {
   const date = new Date(isoString.replace('Z', '+00:00'))
   const utcTimestamp = date.getTime()
@@ -174,10 +192,41 @@ const toggleHeader = v => {
   type.value = v
 }
 
+const debounce = (func, wait) => {
+  let timeout
+  return function (...args) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func.apply(this, args), wait)
+  }
+}
+const loadMore = debounce(async () => {
+  if (loading.value) return
+  if (noMore.value) return
+  loading.value = true
+  currentPage.value++
+  const res = await search(
+    searchQuery.value,
+    type.value,
+    currentPage.value,
+    limit.value
+  )
+  if (res.data.code === 200) searchResult.value.push(...res.data.data?.results)
+  noMore.value =
+    res.data.data?.results.length < limit.value ||
+    res.data.data?.results.length === res.data.data?.totalResults
+  loading.value = false
+}, 300)
 const handleSearch = async () => {
+  loading.value = true
+  currentPage.value = 1
   const res = await search(searchQuery.value, type.value)
   if (res.data.code !== 200) return
   searchResult.value = res.data.data?.results
+  noMore.value =
+    res.data.data?.results.length < limit.value ||
+    res.data.data?.results.length === res.data.data?.totalResults
+  loading.value = false
+  console.log(!loading.value && searchResult.value.length && noMore.value)
 }
 
 watch(type, () => {
@@ -186,7 +235,16 @@ watch(type, () => {
 })
 
 onMounted(() => {
-  handleSearch()
+  if (searchQuery.value) handleSearch()
+  window.addEventListener('scroll', () => {
+    if (
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 20 &&
+      !loading.value &&
+      searchResult.value.length
+    ) {
+      loadMore()
+    }
+  })
   if (window.location.search) {
     const currentUrl = window.location.href
     const urlWithoutQuery = currentUrl.split('?')[0]

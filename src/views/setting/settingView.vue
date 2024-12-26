@@ -1,6 +1,6 @@
 <template>
-  <div class="mx-32 my-5 min-h-[100vh] flex gap-x-3">
-    <div
+  <section class="mx-32 my-5 min-h-[100vh] flex gap-x-3">
+    <aside
       class="w-[15%] p-4 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded"
     >
       <div class="flex flex-col gap-y-6">
@@ -19,28 +19,29 @@
           </div>
         </div>
       </div>
-    </div>
+    </aside>
     <div
       class="w-[85%] px-8 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white rounded"
     >
       <component :is="currentComponent" :setting="setting" />
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, markRaw, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useStore } from 'vuex'
 import HomePage from './components/HomePage.vue'
 import FriendPage from './components/FriendPage.vue'
 import PostPage from './components/PostPage.vue'
 import AboutPage from './components/AboutPage.vue'
 import ChatPage from './components/ChatPage.vue'
-import { useStore } from 'vuex'
-import { useI18n } from 'vue-i18n'
 
-const store = useStore()
-const setting = computed(() => store.state.user.userInfo.setting)
 const { t } = useI18n()
+const store = useStore()
+
+const setting = computed(() => store.state.user.userInfo.setting)
 
 const nav = ref([
   {

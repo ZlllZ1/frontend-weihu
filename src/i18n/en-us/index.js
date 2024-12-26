@@ -59,6 +59,7 @@ export default {
     me: 'me',
     f: 'fr',
     share: 'share',
+    privateLetter: 'private letter',
     edit: 'edit',
     noPublishPost: 'no posts have been posted',
     tiaomessages: 'new messages',

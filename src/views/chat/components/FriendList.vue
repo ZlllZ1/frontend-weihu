@@ -1,12 +1,16 @@
 <template>
-  <div class="w-64 h-full bg-gray-10 flex flex-col">
+  <section class="w-64 h-full bg-gray-10 flex flex-col">
     <div class="p-4 border-b border-warmGray-200">
-      <input
-        v-model="searchQuery"
-        type="text"
-        :placeholder="$t('message.searchFriends')"
-        class="w-full px-3 py-2 rounded-md border border-warmGray-300 focus:outline-none focus:ring-1 focus:border-transparent focus:ring-blue-500"
-      />
+      <form>
+        <label>
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="$t('message.searchFriends')"
+            class="w-full px-3 py-2 rounded-md border border-warmGray-300 focus:outline-none focus:ring-1 focus:border-transparent focus:ring-blue-500"
+          />
+        </label>
+      </form>
     </div>
     <div v-if="filteredFriends.length" class="flex-1 overflow-y-auto">
       <div
@@ -57,14 +61,18 @@
     <div v-else class="flex items-center justify-center h-full">
       <div class="text-gray">{{ $t('message.noFriends') }}</div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, computed, watchEffect } from 'vue'
 import { useStore } from 'vuex'
 
+const emit = defineEmits(['open'])
+
 const store = useStore()
+
+// 用户信息
 const userInfo = computed(() => store.state.user.userInfo)
 const props = defineProps({
   friends: {
@@ -73,10 +81,9 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['open'])
 const searchQuery = ref('')
 const debouncedSearchQuery = ref('')
-
+// 搜索好友
 const debounce = (fn, delay) => {
   let timer = null
   return (...args) => {
@@ -86,15 +93,9 @@ const debounce = (fn, delay) => {
     }, delay)
   }
 }
-
 const debouncedSetSearchQuery = debounce(value => {
   debouncedSearchQuery.value = value
 }, 300)
-
-watchEffect(() => {
-  debouncedSetSearchQuery(searchQuery.value)
-})
-
 const filteredFriends = computed(() => {
   if (!debouncedSearchQuery.value) return props.friends
   const lowercaseQuery = debouncedSearchQuery.value.toLowerCase()
@@ -105,8 +106,14 @@ const filteredFriends = computed(() => {
   )
 })
 
+watchEffect(() => {
+  debouncedSetSearchQuery(searchQuery.value)
+})
+
+// 打开聊天窗口
 const openChat = (chatId, email) => emit('open', { chatId, email })
 
+// 转换时间
 const convertToCST = isoString => {
   if (!isoString) return ''
   const date = new Date(isoString.replace('Z', '+00:00'))
@@ -123,6 +130,8 @@ const convertToCST = isoString => {
       .replace(/^\D*/, '')
   return formattedDate
 }
+
+// 处理content字段,展示
 const processHtmlString = htmlString => {
   if (/<video[^>]*>/i.test(htmlString)) return '[视频]'
   if (/<img[^>]*>/i.test(htmlString)) return '[图片]'

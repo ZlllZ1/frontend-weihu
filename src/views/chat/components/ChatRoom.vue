@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col h-full bg-white shadow-lg rounded-lg">
-    <div
+  <section class="flex flex-col h-full bg-white shadow-lg rounded-lg">
+    <header
       class="flex items-center px-4 py-3 bg-white border-b border-warmGray-400"
     >
       <a
@@ -24,7 +24,7 @@
       <span v-if="!chatInfo?.friend?.email" class="text-lg ml-3 py-1">{{
         $t('message.selectFriend')
       }}</span>
-    </div>
+    </header>
     <div
       ref="messageContainer"
       class="flex-1 overflow-y-auto bg-warmGray-50 p-4"
@@ -81,7 +81,7 @@
         {{ $t('message.send') }}
       </button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -95,16 +95,21 @@ import {
   inject
 } from 'vue'
 import { useStore } from 'vuex'
-import { getChatInfos, uploadChatImg } from '@/api/chat'
+import eventBus from '@/utils/eventBus'
+import { useI18n } from 'vue-i18n'
+import { useToast } from 'vue-toast-notification'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
 import ImageResize from 'quill-image-resize-module'
-import { useI18n } from 'vue-i18n'
-import { useToast } from 'vue-toast-notification'
-import { sendMessages } from '@/api/chat'
-import eventBus from '@/utils/eventBus'
+import { getChatInfos, uploadChatImg, sendMessages } from '@/api/chat'
+
+// 视频时长限制,文件大小限制
+const MAX_VIDEO_DURATION = 3000
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 const emit = defineEmits(['send', 'refresh'])
+
+// 编辑器注册相关模块
 const VideoBlot = Quill.import('formats/video')
 class CustomVideoBlot extends VideoBlot {
   static create(value) {
@@ -117,34 +122,74 @@ class CustomVideoBlot extends VideoBlot {
 }
 CustomVideoBlot.blotName = 'custom-video'
 CustomVideoBlot.tagName = 'VIDEO'
-
 Quill.register(CustomVideoBlot)
 Quill.register('modules/imageResize', ImageResize)
-const MAX_VIDEO_DURATION = 3000
-const MAX_FILE_SIZE = 5 * 1024 * 1024
+let quill = null
+
 const { t } = useI18n()
 const $toast = useToast()
 const store = useStore()
-const userInfo = computed(() => store.state.user.userInfo)
+
 const props = defineProps({
   email: {
     type: String,
     default: ''
   }
 })
-const chatInfo = ref({})
+
+// 获取聊天信息
+const userInfo = computed(() => store.state.user.userInfo)
+
+// 聊天室信息
 const chatId = ref(null)
+const chatInfo = ref({})
+
+// 信息容器
 const messageContainer = ref(null)
-let quill = null
-const uploadProgress = ref(0)
-const loading = ref(false)
-const newMessage = inject('newMessage')
+
+// 分页
 const currentPage = ref(1)
 const limit = 100
-const noMore = ref(false)
-const unreadCount = ref(0)
-const messageRefs = ref([])
 
+// 加载/没有更多
+const loading = ref(false)
+const noMore = ref(false)
+
+// 未读条数
+const unreadCount = ref(0)
+
+// 获取聊天记录
+const getChatInfo = async () => {
+  try {
+    if (!props.email) return
+    chatId.value = [props.email, userInfo.value.email].sort().join('_')
+    const res = await getChatInfos(
+      userInfo.value.email,
+      chatId.value,
+      currentPage.value,
+      limit
+    )
+    if (res.data.code !== 200) return
+    if (!chatInfo.value.messages || res.data.data.messages)
+      chatInfo.value.messages = []
+    chatInfo.value.messages = [
+      ...res.data.data.messages,
+      ...chatInfo.value.messages
+    ]
+    chatInfo.value = {
+      ...chatInfo.value,
+      ...res.data.data,
+      messages: chatInfo.value.messages
+    }
+    if (res.data.data.messages.length < limit) noMore.value = true
+    if (currentPage.value === 1) scrollToBottom()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// 监听新消息,是否是当前聊天对象的消息
+const newMessage = inject('newMessage')
 watch(newMessage, newValue => {
   const { data } = newValue || {}
   if (chatId.value !== data?.chatId) return
@@ -161,22 +206,19 @@ watch(newMessage, newValue => {
   emit('refresh', { chatId: chatId.value, email: chatInfo.value.friend.email })
 })
 
-const getContent = () => {
-  const delta = quill.getContents()
-  const html = quill.root.innerHTML
-  return { delta, html }
+// 设置聊天信息ref
+const messageRefs = ref([])
+const setMessageRef = index => el => {
+  if (el) messageRefs.value[index] = el
 }
-
+// 第一条未读信息索引
 const firstUnreadMessageIndex = computed(() => {
   if (!chatInfo.value?.messages || chatInfo.value.messages.length === 0)
     return -1
   return Math.max(chatInfo.value.messages.length - unreadCount.value, 0)
 })
 
-const setMessageRef = index => el => {
-  if (el) messageRefs.value[index] = el
-}
-
+// 跳转未读信息
 const gotoUnread = () => {
   const index = firstUnreadMessageIndex.value
   if (index >= 0 && index < messageRefs.value.length) {
@@ -189,6 +231,12 @@ const gotoUnread = () => {
   }
 }
 
+// 发送消息
+const getContent = () => {
+  const delta = quill.getContents()
+  const html = quill.root.innerHTML
+  return { delta, html }
+}
 const sendMessage = async () => {
   const isHtmlEmpty = html => {
     const text = html.replace(/<[^>]*>/g, '')
@@ -238,7 +286,7 @@ const sendMessage = async () => {
   }
 }
 
-const toolbarOptions = [['image', 'video']]
+// 上传图片
 const imageHandler = () => {
   const input = document.createElement('input')
   input.setAttribute('type', 'file')
@@ -275,6 +323,8 @@ const imageHandler = () => {
     }
   }
 }
+// 上传视频
+const uploadProgress = ref(0)
 const getVideoDuration = file => {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video')
@@ -340,7 +390,8 @@ const videoHandler = () => {
     }
   }
 }
-
+// 初始化编辑器
+const toolbarOptions = [['image', 'video']]
 const initEditor = () => {
   const container = document.getElementById('editor')
   quill = new Quill(container, {
@@ -366,6 +417,7 @@ const initEditor = () => {
   })
 }
 
+// 滚动至底部
 const scrollToBottom = () => {
   nextTick(() => {
     if (messageContainer.value) {
@@ -374,35 +426,18 @@ const scrollToBottom = () => {
   })
 }
 
-const getChatInfo = async () => {
-  try {
-    if (!props.email) return
-    chatId.value = [props.email, userInfo.value.email].sort().join('_')
-    const res = await getChatInfos(
-      userInfo.value.email,
-      chatId.value,
-      currentPage.value,
-      limit
-    )
-    if (res.data.code !== 200) return
-    if (!chatInfo.value.messages || res.data.data.messages)
-      chatInfo.value.messages = []
-    chatInfo.value.messages = [
-      ...res.data.data.messages,
-      ...chatInfo.value.messages
-    ]
-    chatInfo.value = {
-      ...chatInfo.value,
-      ...res.data.data,
-      messages: chatInfo.value.messages
+// 加载更多
+const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
     }
-    if (res.data.data.messages.length < limit) noMore.value = true
-    if (currentPage.value === 1) scrollToBottom()
-  } catch (error) {
-    console.error(error)
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
   }
 }
-
 const loadMore = async () => {
   if (noMore.value) return
   const scrollHeight = messageContainer.value.scrollHeight
@@ -415,26 +450,14 @@ const loadMore = async () => {
       newScrollHeight - scrollHeight + scrollTop
   })
 }
-
-const debounce = (func, wait) => {
-  let timeout
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout)
-      func(...args)
-    }
-    clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-  }
-}
-
 const handleScroll = debounce(async () => {
   const atTop = messageContainer.value.scrollTop === 0
   if (atTop && !noMore.value) {
     await loadMore()
   }
-}, 500)
+}, 300)
 
+// 处理聊天室变化
 watch(
   () => props.email,
   async (newEmail, oldEmail) => {
@@ -444,6 +467,7 @@ watch(
   { immediate: true }
 )
 
+// ctrl + enter 发送消息
 const handleKeyDown = async event => {
   if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
     event.preventDefault()
@@ -451,21 +475,7 @@ const handleKeyDown = async event => {
   }
 }
 
-onMounted(() => {
-  initEditor()
-  scrollToBottom()
-  document.addEventListener('keydown', handleKeyDown)
-  eventBus.on('sendUnreadCount', unread => {
-    if (unread) unreadCount.value = unread
-  })
-})
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyDown)
-  eventBus.off('sendUnreadCount')
-  unreadCount.value = 0
-})
-
+// 转换时间
 const convertToCST = isoString => {
   const date = new Date(isoString.replace('Z', '+00:00'))
   const utcTimestamp = date.getTime()
@@ -482,6 +492,21 @@ const convertToCST = isoString => {
       .replace(/^\D*/, '')
   return formattedDate
 }
+
+onMounted(() => {
+  initEditor()
+  scrollToBottom()
+  document.addEventListener('keydown', handleKeyDown)
+  eventBus.on('sendUnreadCount', unread => {
+    if (unread) unreadCount.value = unread
+  })
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown)
+  eventBus.off('sendUnreadCount')
+  unreadCount.value = 0
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-6">
+  <section class="pb-6">
     <div id="editor"></div>
     <div v-if="uploadProgress" class="flex gap-[10px] items-center ml-4">
       <span>{{ $t('message.videoUploadProgress') }}</span>
@@ -21,19 +21,24 @@
         {{ $t('message.publish') }}
       </button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
 import { ref, onMounted, computed, onUnmounted } from 'vue'
-import Quill from 'quill'
-import 'quill/dist/quill.snow.css'
+import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toast-notification'
-import { useStore } from 'vuex'
-import { publishCircle, uploadCircleImg } from '@/api/circle'
+import Quill from 'quill'
+import 'quill/dist/quill.snow.css'
 import ImageResize from 'quill-image-resize-module'
+import { publishCircle, uploadCircleImg } from '@/api/circle'
 
+// 视频时长限制,文件大小限制
+const MAX_VIDEO_DURATION = 300
+const MAX_FILE_SIZE = 5 * 1024 * 1024
+
+// 编辑器注册相关模块
 const VideoBlot = Quill.import('formats/video')
 class CustomVideoBlot extends VideoBlot {
   static create(value) {
@@ -46,42 +51,21 @@ class CustomVideoBlot extends VideoBlot {
 }
 CustomVideoBlot.blotName = 'custom-video'
 CustomVideoBlot.tagName = 'VIDEO'
-
 Quill.register(CustomVideoBlot)
 Quill.register('modules/imageResize', ImageResize)
 
-const MAX_VIDEO_DURATION = 300
-const MAX_FILE_SIZE = 5 * 1024 * 1024
 const store = useStore()
 const { t } = useI18n()
 const $toast = useToast()
-const uploadProgress = ref(0)
-const loading = ref(false)
+
 let quill = null
+
+const loading = ref(false)
+
+// 用户信息
 const userInfo = computed(() => store.state.user.userInfo)
 
-const toolbarOptions = [
-  ['bold', 'italic', 'underline', 'strike'],
-  ['blockquote', 'code-block'],
-  [{ list: 'ordered' }, { list: 'bullet' }],
-  [{ header: 1 }, { header: 2 }],
-  [{ script: 'sub' }, { script: 'super' }],
-  [{ indent: '-1' }, { indent: '+1' }],
-  [{ size: ['small', false, 'large', 'huge'] }],
-  [{ header: [1, 2, 3, 4, 5, 6, false] }],
-  [{ color: [] }, { background: [] }],
-  [{ font: [] }],
-  [{ align: [] }],
-  ['clean'],
-  ['link', 'image', 'video']
-]
-
-const getContent = () => {
-  const delta = quill.getContents()
-  const html = quill.root.innerHTML
-  return { delta, html }
-}
-
+// 上传图片
 const imageHandler = () => {
   const input = document.createElement('input')
   input.setAttribute('type', 'file')
@@ -119,6 +103,8 @@ const imageHandler = () => {
   }
 }
 
+// 上传视频
+const uploadProgress = ref(0)
 const getVideoDuration = file => {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video')
@@ -133,7 +119,6 @@ const getVideoDuration = file => {
     video.src = URL.createObjectURL(file)
   })
 }
-
 const videoHandler = () => {
   const input = document.createElement('input')
   input.setAttribute('type', 'file')
@@ -186,6 +171,12 @@ const videoHandler = () => {
   }
 }
 
+// 发布
+const getContent = () => {
+  const delta = quill.getContents()
+  const html = quill.root.innerHTML
+  return { delta, html }
+}
 const publish = async () => {
   const isHtmlEmpty = html => {
     const text = html.replace(/<[^>]*>/g, '')
@@ -212,6 +203,22 @@ const publish = async () => {
   }
 }
 
+// 初始化编辑器
+const toolbarOptions = [
+  ['bold', 'italic', 'underline', 'strike'],
+  ['blockquote', 'code-block'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  [{ header: 1 }, { header: 2 }],
+  [{ script: 'sub' }, { script: 'super' }],
+  [{ indent: '-1' }, { indent: '+1' }],
+  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  [{ color: [] }, { background: [] }],
+  [{ font: [] }],
+  [{ align: [] }],
+  ['clean'],
+  ['link', 'image', 'video']
+]
 const initEditor = () => {
   const container = document.getElementById('editor')
   quill = new Quill(container, {
@@ -252,7 +259,6 @@ onUnmounted(() => {
 
 <style lang="scss">
 @import '../styles/editor.scss';
-
 #editor {
   @apply mb-4;
 }

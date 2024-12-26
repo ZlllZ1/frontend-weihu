@@ -163,7 +163,7 @@ export const uploadPostImg = formData => {
   })
 }
 
-export const search = (searchQuery, type, page = 1, limit = 10) => {
+export const search = (searchQuery, type, page = 1, limit = 30) => {
   return request.post(
     '/post/search',
     { searchQuery, type, page, limit },
