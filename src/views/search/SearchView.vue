@@ -226,7 +226,6 @@ const handleSearch = async () => {
     res.data.data?.results.length < limit.value ||
     res.data.data?.results.length === res.data.data?.totalResults
   loading.value = false
-  console.log(!loading.value && searchResult.value.length && noMore.value)
 }
 
 watch(type, () => {

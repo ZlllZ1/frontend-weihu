@@ -14,7 +14,6 @@ class WebSocketManager {
     this.socket = new WebSocket(this.url)
 
     this.socket.onopen = () => {
-      console.log('WebSocket connected')
       this.isConnected = true
       this.startHeartbeat()
       this.emit('open')
@@ -26,7 +25,6 @@ class WebSocketManager {
     }
 
     this.socket.onclose = () => {
-      console.log('WebSocket disconnected')
       this.isConnected = false
       this.stopHeartbeat()
       this.scheduleReconnect()
@@ -68,7 +66,6 @@ class WebSocketManager {
   scheduleReconnect() {
     if (!this.reconnectTimer) {
       this.reconnectTimer = setTimeout(() => {
-        console.log('Attempting to reconnect...')
         this.connect()
         this.reconnectTimer = null
       }, this.reconnectInterval)
