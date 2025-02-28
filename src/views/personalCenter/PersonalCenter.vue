@@ -100,9 +100,11 @@
                     {{ $t('message.individualResume') }}:
                   </span>
                   <span class="introduction-box">{{
-                    userInfo?.introduction || ''
+                    userInfo?.introduction || '无'
                   }}</span>
-                  <div class="toolTip">{{ userInfo?.introduction }}</div>
+                  <div v-if="userInfo?.introduction" class="toolTip">
+                    {{ userInfo?.introduction }}
+                  </div>
                 </div>
               </div>
             </div>

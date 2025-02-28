@@ -84,17 +84,38 @@ const time = ref('')
 // 计时器
 const intervalId = ref(null)
 
+// 获取城市行政区编码
+const getAdcode = async (lng, lat) => {
+  const res = await request.get(
+    `https://restapi.amap.com/v3/geocode/regeo?key=1cefab37151fe80bdfd575a8d8545da9&location=${lng.toFixed(
+      3
+    )},${lat.toFixed(3)}&extensions=all`
+  )
+  return res.data.regeocode.addressComponent.adcode
+}
+
 // 获取城市数据
 const getCity = () => {
   return new Promise((resolve, reject) => {
     AMapLoader.load({
       key: '1cefab37151fe80bdfd575a8d8545da9',
       version: '2.0',
-      plugins: ['AMap.CitySearch']
+      plugins: ['AMap.Geolocation']
     })
       .then(AMap => {
-        const citySearch = new AMap.CitySearch()
-        resolve(citySearch.config.adcode)
+        const geolocation = new AMap.Geolocation({
+          enableHighAccuracy: true, // 是否使用高精度定位
+          timeout: 10000, // 超时时间
+          maximumAge: 0 // 定位结果缓存时间
+        })
+        geolocation.getCurrentPosition(async (status, result) => {
+          if (status === 'complete') {
+            const lng = result.position.lng // 经度
+            const lat = result.position.lat // 纬度
+            const adcode = await getAdcode(lng, lat)
+            resolve(adcode)
+          }
+        })
       })
       .catch(e => {
         console.error('AMap加载失败:', e)

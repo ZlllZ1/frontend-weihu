@@ -132,7 +132,7 @@ router.beforeEach((to, from, next) => {
       eventBus.emit('openLogin')
       next(false)
     } else {
-      document.title = to.meta.title || '微乎'
+      // document.title = to.meta.title || '微乎'
       next()
     }
   } else {
