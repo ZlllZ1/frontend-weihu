@@ -8,7 +8,7 @@ export const publishCircle = data => {
 
 export const getCircles = (email, page, limit) => {
   return request.get(
-    '/circle/getCircles',
+    '/api/circle/getCircles',
     { email, page, limit },
     { requiresAuth: true }
   )
@@ -16,7 +16,7 @@ export const getCircles = (email, page, limit) => {
 
 export const praiseCircle = (email, circleId) => {
   return request.post(
-    '/circle/praiseCircle',
+    '/api/circle/praiseCircle',
     { email, circleId },
     { requiresAuth: true }
   )
@@ -40,7 +40,7 @@ export const handleComment = (
   circleEmail
 ) => {
   return request.post(
-    '/circle/commentCircle',
+    '/api/circle/commentCircle',
     { email, circleId, content, parentId, parentEmail, circleEmail },
     { requiresAuth: true }
   )
@@ -48,7 +48,7 @@ export const handleComment = (
 
 export const getCircleComments = (email, circleEmail, circleId) => {
   return request.get(
-    '/circle/getCircleComments',
+    '/api/circle/getCircleComments',
     { email, circleEmail, circleId },
     { requiresAuth: true }
   )
@@ -56,7 +56,7 @@ export const getCircleComments = (email, circleEmail, circleId) => {
 
 export const getPraiseUsers = (email, circleEmail, circleId) => {
   return request.get(
-    '/circle/getPraiseUsers',
+    '/api/circle/getPraiseUsers',
     { email, circleEmail, circleId },
     { requiresAuth: true }
   )
@@ -64,7 +64,7 @@ export const getPraiseUsers = (email, circleEmail, circleId) => {
 
 export const getMyCircles = (email, visitEmail, type, page, limit) => {
   return request.get(
-    '/circle/getMyCircles',
+    '/api/circle/getMyCircles',
     { email, visitEmail, type, page, limit },
     { requiresAuth: true }
   )
@@ -72,7 +72,7 @@ export const getMyCircles = (email, visitEmail, type, page, limit) => {
 
 export const deleteCircle = (email, circleId) => {
   return request.post(
-    '/circle/deleteCircle',
+    '/api/circle/deleteCircle',
     { circleId, email },
     { requiresAuth: true }
   )

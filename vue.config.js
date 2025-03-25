@@ -3,7 +3,7 @@ const webpack = require('webpack')
 
 module.exports = defineConfig({
   transpileDependencies: true,
-  publicPath: process.env.NODE_ENV === 'production' ? '/my-project/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
   outputDir: 'dist',
   assetsDir: 'static',
   productionSourceMap: false,
@@ -31,10 +31,14 @@ module.exports = defineConfig({
   },
   css: {},
   devServer: {
+    port: process.env.VUE_APP_PORT,
     proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:3007',
-        changeOrigin: true
+      [process.env.VUE_APP_BASE_URL]: {
+        target: process.env.VUE_APP_API_BASE_URL,
+        changeOrigin: true,
+        pathRewrite: {
+          [`^${process.env.VUE_APP_BASE_URL}`]: ''
+        }
       }
     },
     client: {

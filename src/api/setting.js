@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export const changeShowIp = (account, showIp) => {
   return request.post(
-    '/setting/changeShowIp',
+    '/api/setting/changeShowIp',
     { account, showIp },
     { requiresAuth: true }
   )
@@ -10,7 +10,7 @@ export const changeShowIp = (account, showIp) => {
 
 export const changeShowFan = (account, showFan) => {
   return request.post(
-    '/setting/changeShowFan',
+    '/api/setting/changeShowFan',
     { account, showFan },
     { requiresAuth: true }
   )
@@ -18,7 +18,7 @@ export const changeShowFan = (account, showFan) => {
 
 export const changeShowFollow = (account, showFollow) => {
   return request.post(
-    '/setting/changeShowFollow',
+    '/api/setting/changeShowFollow',
     { account, showFollow },
     { requiresAuth: true }
   )
@@ -26,7 +26,7 @@ export const changeShowFollow = (account, showFollow) => {
 
 export const changeShowPraise = (account, showPraise) => {
   return request.post(
-    '/setting/changeShowPraise',
+    '/api/setting/changeShowPraise',
     { account, showPraise },
     { requiresAuth: true }
   )
@@ -34,7 +34,7 @@ export const changeShowPraise = (account, showPraise) => {
 
 export const changeShowCollect = (account, showCollect) => {
   return request.post(
-    '/setting/changeShowCollect',
+    '/api/setting/changeShowCollect',
     { account, showCollect },
     { requiresAuth: true }
   )
@@ -42,7 +42,7 @@ export const changeShowCollect = (account, showCollect) => {
 
 export const changeShowShare = (account, showShare) => {
   return request.post(
-    '/setting/changeShowShare',
+    '/api/setting/changeShowShare',
     { account, showShare },
     { requiresAuth: true }
   )
@@ -50,7 +50,7 @@ export const changeShowShare = (account, showShare) => {
 
 export const changeShowFriend = (account, showFriend) => {
   return request.post(
-    '/setting/changeShowShare',
+    '/api/setting/changeShowShare',
     { account, showFriend },
     { requiresAuth: true }
   )
@@ -58,7 +58,7 @@ export const changeShowFriend = (account, showFriend) => {
 
 export const changeShowLive = (account, showLive) => {
   return request.post(
-    '/setting/changeShowLive',
+    '/api/setting/changeShowLive',
     { account, showLive },
     { requiresAuth: true }
   )
@@ -66,7 +66,7 @@ export const changeShowLive = (account, showLive) => {
 
 export const changeChatLimit = (account, chatLimit) => {
   return request.post(
-    '/setting/changeChatLimit',
+    '/api/setting/changeChatLimit',
     { account, chatLimit },
     { requiresAuth: true }
   )
@@ -74,7 +74,7 @@ export const changeChatLimit = (account, chatLimit) => {
 
 export const changeCircleLimit = (account, circleLimit) => {
   return request.post(
-    '/setting/changeCircleLimit',
+    '/api/setting/changeCircleLimit',
     { account, circleLimit },
     { requiresAuth: true }
   )
@@ -82,7 +82,7 @@ export const changeCircleLimit = (account, circleLimit) => {
 
 export const changePostLimit = (account, postLimit) => {
   return request.post(
-    '/setting/changePostLimit',
+    '/api/setting/changePostLimit',
     { account, postLimit },
     { requiresAuth: true }
   )

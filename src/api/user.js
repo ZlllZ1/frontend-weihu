@@ -1,12 +1,16 @@
 import request from '@/utils/request'
 
 export const getUserInfo = account => {
-  return request.get('/user/getUserInfo', { account }, { requiresAuth: true })
+  return request.get(
+    '/api/user/getUserInfo',
+    { account },
+    { requiresAuth: true }
+  )
 }
 
 export const saveNickname = (account, nickname) => {
   return request.post(
-    '/user/changeNickname',
+    '/api/user/changeNickname',
     { account, nickname },
     { requiresAuth: true }
   )
@@ -14,7 +18,7 @@ export const saveNickname = (account, nickname) => {
 
 export const saveSex = (account, sex) => {
   return request.post(
-    '/user/changeSex',
+    '/api/user/changeSex',
     { account, sex },
     { requiresAuth: true }
   )
@@ -22,7 +26,7 @@ export const saveSex = (account, sex) => {
 
 export const saveLive = (account, live) => {
   return request.post(
-    '/user/changeLive',
+    '/api/user/changeLive',
     { account, live },
     { requiresAuth: true }
   )
@@ -30,7 +34,7 @@ export const saveLive = (account, live) => {
 
 export const saveEmail = (account, email) => {
   return request.post(
-    '/user/changeEmail',
+    '/api/user/changeEmail',
     { account, email },
     { requiresAuth: true }
   )
@@ -38,7 +42,7 @@ export const saveEmail = (account, email) => {
 
 export const savePassword = (account, password) => {
   return request.post(
-    '/user/changePassword',
+    '/api/user/changePassword',
     { account, password },
     { requiresAuth: true }
   )
@@ -46,7 +50,7 @@ export const savePassword = (account, password) => {
 
 export const saveIntroduction = (account, introduction) => {
   return request.post(
-    '/user/changeIntroduction',
+    '/api/user/changeIntroduction',
     { account, introduction },
     { requiresAuth: true }
   )
@@ -54,14 +58,14 @@ export const saveIntroduction = (account, introduction) => {
 
 export const saveBirthDate = (account, birthDate) => {
   return request.post(
-    '/user/changeBirthDate',
+    '/api/user/changeBirthDate',
     { account, birthDate },
     { requiresAuth: true }
   )
 }
 
 export const uploadAvatar = formData => {
-  return request.post('/user/changeAvatar', formData, {
+  return request.post('/api/user/changeAvatar', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
@@ -70,7 +74,7 @@ export const uploadAvatar = formData => {
 }
 
 export const uploadHomeBg = formData => {
-  return request.post('/user/changeHomeBg', formData, {
+  return request.post('/api/user/changeHomeBg', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
@@ -79,7 +83,7 @@ export const uploadHomeBg = formData => {
 }
 
 export const uploadCircleBg = formData => {
-  return request.post('/user/changeCircleBg', formData, {
+  return request.post('/api/user/changeCircleBg', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
@@ -89,7 +93,7 @@ export const uploadCircleBg = formData => {
 
 export const followUser = (fanEmail, followedEmail) => {
   return request.post(
-    '/user/followUser',
+    '/api/user/followUser',
     { fanEmail, followedEmail },
     { requiresAuth: true }
   )
@@ -103,7 +107,7 @@ export const getOnesInfo = (
   userEmail = ''
 ) => {
   return request.get(
-    '/user/getOnesInfo',
+    '/api/user/getOnesInfo',
     { email, page, limit, type, userEmail },
     { requiresAuth: true }
   )
@@ -111,7 +115,7 @@ export const getOnesInfo = (
 
 export const getOtherUserInfo = (email, visitEmail) => {
   return request.get(
-    '/user/getOtherUserInfo',
+    '/api/user/getOtherUserInfo',
     { email, visitEmail },
     { requiresAuth: true }
   )

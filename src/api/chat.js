@@ -6,7 +6,7 @@ export const getFriendLists = email => {
 
 export const getChatInfos = (email, chatId, page, limit) => {
   return request.get(
-    '/chat/getChatInfos',
+    '/api/chat/getChatInfos',
     { email, chatId, page, limit },
     { requiresAuth: true }
   )
@@ -23,7 +23,7 @@ export const uploadChatImg = formData => {
 
 export const sendMessages = (chatId, content, senderEmail, recipientEmail) => {
   return request.post(
-    '/chat/sendMessages',
+    '/api/chat/sendMessages',
     { chatId, content, senderEmail, recipientEmail },
     { requiresAuth: true }
   )
@@ -31,7 +31,7 @@ export const sendMessages = (chatId, content, senderEmail, recipientEmail) => {
 
 export const readMessages = (chatId, email, senderEmail) => {
   return request.post(
-    '/chat/readMessages',
+    '/api/chat/readMessages',
     { chatId, email, senderEmail },
     { requiresAuth: true }
   )

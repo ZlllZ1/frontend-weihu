@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export const judgeNewNotification = userId => {
   return request.post(
-    '/notification/judgeNewNotification',
+    '/api/notification/judgeNewNotification',
     { userId },
     { requiresAuth: true }
   )
@@ -10,7 +10,7 @@ export const judgeNewNotification = userId => {
 
 export const getNotifications = (userId, type, page, limit) => {
   return request.get(
-    '/notification/getNotifications',
+    '/api/notification/getNotifications',
     { userId, type, page, limit },
     { requiresAuth: true }
   )
@@ -18,7 +18,7 @@ export const getNotifications = (userId, type, page, limit) => {
 
 export const readNew = (userId, type) => {
   return request.post(
-    '/notification/readNew',
+    '/api/notification/readNew',
     { userId, type },
     { requiresAuth: true }
   )

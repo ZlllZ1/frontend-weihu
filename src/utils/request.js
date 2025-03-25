@@ -147,6 +147,5 @@ class Request {
 }
 
 export default new Request({
-  baseURL: process.env.VUE_APP_API_BASE_URL || 'http://127.0.0.1:3007',
   timeout: 5000
 })
